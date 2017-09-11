@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Nuxt.js project templates",
   "private": true,
-  "author": "ydmap",
+  "author": "yoyo837 <yoyo837@hotmail.com>",
   "main": "index.js",
   "scripts": {
   },
