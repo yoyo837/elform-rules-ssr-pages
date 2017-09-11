@@ -9,6 +9,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://tanghui@git.vipwindows.com:11080/ydmap/ydmap-ssr-portal-pages.git"
+    "url": "git@git.vipwindows.com:ydmap/ydmap-ssr-portal-pages.git"
   }
 }
