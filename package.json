@@ -1,0 +1,14 @@
+{
+  "name": "ydmap-ssr-portal-pages",
+  "version": "1.0.0",
+  "description": "Nuxt.js project templates",
+  "private": true,
+  "author": "ydmap",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://tanghui@git.vipwindows.com:11080/ydmap/ydmap-ssr-portal-pages.git"
+  }
+}
