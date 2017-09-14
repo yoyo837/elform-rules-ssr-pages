@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title="'会员注册'" class="box">
+  <div class="box">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="真实姓名" prop="realName">
         <el-input v-model="form.realName" placeholder="请输入您的姓名"></el-input>
@@ -44,6 +44,11 @@ Vue.component(Input.name, Input)
 
 export default {
   name: 'register',
+  head() {
+    return {
+      title: '会员注册'
+    }
+  },
   components: {
     VerifyComp
   },

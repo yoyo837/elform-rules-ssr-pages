@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" :model="form" :rules="rules" label-width="80px" v-doc-title="'设置新密码'" class="box">
+  <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="box">
     <el-form-item label="新密码" prop="newPwd1">
       <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password"></el-input>
     </el-form-item>
@@ -23,6 +23,11 @@ Vue.component(Col.name, Col)
 Vue.component(Input.name, Input)
 export default {
   name: 'changepwd',
+  head() {
+    return {
+      title: '设置新密码'
+    }
+  },
   data() {
     return {
       rules: {

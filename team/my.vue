@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title="'我的团队'">
+  <div>
     <ProfilePanel :pic-path="serverData.loginAccountVo.picPath">
       {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
     </ProfilePanel>
@@ -38,6 +38,11 @@ Vue.component(Button.name, Button)
 
 export default {
   name: 'team-my',
+  head() {
+    return {
+      title: '我的团队'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel

@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title.sync="docTitle" :class="{'has-fixed-nav-header': navHeader}">
+  <div :class="{'has-fixed-nav-header': navHeader}">
     <mt-header fixed v-if="navHeader">
       <nuxt-link :to="navHeaderBackPath" v-if="navHeaderBackPath != null" slot="left">
         <mt-button icon="back"></mt-button>
@@ -17,10 +17,6 @@ Vue.component(Button.name, Button)
 export default {
   name: 'pageContainer',
   props: {
-    docTitle: {
-      type: String,
-      default: ''
-    },
     navHeader: {
       type: Boolean,
       default: false

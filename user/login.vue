@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title="'登陆'" class="box">
+  <div class="box">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
@@ -36,6 +36,11 @@ Vue.component(Input.name, Input)
 
 export default {
   name: 'login',
+  head() {
+    return {
+      title: '登陆'
+    }
+  },
   data() {
     return {
       rules: {

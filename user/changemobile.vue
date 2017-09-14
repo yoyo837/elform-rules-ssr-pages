@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title="'忘记密码'" class="box">
+  <div class="box">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
@@ -29,6 +29,11 @@ Vue.component(Input.name, Input)
 
 export default {
   name: 'forgot',
+  head() {
+    return {
+      title: '修改手机号'
+    }
+  },
   components: {
     VerifyComp
   },

@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title="'用户中心'">
+  <div>
     <ProfilePanel :pic-path="serverData.picPath">
       <template slot="left" v-if="serverData.isFee">
         <span>积分:{{serverData.accountFee}}</span>
@@ -86,6 +86,11 @@ Vue.component(Button.name, Button)
 
 export default {
   name: 'my',
+  head() {
+    return {
+      title: '用户中心'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel

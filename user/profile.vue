@@ -1,5 +1,5 @@
 <template>
-  <div v-doc-title="'用户中心'">
+  <div>
 
     <ProfilePanel :pic-path="serverData.picPath">
       {{serverData.realName}}/{{serverData.mobile}}
@@ -73,6 +73,11 @@ const staticSlotList = [{
 
 export default {
   name: 'profile',
+  head() {
+    return {
+      title: '个人信息'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel,

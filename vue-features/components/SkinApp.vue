@@ -7,14 +7,6 @@
 
 <script>
 import Vue from 'vue'
-Vue.directive('doc-title', {
-  inserted: function(el, binding) {
-    document.title = binding.value
-  },
-  update: function(el, binding) {
-    document.title = binding.value
-  }
-})
 export default {
   name: 'skinApp'
 }
