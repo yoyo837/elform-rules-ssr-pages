@@ -1,10 +1,14 @@
 <template>
+
 </template>
 
 <script>
 import utils from '../../components/utils'
 export default {
   name: 'page',
+  validate({ params, query }) {
+    return false
+  },
   mounted() {
     const query = this.$route.query || {}
     const id = query['id']
