@@ -18,7 +18,7 @@
 <script>
 import Vue from 'vue'
 import utils from '../../components/utils'
-import VerifyComp from '../components/PictureVerify'
+import VerifyComp from '../vue-features/components/PictureVerify'
 import { Form, FormItem, Button, Row, Col, Input } from 'element-ui'
 Vue.component(Form.name, Form)
 Vue.component(FormItem.name, FormItem)

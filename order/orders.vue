@@ -41,10 +41,10 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import PageContainer from '../components/PageContainer'
+import PageContainer from '../vue-features/components/PageContainer'
 import { Row, Col } from 'element-ui'
 import { Loadmore } from 'mint-ui'
-import bdStyleMixin from '../mixins/body-style'
+import bdStyleMixin from '../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)

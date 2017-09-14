@@ -30,7 +30,7 @@
 <script>
 import Vue from 'vue'
 import utils from '../../components/utils'
-import VerifyComp from '../components/PictureVerify'
+import VerifyComp from '../vue-features/components/PictureVerify'
 // 引入全部
 // import ElementUI from 'element-ui'
 // Vue.use(ElementUI)

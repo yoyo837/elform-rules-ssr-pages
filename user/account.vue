@@ -37,10 +37,10 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import bdStyleMixin from '../mixins/body-style'
+import bdStyleMixin from '../vue-features/mixins/body-style'
 import { Row, Col } from 'element-ui'
 import { Header, Button } from 'mint-ui'
-import PageContainer from '../components/PageContainer'
+import PageContainer from '../vue-features/components/PageContainer'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)

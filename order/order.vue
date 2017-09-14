@@ -467,8 +467,8 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import { Row, Col } from 'element-ui'
-import bdStyleMixin, { DefaultConfig } from '../mixins/body-style'
-import PageContainer from '../components/PageContainer'
+import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
+import PageContainer from '../vue-features/components/PageContainer'
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 export default {
