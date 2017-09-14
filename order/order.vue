@@ -1,5 +1,5 @@
 <template>
-  <PageContainer :doc-title.sync="title" :nav-header="true" nav-header-back-path="/orders">
+  <PageContainer :nav-header="true" nav-header-back-path="/orders">
     <!-- 场地订单 -->
     <div v-if="serverData.dealPlatformList && serverData.dealPlatformList.length" class="ctx-bg list-box">
       <template v-for="(platform, idx) in serverData.dealPlatformList">
@@ -473,6 +473,11 @@ Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 export default {
   name: 'order',
+  head() {
+    return {
+      title: this.title
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     PageContainer

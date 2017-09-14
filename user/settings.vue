@@ -1,5 +1,5 @@
 <template>
-  <PageContainer doc-title="设置" :nav-header="true" nav-header-back-path="/user/my">
+  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
     <nuxt-link to="/user/changepwd">
       <el-row class="nav-panel">
         <el-col :span="20">
@@ -47,6 +47,11 @@ Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
 export default {
   name: 'settings',
+  head() {
+    return {
+      title: '设置'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     PageContainer

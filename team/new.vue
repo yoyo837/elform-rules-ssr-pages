@@ -1,5 +1,5 @@
 <template>
-  <PageContainer doc-title="创建团队" :nav-header="true" nav-header-back-path="/team/my">
+  <PageContainer :nav-header="true" nav-header-back-path="/team/my">
     <el-row class="team-category">
       <el-col :span="6" class="category-item" v-for="item in serverData" :key="item.key">
         <div class="category-content" @click="onSelect(item.key)" :ref="`key-${item.key}`">
@@ -26,6 +26,11 @@ Vue.component(Button.name, Button)
 
 export default {
   name: 'team-new',
+  head() {
+    return {
+      title: '创建团队'
+    }
+  },
   components: {
     PageContainer
   },

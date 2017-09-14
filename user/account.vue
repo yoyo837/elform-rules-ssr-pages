@@ -1,5 +1,5 @@
 <template>
-  <PageContainer doc-title="我的账户" :nav-header="true" nav-header-back-path="/user/my">
+  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
     <el-row>
       <el-col :span="24">
         <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/deal_s.png`">
@@ -49,8 +49,13 @@ Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
 
 export default {
-  mixins: [bdStyleMixin],
   name: 'account',
+  head() {
+    return {
+      title: '我的账户'
+    }
+  },
+  mixins: [bdStyleMixin],
   components: {
     PageContainer
   },

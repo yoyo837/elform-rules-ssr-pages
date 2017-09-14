@@ -1,5 +1,5 @@
 <template>
-  <PageContainer doc-title="关于我们" :nav-header="false">
+  <PageContainer :nav-header="false">
     <el-row class="nav-panel nav-panel-mini">
       <el-col :span="24">
         <span>技术支持：深圳运动帝图科技有限公司</span>
@@ -38,6 +38,11 @@ Vue.component(Col.name, Col)
 
 export default {
   name: 'aboutUs',
+  head() {
+    return {
+      title: '关于我们'
+    }
+  },
   components: {
     PageContainer
   }

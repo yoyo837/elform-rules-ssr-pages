@@ -1,5 +1,5 @@
 <template>
-  <PageContainer doc-title="签到" :nav-header="true" nav-header-back-path="/user/my">
+  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
     <el-row class="text-center sign-title">
       <el-col :span="24">
         <span>每日签到</span>
@@ -51,6 +51,11 @@ Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
 export default {
   name: 'sign',
+  head() {
+    return {
+      title: '签到'
+    }
+  },
   components: {
     PageContainer
   },

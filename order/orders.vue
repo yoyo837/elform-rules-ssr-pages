@@ -1,5 +1,5 @@
 <template>
-  <PageContainer doc-title="我的订单" :nav-header="true" nav-header-back-path="/user/my">
+  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
     <div class="text-center no-more" v-if="list == null || list.length === 0">
       <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/no_icon_1.png`">
       <div>暂无订单!</div>
@@ -52,6 +52,11 @@ Vue.component(Loadmore.name, Loadmore)
 
 export default {
   name: 'orders',
+  head() {
+    return {
+      title: '我的订单'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     PageContainer
