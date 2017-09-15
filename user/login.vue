@@ -23,10 +23,9 @@
 <script>
 import Vue from 'vue'
 import util from '../../components/utils'
-// 引入全部
-// import ElementUI from 'element-ui'
-// Vue.use(ElementUI)
 import { Form, FormItem, Button, Row, Col, Input } from 'element-ui'
+const nuxtConfig = require('../../nuxt.config')
+
 Vue.component(Form.name, Form)
 Vue.component(FormItem.name, FormItem)
 Vue.component(Button.name, Button)
@@ -77,7 +76,8 @@ export default {
             // 登陆成功
             // redirectURL
             let redirectURL = decodeURIComponent(this.$route.query['redirectURL'] || '')
-            const prefix = `${location.protocol}//${location.host}/#`
+            const isHashUrl = nuxtConfig.router.router && nuxtConfig.router.router.mode === 'hash'
+            const prefix = `${location.protocol}//${location.host}${isHashUrl ? '/#' : ''}`
             if (redirectURL.startsWith(prefix)) {
               redirectURL = redirectURL.substr(prefix.length)
             }
