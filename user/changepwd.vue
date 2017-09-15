@@ -47,13 +47,13 @@ export default {
     }
   },
   methods: {
-    checkNewPwd(rule, value, callback, source, options) {
+    checkNewPwd(rule, value, fn, source, options) {
       if (this.form.newPwd1 === this.form.newPwd2) {
-        callback([])
+        fn([])
       } else {
-        callback([new Error('13')])
+        fn([new Error('13')])
       }
-    },  // 提交表单
+    }, // 提交表单
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {

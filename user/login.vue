@@ -63,11 +63,11 @@ export default {
     toRegister() {
       this.$router.push('/user/register')
     },
-    checkMobile(rule, value, callback, source, options) {
+    checkMobile(rule, value, fn, source, options) {
       if (util.validator.isMobile(value)) {
-        callback([])
+        fn([])
       } else {
-        callback([new Error()])
+        fn([new Error()])
       }
     },
     submitForm(formName) {

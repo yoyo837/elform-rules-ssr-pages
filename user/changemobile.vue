@@ -59,11 +59,11 @@ export default {
   },
   methods: {
     // 校验手机号
-    checkMobile(rule, value, callback, source, options) {
+    checkMobile(rule, value, fn, source, options) {
       if (utils.validator.isMobile(value)) {
-        callback([])
+        fn([])
       } else {
-        callback([new Error()])
+        fn([new Error()])
       }
     },
     // 提交表单
