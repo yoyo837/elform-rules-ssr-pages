@@ -6,10 +6,20 @@
       ul.sec-content
         li
           el-button(type="primary") 场馆1
+          el-button(type="primary") 场馆3
+          el-button(type="primary") 场馆3
+          el-button(type="primary") 场馆3
+          el-button(type="primary") 场馆3
+          el-button(type="primary") 场馆3
+          el-button(type="primary") 场馆3
     .sec
       .sec-title 选择场次时间
       ul.sec-content
         li
+          el-button(type="primary") 场馆1
+          el-button(type="primary") 场馆1
+          el-button(type="primary") 场馆1
+          el-button(type="primary") 场馆1
           el-button(type="primary") 场馆1
     .sec
       .sec-title 选择价格
@@ -53,7 +63,7 @@ export default {
 
 <style lang="scss">
 body.bd-pt-ticket-list {
-  padding-bottom: 50px;
+  padding-bottom: 60px;
 }
 </style>
 
@@ -78,6 +88,12 @@ $padding: 10px;
       padding: $padding;
       list-style-type: none;
       background-color: white;
+      .el-button+.el-button {
+        margin-left: 0;
+      }
+      .el-button {
+        margin: 5px 10px 5px 0;
+      }
     }
     .num-content {
       border-top: 1px solid #eee;
@@ -90,6 +106,7 @@ $padding: 10px;
     }
   }
   .fixed-bt {
+    z-index: 1;
     background-color: white;
     padding: 0;
     .el-row {
