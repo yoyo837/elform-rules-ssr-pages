@@ -1,12 +1,12 @@
 <template>
-  <div :class="{'has-fixed-nav-header': navHeader}">
+  <section class="container" :class="{'has-fixed-nav-header': navHeader}">
     <mt-header fixed v-if="navHeader">
       <nuxt-link :to="navHeaderBackPath" v-if="navHeaderBackPath != null" slot="left">
         <mt-button icon="back"></mt-button>
       </nuxt-link>
     </mt-header>
     <slot></slot>
-  </div>
+  </section>
 </template>
 
 <script>

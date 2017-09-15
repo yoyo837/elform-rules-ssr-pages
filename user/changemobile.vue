@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <section class="container box">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
@@ -12,7 +12,7 @@
         <el-button type="primary" @click="submitForm('form')">下一步</el-button>
       </el-form-item>
     </el-form>
-  </div>
+  </section>
 </template>
 
 <script>

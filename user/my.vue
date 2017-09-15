@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section class="container">
     <ProfilePanel :pic-path="serverData.picPath">
       <template slot="left" v-if="serverData.isFee">
         <span>积分:{{serverData.accountFee}}</span>
@@ -71,7 +71,7 @@
     <div class="fixed-bt">
       <el-button type="danger" @click="toLogout">退出/切换账号</el-button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section class="container">
     <ProfilePanel :pic-path="serverData.loginAccountVo.picPath">
       {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
     </ProfilePanel>
@@ -22,7 +22,7 @@
         <el-button type="primary">查找团队</el-button>
       </nuxt-link>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>

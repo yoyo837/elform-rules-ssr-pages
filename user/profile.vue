@@ -1,6 +1,5 @@
 <template>
-  <div>
-
+  <section class="container box">
     <ProfilePanel :pic-path="serverData.picPath">
       {{serverData.realName}}/{{serverData.mobile}}
     </ProfilePanel>
@@ -33,7 +32,7 @@
     <div class="fixed-bt">
       <el-button type="danger" @click="submitForm">保存设置</el-button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>

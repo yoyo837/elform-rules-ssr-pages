@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <section class="container box">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
@@ -17,7 +17,7 @@
     <div class="text-right">
       <nuxt-link to="/user/forgot">找回密码</nuxt-link>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>

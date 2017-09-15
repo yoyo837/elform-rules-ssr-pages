@@ -1,15 +1,17 @@
 <template>
-  <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="box">
-    <el-form-item label="新密码" prop="newPwd1">
-      <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password"></el-input>
-    </el-form-item>
-    <el-form-item label="确认密码" prop="newPwd2">
-      <el-input v-model="form.newPwd2" placeholder="请确认新密码" type="password"></el-input>
-    </el-form-item>
-    <el-form-item label-width="0px">
-      <el-button type="primary" @click="submitForm('form')">确认修改</el-button>
-    </el-form-item>
-  </el-form>
+  <section class="container">
+    <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="box">
+      <el-form-item label="新密码" prop="newPwd1">
+        <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password"></el-input>
+      </el-form-item>
+      <el-form-item label="确认密码" prop="newPwd2">
+        <el-input v-model="form.newPwd2" placeholder="请确认新密码" type="password"></el-input>
+      </el-form-item>
+      <el-form-item label-width="0px">
+        <el-button type="primary" @click="submitForm('form')">确认修改</el-button>
+      </el-form-item>
+    </el-form>
+  </section>
 </template>
 
 <script>
