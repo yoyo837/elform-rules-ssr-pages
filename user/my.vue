@@ -24,7 +24,7 @@
         </el-col>
       </el-row>
     </nuxt-link>
-    <nuxt-link to="/orders">
+    <nuxt-link to="/order/list">
       <el-row class="nav-panel">
         <el-col :span="20">
           <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_order.png`">
@@ -46,7 +46,7 @@
         </el-col>
       </el-row>
     </nuxt-link>
-    <nuxt-link to="/user/events">
+    <nuxt-link to="/event/list">
       <el-row class="nav-panel">
         <el-col :span="20">
           <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_active.png`">

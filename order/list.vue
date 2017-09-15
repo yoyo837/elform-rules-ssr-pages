@@ -42,12 +42,13 @@
 import _ from 'lodash'
 import Vue from 'vue'
 import PageContainer from '../vue-features/components/PageContainer'
-import { Row, Col } from 'element-ui'
+import { Row, Col, Button } from 'element-ui'
 import { Loadmore } from 'mint-ui'
 import bdStyleMixin from '../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
+Vue.component(Button.name, Button)
 Vue.component(Loadmore.name, Loadmore)
 
 export default {

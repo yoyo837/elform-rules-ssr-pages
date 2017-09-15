@@ -20,7 +20,7 @@
         </el-col>
       </el-row>
     </nuxt-link>
-    <nuxt-link to="/user/aboutus">
+    <nuxt-link to="/about">
       <el-row class="nav-panel nav-panel-mg">
         <el-col :span="20">
           <span>关于我们</span>

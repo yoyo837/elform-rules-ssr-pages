@@ -1,5 +1,5 @@
 <template>
-  <section class="container box">
+  <section class="container">
     <ProfilePanel :pic-path="serverData.picPath">
       {{serverData.realName}}/{{serverData.mobile}}
     </ProfilePanel>

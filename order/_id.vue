@@ -1,5 +1,5 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/orders">
+  <PageContainer :nav-header="true" nav-header-back-path="/order/list">
     <!-- 场地订单 -->
     <div v-if="serverData.dealPlatformList && serverData.dealPlatformList.length" class="ctx-bg list-box">
       <template v-for="(platform, idx) in serverData.dealPlatformList">
