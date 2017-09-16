@@ -1,5 +1,7 @@
-<template lang="pug">
-  section.container 活动列表
+<template>
+  <section>
+    活动列表
+  </section>
 </template>
 
 <script>
