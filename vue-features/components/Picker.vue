@@ -5,10 +5,10 @@
     <mt-popup v-model="visible" popup-transition="popup-fade" position="bottom">
       <el-row class="picker-wrapper-toolbar">
         <el-col :span="12">
-          <mt-button size="small" @click="cancel">取消</mt-button>
+          <el-button size="small" @click="cancel">取消</el-button>
         </el-col>
         <el-col :span="12" class="text-right">
-          <mt-button type="primary" size="small" @click="sure">确定</mt-button>
+          <el-button type="primary" size="small" @click="sure">确定</el-button>
         </el-col>
       </el-row>
       <mt-picker value-key="label" :slots="slots" @change="onValuesChange">
@@ -21,8 +21,8 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import { Row, Col, Input } from 'element-ui'
-import { Popup, Picker, Button } from 'mint-ui'
+import { Row, Col, Input, Button } from 'element-ui'
+import { Popup, Picker } from 'mint-ui'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)

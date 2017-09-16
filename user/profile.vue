@@ -87,7 +87,7 @@ export default {
     this.$http.get('/pubUser/userInfo.do').then(data => {
       data = data || {}
       // _.merge(data, _.cloneDeep(defServerData))
-      _.assign(this.serverData, data)
+      _.assign(this.serverData, data.userInfo)
     }).catch(() => {
     })
 
@@ -97,12 +97,12 @@ export default {
   },
   methods: {
     changeMbl() {
-      this.$router.push('/user/changembl')
+      this.$router.push('/user/changemobile')
     },
     submitForm() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          this.$http.post('/pubUser/updateUserInfo.do', {
+          this.$http.post('/pubUser/saveUserInfo.do', {
             realName: this.serverData.realName,
             gender: this.serverData.gender,
             birthday: this.serverData.birthday,
