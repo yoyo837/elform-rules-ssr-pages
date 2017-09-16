@@ -50,7 +50,7 @@ export default {
         if (data && data.pageTag === 'needAddInfo') {
           popop.alert(`${data.pageTagMsg || 'needAddInfo'} 跳转中...`)
           setTimeout(() => {
-            this.$router.push(`/team/member?key=${key}`)
+            this.$router.push(`/user/profile?key=${key}`)
           }, TOAST_DURATION)
           return
         }

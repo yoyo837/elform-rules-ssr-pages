@@ -98,16 +98,18 @@ export default {
     DatetimePicker
   },
   mounted() {
-    this.$http.get('/pubUser/userInfo.do').then(data => {
+    const params = {}
+    if (this.teamid) {
+      params['teamId'] = this.teamid
+    }
+    if (this.key) {
+      params['professionalId'] = this.key
+    }
+    this.$http.get('/pubUser/userInfo.do', params).then(data => {
       data = data || {}
-      // _.merge(data, _.cloneDeep(defServerData))
       _.assign(this.serverData, data.userInfo)
     }).catch(() => {
     })
-
-    // setInterval(() => {
-    //   console.log(this.serverData.birthday, this.serverData.idcardType)
-    // }, 1000 * 3)
   },
   methods: {
     changeMbl() {
@@ -160,7 +162,9 @@ export default {
         gender: 0,
         idcard: null,
         birthday: null
-      }
+      },
+      teamid: this.$route.query['teamid'],
+      key: this.$route.query['key']
     }
   }
 }
