@@ -102,7 +102,6 @@ export default {
       data = data || {}
       // _.merge(data, _.cloneDeep(defServerData))
       _.assign(this.serverData, data.userInfo)
-      this.serverData.canEdit = false
     }).catch(() => {
     })
 
