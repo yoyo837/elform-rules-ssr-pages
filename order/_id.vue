@@ -483,7 +483,7 @@ export default {
     PageContainer
   },
   mounted() {
-    this.$http.get('deal/dealDetail.do', {
+    this.$http.get('/deal/detail.do', {
       dealId: this.orderId
     }).then(data => {
       _.assign(this.serverData, data || {})
