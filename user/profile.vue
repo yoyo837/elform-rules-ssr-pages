@@ -6,30 +6,44 @@
 
     <el-form ref="form" :model="serverData" :rules="rules" label-width="80px" class="ctx-bg mintui-style">
       <el-form-item label="姓名" prop="realName">
-        <el-input v-model="serverData.realName" placeholder="请输入姓名"></el-input>
+        <el-input v-if="serverData.canEdit" v-model="serverData.realName" placeholder="请输入姓名"></el-input>
+        <template v-else>
+          {{serverData.realName}}
+        </template>
       </el-form-item>
       <el-form-item label="性别" prop="gender">
-        <el-radio-group v-model="serverData.gender">
+        <el-radio-group v-if="serverData.canEdit" v-model="serverData.gender">
           <el-radio :label="1">男</el-radio>
           <el-radio :label="2">女</el-radio>
         </el-radio-group>
+        <template v-else-if="serverData.gender">
+          {{serverData.gender == 1 ? '男' : '女'}}
+        </template>
       </el-form-item>
       <el-form-item label="手机" prop="mobile" required>
-        <el-input v-model="serverData.mobile" :readonly="true"></el-input>
-        <el-button type="primary" class="btn-right" @click="changeMbl">更改</el-button>
+        <template v-if="serverData.canEdit">
+          <el-input v-model="serverData.mobile" :readonly="true"></el-input>
+          <el-button type="primary" class="btn-right" @click="changeMbl">更改</el-button>
+        </template>
+        <template v-else>
+          {{serverData.mobile}}
+        </template>
       </el-form-item>
       <el-form-item label="生日" prop="birthday">
-        <DatetimePicker type="date" v-model="serverData.birthday" :start-date="startDate" :end-date="endDate"></DatetimePicker>
+        <DatetimePicker type="date" v-model="serverData.birthday" :start-date="startDate" :end-date="endDate" :can-edit="serverData.canEdit"></DatetimePicker>
       </el-form-item>
       <el-form-item label="证件类型" prop="idcardType">
-        <Picker ref="picker" :slots="certificates" v-model="serverData.idcardType"></Picker>
+        <Picker ref="picker" :slots="certificates" v-model="serverData.idcardType" :can-edit="serverData.canEdit"></Picker>
       </el-form-item>
       <el-form-item label="证件号码" prop="idcard">
-        <el-input v-model="serverData.idcard"></el-input>
+        <el-input v-if="serverData.canEdit" v-model="serverData.idcard"></el-input>
+        <template v-else>
+          {{serverData.idcard}}
+        </template>
       </el-form-item>
     </el-form>
 
-    <div class="fixed-bt">
+    <div class="fixed-bt" v-if="serverData.canEdit">
       <el-button type="danger" @click="submitForm">保存设置</el-button>
     </div>
   </section>
@@ -88,6 +102,7 @@ export default {
       data = data || {}
       // _.merge(data, _.cloneDeep(defServerData))
       _.assign(this.serverData, data.userInfo)
+      this.serverData.canEdit = false
     }).catch(() => {
     })
 

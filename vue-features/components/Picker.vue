@@ -1,20 +1,25 @@
 <template>
   <div class="picker-wrapper">
-    <el-input ref="input" placeholder="请选择" :readonly="true" v-model="displayValue"></el-input>
-    <el-button type="primary" class="btn-right" @click="showSelect">选择</el-button>
-    <mt-popup v-model="visible" popup-transition="popup-fade" position="bottom">
-      <el-row class="picker-wrapper-toolbar">
-        <el-col :span="12">
-          <el-button size="small" @click="cancel">取消</el-button>
-        </el-col>
-        <el-col :span="12" class="text-right">
-          <el-button type="primary" size="small" @click="sure">确定</el-button>
-        </el-col>
-      </el-row>
-      <mt-picker value-key="label" :slots="slots" @change="onValuesChange">
-        <!-- 上面的picker-wrapper-toolbar放到这里show-toolbar="true"就是slot插槽的内容，需要flex布局-->
-      </mt-picker>
-    </mt-popup>
+    <template v-if="canEdit">
+      <el-input ref="input" placeholder="请选择" :readonly="true" v-model="displayValue"></el-input>
+      <el-button type="primary" class="btn-right" @click="showSelect">选择</el-button>
+      <mt-popup v-model="visible" popup-transition="popup-fade" position="bottom">
+        <el-row class="picker-wrapper-toolbar">
+          <el-col :span="12">
+            <el-button size="small" @click="cancel">取消</el-button>
+          </el-col>
+          <el-col :span="12" class="text-right">
+            <el-button type="primary" size="small" @click="sure">确定</el-button>
+          </el-col>
+        </el-row>
+        <mt-picker value-key="label" :slots="slots" @change="onValuesChange">
+          <!-- 上面的picker-wrapper-toolbar放到这里show-toolbar="true"就是slot插槽的内容，需要flex布局-->
+        </mt-picker>
+      </mt-popup>
+    </template>
+    <template v-else>
+      {{displayValue}}
+    </template>
   </div>
 </template>
 
@@ -40,6 +45,10 @@ export default {
       type: Array,
       default: [],
       required: true
+    },
+    canEdit: {
+      type: Boolean,
+      default: true
     },
     value: null
   },

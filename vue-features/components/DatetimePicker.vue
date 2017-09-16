@@ -1,13 +1,18 @@
 <template>
   <div>
-    <el-input ref="input" placeholder="请选择日期" :readonly="true" v-model="displayValue"></el-input>
-    <el-button type="primary" class="btn-right" @click="showSelect">选择</el-button>
-    <mt-datetime-picker v-if="type == 'date'" ref="picker" v-model="innerValue" :type="type" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日" @confirm="handleConfirm" :start-date="startDate" :end-date="endDate">
-    </mt-datetime-picker>
-    <mt-datetime-picker v-if="type == 'datetime'" ref="picker" v-model="innerValue" :type="type" @confirm="handleConfirm">
-    </mt-datetime-picker>
-    <mt-datetime-picker v-if="type == 'time'" ref="picker" v-model="innerValue" :type="type" @confirm="handleConfirm">
-    </mt-datetime-picker>
+    <template v-if="canEdit">
+      <el-input ref="input" placeholder="请选择日期" :readonly="true" v-model="displayValue"></el-input>
+      <el-button type="primary" class="btn-right" @click="showSelect">选择</el-button>
+      <mt-datetime-picker v-if="type == 'date'" ref="picker" v-model="innerValue" :type="type" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日" @confirm="handleConfirm" :start-date="startDate" :end-date="endDate">
+      </mt-datetime-picker>
+      <mt-datetime-picker v-if="type == 'datetime'" ref="picker" v-model="innerValue" :type="type" @confirm="handleConfirm">
+      </mt-datetime-picker>
+      <mt-datetime-picker v-if="type == 'time'" ref="picker" v-model="innerValue" :type="type" @confirm="handleConfirm">
+      </mt-datetime-picker>
+    </template>
+    <template v-else>
+      {{displayValue}}
+    </template>
   </div>
 </template>
 
@@ -33,6 +38,10 @@ export default {
     },
     endDate: {
       type: Date
+    },
+    canEdit: {
+      type: Boolean,
+      default: true
     },
     value: null // 默认值
   },
