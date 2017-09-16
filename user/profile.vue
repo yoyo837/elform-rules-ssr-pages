@@ -107,7 +107,9 @@ export default {
     }
     this.$http.get('/pubUser/userInfo.do', params).then(data => {
       data = data || {}
-      _.assign(this.serverData, data.userInfo)
+      _.assign(this.serverData, data.userInfo, {
+        userProfessionalInfo: data.userProfessionalInfo
+      })
     }).catch(() => {
     })
   },
@@ -161,7 +163,10 @@ export default {
         mobile: null,
         gender: 0,
         idcard: null,
-        birthday: null
+        birthday: null,
+        userProfessionalInfo: {
+          extFieldList: []
+        }
       },
       teamid: this.$route.query['teamid'],
       key: this.$route.query['key']
