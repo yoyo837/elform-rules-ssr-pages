@@ -47,7 +47,7 @@ export default {
   methods: {
     onSelect(key) {
       this.$http.get('/team/checkNeedAddInfo.do', { professionalId: key }).then(data => {
-        if (data.pageTag === 'needAddInfo') {
+        if (data && data.pageTag === 'needAddInfo') {
           popop.alert(`${data.pageTagMsg || 'needAddInfo'} 跳转中...`)
           setTimeout(() => {
             this.$router.push(`/team/member?key=${key}`)
