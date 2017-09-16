@@ -7,7 +7,7 @@ import utils from '../../components/utils'
 export default {
   name: 'page',
   validate({ params, query }) {
-    return false
+    return /^\d+$/.test(query.id)
   },
   mounted() {
     const query = this.$route.query || {}
