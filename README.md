@@ -1,10 +1,13 @@
 # ydmap-web-portal/ydmap-ssr-portal-pages
 
-> 此repo是ydmap-ssr-portal的模板页子模块submodule
+此repo是ydmap-ssr-portal的模板页子模块submodule, 拉取ydmap-ssr-portal时请添加--recursive参数, 或者使用
+```shell
+git submodule init
+git submodule update
+```
 
-由于Visual Studio Code团队还在讨论git submodule功能的实现计划，故此暂时不能支持在Visual Studio Code工具内直接操作git commit/pull/push等操作，但关联子项目是没有问题的。
 
-请使用客户端工具(如[TortoiseGit](https://tortoisegit.org/))或者命令行终端进行git submodule子模块的相关操作。
+> 由于Visual Studio Code团队还在讨论git submodule功能的实现计划，故此暂时不能支持在Visual Studio Code工具内直接操作git commit/pull/push等操作，但关联子项目是没有问题的。请使用客户端工具(如[TortoiseGit](https://tortoisegit.org/))或者命令行终端进行git submodule子模块的相关操作。
 
 ## 模板开发/部署规范
 1. 任何涉及接口调整的情况，先本地测试通过再同步部署到测试环境测试通过后方可同步部署到正式环境；
