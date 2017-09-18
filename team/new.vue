@@ -15,7 +15,7 @@
 <script>
 // import _ from 'lodash'
 import Vue from 'vue'
-import popop, { TOAST_DURATION } from '../../components/popup'
+import popop from '../../components/popup'
 import { Row, Col, Button, Tag } from 'element-ui'
 import PageContainer from '../vue-features/components/PageContainer'
 
@@ -42,20 +42,21 @@ export default {
       if (this.defaultKey) {
         // this.$refs[`key-${this.defaultKey}`]
       }
-    }).catch(() => { })
+    })
   },
   methods: {
     onSelect(key) {
       this.$http.get('/team/checkNeedAddInfo.do', { professionalId: key }).then(data => {
         if (data && data.pageTag === 'needAddInfo') {
-          popop.alert(`${data.pageTagMsg || 'needAddInfo'} 跳转中...`)
-          setTimeout(() => {
-            this.$router.push(`/user/profile?key=${key}`)
-          }, TOAST_DURATION)
+          popop.alert(`${data.pageTagMsg || 'needAddInfo'} 跳转中...`, {
+            callback: () => {
+              this.$router.push(`/user/profile?key=${key}`)
+            }
+          })
           return
         }
         this.$router.push(`/team/edit?key=${key}`)
-      }).catch(() => { })
+      })
     }
   },
   data() {

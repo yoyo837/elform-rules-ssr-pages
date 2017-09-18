@@ -110,7 +110,6 @@ export default {
       _.assign(this.serverData, data.userInfo, {
         userProfessionalInfo: data.userProfessionalInfo
       })
-    }).catch(() => {
     })
   },
   methods: {
@@ -128,7 +127,6 @@ export default {
             idcard: this.serverData.idcard
           }).then(() => {
             this.$router.push('/user/my')
-          }).catch(() => {
           })
         }
         return false

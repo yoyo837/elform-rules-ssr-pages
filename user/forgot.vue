@@ -75,8 +75,6 @@ export default {
             smsCode: this.form.smsCode
           }).then(() => {
             this.$router.push('/user/changepwd')
-          }).catch(() => {
-            //
           })
         }
         return false

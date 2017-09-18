@@ -91,7 +91,6 @@ export default {
         }
 
         this.$refs.loadmore.onBottomLoaded()
-      }).catch(() => {
       })
     },
     toPay(id) {

@@ -64,8 +64,6 @@ export default {
             pwds: this.form.newPwd2
           }).then(() => {
             this.$router.replace('/user/my')
-          }).catch(() => {
-            //
           })
         }
         return false

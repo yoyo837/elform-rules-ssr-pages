@@ -82,7 +82,6 @@ export default {
               redirectURL = redirectURL.substr(prefix.length)
             }
             this.$router.replace(redirectURL || '/user/my')
-          }).catch(() => {
           })
         }
         return false

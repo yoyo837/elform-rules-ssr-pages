@@ -102,7 +102,6 @@ export default {
             smsCode: this.form.smsCode
           }).then(() => {
             this.$router.push('/user/login')
-          }).catch(() => {
           })
         }
         return false

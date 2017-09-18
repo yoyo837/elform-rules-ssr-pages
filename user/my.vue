@@ -98,8 +98,6 @@ export default {
   mounted() {
     this.$http.get('/pubUser/my.do').then(data => {
       _.assign(this.serverData, data || {})
-    }).catch(() => {
-
     })
   },
   data() {
@@ -120,7 +118,6 @@ export default {
     toLogout() {
       this.$http.post('/pubUser/logout.do').then(() => {
         this.$router.push('/')
-      }).catch(() => {
       })
     }
   }

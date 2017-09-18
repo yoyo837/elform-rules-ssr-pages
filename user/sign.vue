@@ -64,8 +64,6 @@ export default {
       // test
       // data.sameDay = 0
       _.assign(this.serverData, data || {})
-    }).catch(() => {
-
     })
   },
   methods: {
@@ -77,8 +75,6 @@ export default {
           this.visible = false
           this.$router.push('/user/my')
         }, 1000)
-      }).catch(() => {
-
       })
     }
   },

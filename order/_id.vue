@@ -487,7 +487,6 @@ export default {
       dealId: this.orderId
     }).then(data => {
       _.assign(this.serverData, data || {})
-    }).catch(() => {
     })
   },
   methods: {

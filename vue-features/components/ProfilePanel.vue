@@ -3,13 +3,13 @@
     <el-col :span="24">
       <img :src.sync="imgUrl">
     </el-col>
-    <el-col :span="6" class="text-left">
+    <el-col :span="6" class="text-left" v-if="showSlot">
       <slot name="left">&nbsp;</slot>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" v-if="showSlot">
       <slot>&nbsp;</slot>
     </el-col>
-    <el-col :span="6" class="text-right">
+    <el-col :span="6" class="text-right" v-if="showSlot">
       <slot name="right">&nbsp;</slot>
     </el-col>
   </el-row>
@@ -25,6 +25,9 @@ Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 export default {
   name: 'profilePanel',
+  mounted() {
+    this.showSlot = Object.keys(this.$slots).length > 0
+  },
   props: {
     picPath: {
       type: String,
@@ -41,11 +44,13 @@ export default {
   },
   data() {
     return {
-      imgUrl: `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
+      imgUrl: this.type === 'team' ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
       color: ({
         user: 'rgba(32, 160, 255, 0.75)',
-        team: '#1cc2b4'
-      })[this.type]
+        team: 'rgba(32, 160, 255, 0.75)'
+        // team: '#1cc2b4'
+      })[this.type],
+      showSlot: true
     }
   },
   computed: {

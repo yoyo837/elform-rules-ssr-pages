@@ -62,8 +62,6 @@ export default {
   mounted() {
     this.$http.get('/pubUser/pubAccount.do').then(data => {
       _.assign(this.serverData, data || {})
-    }).catch(() => {
-
     })
   },
   data() {
