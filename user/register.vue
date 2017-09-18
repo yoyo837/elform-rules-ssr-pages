@@ -15,10 +15,10 @@
         <VerifyComp :type="1" :mobile="form.mobile" v-model="form.smsCode"></VerifyComp>
       </el-form-item>
       <el-form-item label-width="0px">
-        <el-button type="primary" @click="submitForm('form')">确定</el-button>
+        <el-button type="primary" @click="submitForm('form')" class="full-width">确定</el-button>
       </el-form-item>
       <el-form-item label-width="0px">
-        <el-button @click="toLogin">已有账号，直接登陆</el-button>
+        <el-button @click="toLogin" class="full-width">已有账号，直接登陆</el-button>
       </el-form-item>
     </el-form>
     <div class="text-right">
@@ -110,9 +110,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-button {
-  width: 100%; // 如果有attribute能控制则最好不使用css
-}
-</style>

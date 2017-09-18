@@ -8,10 +8,10 @@
         <el-input v-model="form.pwd" placeholder="请输入密码" type="password"></el-input>
       </el-form-item>
       <el-form-item label-width="0px">
-        <el-button type="primary" @click="submitForm('form')">马上登陆</el-button>
+        <el-button type="primary" @click="submitForm('form')" class="full-width">马上登陆</el-button>
       </el-form-item>
       <el-form-item label-width="0px">
-        <el-button @click="toRegister">注册一个新账号</el-button>
+        <el-button @click="toRegister" class="full-width">注册一个新账号</el-button>
       </el-form-item>
     </el-form>
     <div class="text-right">
@@ -90,9 +90,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-button {
-  width: 100%; // 如果有attribute能控制则最好不使用css
-}
-</style>

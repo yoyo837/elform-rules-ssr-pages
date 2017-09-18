@@ -8,7 +8,7 @@
         <el-input v-model="form.newPwd2" placeholder="请确认新密码" type="password"></el-input>
       </el-form-item>
       <el-form-item label-width="0px">
-        <el-button type="primary" @click="submitForm('form')">确认修改</el-button>
+        <el-button type="primary" @click="submitForm('form')" class="full-width">确认修改</el-button>
       </el-form-item>
     </el-form>
   </section>
@@ -72,9 +72,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-button {
-  width: 100%; // 如果有attribute能控制则最好不使用css
-}
-</style>
