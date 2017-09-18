@@ -10,7 +10,7 @@
     <div class="operation">
       <el-button type="primary" class="full-width" @click="toSearch">搜索</el-button>
     </div>
-    <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+    <mt-loadmore :top-method="load" :bottom-all-loaded="allLoaded" ref="loadmore">
       <nuxt-link :to="`/team/profile?teamid=${item.id}`" v-for="item in list" :key="item.id">
         <el-row class="nav-panel">
           <el-col :span="18">
@@ -54,9 +54,9 @@ export default {
       this.listServerData.page = 0
       this.listServerData.total = 0
       this.allLoaded = false
-      this.loadBottom()
+      this.load()
     },
-    loadBottom() {
+    load() {
       this.$http.get('/team/searchTeamList.do', _.assign(this.serverData, {
         page: (this.listServerData.page || 0) + 1,
         pageSize: this.pageSize
@@ -69,18 +69,21 @@ export default {
         if (!_.isArray(data.rows)) {
           data.rows = []
         }
-        _.assign(this.listServerData, {
-          page: data.page || 1,
-          total: data.total || data.rows.length
-        })
-        const oldLength = this.list.length
-        this.list.push.apply(this.list, data.rows)
 
+        const oldLength = this.list.length
+        if (data.rows.length) {
+          _.assign(this.listServerData, {
+            page: data.page || 1,
+            total: data.total || data.rows.length
+          })
+
+          /* eslint-disable no-useless-call */
+          this.list.splice.apply(this.list, [0, 0, ...data.rows])
+        }
         if (this.list.length - oldLength < this.pageSize || this.list.length >= this.listServerData.total) { // 没用响应满页或者超过总数
           this.allLoaded = true
         }
-
-        this.$refs.loadmore.onBottomLoaded()
+        this.$refs.loadmore.onTopLoaded()
       })
     }
   },
