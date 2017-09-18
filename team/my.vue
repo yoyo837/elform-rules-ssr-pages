@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <ProfilePanel :pic-path="serverData.loginAccountVo.picPath">
+    <ProfilePanel :pic-path="serverData.loginAccountVo.picPath" type="team">
       {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
     </ProfilePanel>
     <nuxt-link to="/user/account" v-for="team in serverData.teamList" :key="team.id">
