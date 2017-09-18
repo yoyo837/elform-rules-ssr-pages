@@ -16,10 +16,10 @@
         <el-input v-model="serverData.address" placeholder="请输入团队联系地址"></el-input>
       </el-form-item>
       <el-form-item label="所属专业">
-        123
+        {{serverData.professionalText}}
       </el-form-item>
       <el-form-item label="所属行业">
-        456
+        {{serverData.industryText}}
       </el-form-item>
       <el-form-item label="团队简介" prop="teamIntro">
         <el-input type="textarea" v-model="serverData.teamIntro"></el-input>
@@ -56,7 +56,14 @@ export default {
       this.$http.get('/team/getIndustryInfo.do', {
         professionalId: this.key
       }).then(data => {
-        _.assign(this.serverData, data)
+        data.industry = data.industry || {}
+        data.professional = data.professional || {}
+        _.assign(this.serverData, {
+          industry: data.industry.key, // 行业
+          industryText: data.industry.value,
+          professional: data.professional.key, // 专业
+          professionalText: data.professional.value
+        })
       })
     } else {
       this.$router.push('/team/my')
@@ -70,7 +77,11 @@ export default {
 
       },
       serverData: {
-        canEdit: true
+        canEdit: true,
+        industry: null, // 行业
+        industryText: null,
+        professional: null, // 专业
+        professionalText: null
       },
       teamid: this.$route.query['teamid'],
       key: this.$route.query['key']
