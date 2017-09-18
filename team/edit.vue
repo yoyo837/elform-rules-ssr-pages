@@ -25,7 +25,7 @@
         <el-input type="textarea" v-model="serverData.teamIntro"></el-input>
       </el-form-item>
       <template v-for="field in serverData.extFieldList">
-        <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写', trigger: 'blur'}]">
+        <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
           <template v-if="field.extDataType == 0 || field.extDataType == 1 || field.extDataType == 2">
             <el-input v-model="serverData[field.extName]" :placeholder="field.descr"></el-input>
           </template>
@@ -114,8 +114,7 @@ export default {
     submitForm() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          console.log(this.serverData)
-          console.log('验证通过')
+          // console.log(this.serverData)
         }
         return false
       })
@@ -126,7 +125,12 @@ export default {
       startDate: moment().subtract(100, 'years').toDate(),
       endDate: moment().toDate(),
       rules: {
-
+        teamName: [{
+          required: true, message: '请填写团队名称', trigger: 'blur'
+        }],
+        contact: [{
+          required: true, message: '请填写联系方式', trigger: 'blur'
+        }]
       },
       serverData: {
         canEdit: true,
