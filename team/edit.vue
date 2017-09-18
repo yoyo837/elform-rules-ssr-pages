@@ -24,7 +24,25 @@
       <el-form-item label="团队简介" prop="teamIntro">
         <el-input type="textarea" v-model="serverData.teamIntro"></el-input>
       </el-form-item>
+      <template v-for="field in serverData.extFieldList">
+        <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写', trigger: 'blur'}]">
+          <template v-if="field.extDataType == 0 || field.extDataType == 1 || field.extDataType == 2">
+            <el-input v-model="serverData[field.extName]" :placeholder="field.descr"></el-input>
+          </template>
+          <template v-else-if="field.extDataType == 3">
+            <el-radio-group v-model="serverData[field.extName]">
+              <el-radio v-for="item in field.dataTypeValue" :label="item.value" :key="item.value">{{item.name || item.value}}</el-radio>
+            </el-radio-group>
+          </template>
+          <template v-else-if="field.extDataType == 4">
+            <el-input v-model="serverData[field.extName]" placeholder="选择文件待完善"></el-input>
+          </template>
+        </el-form-item>
+      </template>
     </el-form>
+    <div class="fixed-bt">
+      <el-button type="primary" @click="submitForm">保存</el-button>
+    </div>
   </section>
 </template>
 
@@ -33,6 +51,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import Vue from 'vue'
 import { Form, FormItem, Button, Input, RadioGroup, Radio } from 'element-ui'
+import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
 import DatetimePicker from '../vue-features/components/DatetimePicker'
 
@@ -45,6 +64,7 @@ Vue.component(Radio.name, Radio)
 
 export default {
   name: 'team-edit',
+  mixins: [bdStyleMixin],
   components: {
     ProfilePanel,
     DatetimePicker
@@ -53,20 +73,52 @@ export default {
     if (this.teamid) {
       // serverData.canEdit  如果没权限直接跳走
     } else if (this.key) {
-      this.$http.get('/team/getIndustryInfo.do', {
+      Promise.all([this.$http.get('/team/getIndustryInfo.do', {
         professionalId: this.key
-      }).then(data => {
-        data.industry = data.industry || {}
-        data.professional = data.professional || {}
+      }), this.getExtFieldList()]).then(resultList => {
+        // 行业/专业信息
+        const industryInfo = resultList[0]
+        industryInfo.industry = industryInfo.industry || {}
+        industryInfo.professional = industryInfo.professional || {}
         _.assign(this.serverData, {
-          industry: data.industry.key, // 行业
-          industryText: data.industry.value,
-          professional: data.professional.key, // 专业
-          professionalText: data.professional.value
+          industry: industryInfo.industry.key, // 行业
+          industryText: industryInfo.industry.value,
+          professional: industryInfo.professional.key, // 专业
+          professionalText: industryInfo.professional.value
+        })
+
+        this.serverData.extFieldList = (resultList[1] || []).filter(item => {
+          const baseReq = item != null && item.dataId && item.extDataType // 过滤非法
+          if (baseReq && item.extDataType === 3) {
+            if (_.isArray(item.dataTypeValue)) {
+              return item.dataTypeValue.filter(selectItem => {
+                return selectItem.value != null
+              }).length > 0
+            }
+            return false
+          }
+          return baseReq
         })
       })
     } else {
       this.$router.push('/team/my')
+    }
+  },
+  methods: {
+    async getExtFieldList() {
+      const result = await this.$http.get('/team/teamProfessionalExtFieldList.do', {
+        professionalId: this.key
+      })
+      return result
+    },
+    submitForm() {
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          console.log(this.serverData)
+          console.log('验证通过')
+        }
+        return false
+      })
     }
   },
   data() {
@@ -81,15 +133,20 @@ export default {
         industry: null, // 行业
         industryText: null,
         professional: null, // 专业
-        professionalText: null
+        professionalText: null,
+
+        extFieldList: []
       },
       teamid: this.$route.query['teamid'],
-      key: this.$route.query['key']
+      key: this.$route.query['key'],
+      bodyClass: `${DefaultConfig.bodyClass} bd-pt-team-edit`
     }
   }
 }
 </script>
 
-<style>
-
+<style lang="scss">
+body.bd-pt-team-edit {
+  padding-bottom: 50px;
+}
 </style>
