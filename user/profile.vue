@@ -167,7 +167,7 @@ export default {
                 dataId: field.dataId,
                 dataType: field.extDataType,
                 name: field.extName,
-                value: this.serverData[field.extName] == null ? '' : this.serverData[field.extName]
+                value: this.serverData[field.extName]
               }
             })
           }
