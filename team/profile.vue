@@ -98,12 +98,11 @@
 
     <div class="fixed-bt">
       <template v-if="serverData.roleIsTeamAdmin">
-        <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button>
+        <el-button type="danger" key="share" @click="toShareGuide">邀请加入团队</el-button>
         <el-button type="info" key="eidt" @click="toEdit">修改团队信息</el-button>
         <el-button key="disband" @click="toDisband">解散团队</el-button>
       </template>
       <template v-else-if="serverData.roleIsTeamMember">
-        <!-- <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button> -->
         <el-button key="quit" @click="toQuit">退出团队</el-button>
       </template>
       <template v-else>
@@ -141,6 +140,8 @@ export default {
     }).then(data => {
       _.assign(this.serverData, data)
     })
+
+    this.$wxConfig()
   },
   methods: {
     toJoin() {
@@ -174,7 +175,7 @@ export default {
     toEdit() {
       this.$router.push(`/team/edit?teamid=${this.teamid}`)
     },
-    toShare() {
+    toShareGuide() {
       this.showShareImg = true
       if (process.browser) {
         document.documentElement.scrollTop = 0
