@@ -18,7 +18,12 @@
             <span>{{item.teamName}}</span>
           </el-col>
           <el-col :span="6" class="text-right">
-            <el-button type="primary" size="small">申请加入</el-button>
+            <template v-if="item.needPending">
+              待审核
+            </template>
+            <template v-else-if="item.isTeamAdmin">
+            </template>
+            <el-button v-else type="primary" size="small">申请加入</el-button>
           </el-col>
         </el-row>
       </nuxt-link>

@@ -3,7 +3,7 @@
     <ProfilePanel :pic-path="serverData.loginAccountVo.picPath">
       {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
     </ProfilePanel>
-    <nuxt-link to="/user/account" v-for="team in serverData.teamList" :key="team.id">
+    <nuxt-link v-for="team in serverData.teamList" :key="team.id" :to="`/team/profile?teamid=${team.id}`">
       <el-row class="nav-panel">
         <el-col :span="20">
           <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_zh.png`">

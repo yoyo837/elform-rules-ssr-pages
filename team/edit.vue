@@ -115,6 +115,14 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // console.log(this.serverData)
+          this.$http.postJSON('/team/saveTeam.do', {
+            teamInfo: {
+
+            },
+            extInfoList: []
+          }).then(data => {
+            console.log(data)
+          })
         }
         return false
       })

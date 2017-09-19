@@ -1,7 +1,7 @@
 <template>
   <el-row class="header-panel text-center" :class="classObject" :style="{backgroundColor: color, color: contrast}">
     <el-col :span="24">
-      <img :src.sync="imgUrl">
+      <img :src.sync="imgUrl" class="header-logo">
     </el-col>
     <el-col :span="6" class="text-left" v-if="showSlot">
       <slot name="left">&nbsp;</slot>
@@ -75,20 +75,24 @@ export default {
 .header-panel {
   padding: 8px;
   color: white;
-  img {
-    max-width: 40%;
-    min-width: 100px;
-    min-height: 100px;
-    border-radius: 50%;
-    border: 5px solid rgba(0, 0, 0, 0.1);
+  .el-col {
+    .header-logo {
+      max-width: 40%;
+      min-width: 100px;
+      min-height: 100px;
+      border-radius: 50%;
+      border: 5px solid rgba(0, 0, 0, 0.1);
+    }
   }
 }
 
 .header-panel.panel-size-small {
-  img {
-    max-width: 20%;
-    min-width: 50px;
-    min-height: 50px;
+  .el-col {
+    .header-logo {
+      max-width: 20%;
+      min-width: 50px;
+      min-height: 50px;
+    }
   }
 }
 </style>
