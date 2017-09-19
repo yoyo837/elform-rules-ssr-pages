@@ -6,7 +6,7 @@
     <nuxt-link v-for="team in serverData.teamList" :key="team.id" :to="`/team/profile?teamid=${team.id}`">
       <el-row class="nav-panel">
         <el-col :span="20">
-          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_zh.png`">
+          <img :src="defaultTeamImg">
           <span>{{team.teamName}}</span>
         </el-col>
         <el-col :span="4" class="text-right">
@@ -28,6 +28,7 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
+import utils from '../../components/utils'
 import { Row, Col, Button } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
@@ -56,6 +57,7 @@ export default {
   data() {
     return {
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-team-my`,
+      defaultTeamImg: utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH,
       serverData: {
         loginAccountVo: {},
         teamList: []
@@ -70,3 +72,12 @@ body.bd-pt-team-my {
   padding-bottom: 100px;
 }
 </style>
+
+<style lang="scss" scoped>
+.nav-panel {
+  img {
+    border-radius: 50%;
+  }
+}
+</style>
+
