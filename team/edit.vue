@@ -79,6 +79,7 @@ export default {
           return
         }
         _.assign(this.serverData, data.teamInfo)
+        this.serverData.extFieldList = this.optimizeExtFieldList(data.extFieldList)
       })
       // serverData.canEdit  如果没权限直接跳走
     } else if (this.key) {
@@ -96,24 +97,27 @@ export default {
           professionalIdValue: industryInfo.professional.value
         })
 
-        this.serverData.extFieldList = (resultList[1] || []).filter(item => {
-          const baseReq = item != null && item.dataId && item.extDataType // 过滤非法
-          if (baseReq && item.extDataType === 3) {
-            if (_.isArray(item.dataTypeValue)) {
-              return item.dataTypeValue.filter(selectItem => {
-                return selectItem.value != null
-              }).length > 0
-            }
-            return false
-          }
-          return baseReq
-        })
+        this.serverData.extFieldList = this.optimizeExtFieldList(resultList[1])
       })
     } else {
       this.$router.push('/team/my')
     }
   },
   methods: {
+    optimizeExtFieldList(list) {
+      return (list || []).filter(item => {
+        const baseReq = item != null && item.dataId && item.extDataType // 过滤非法
+        if (baseReq && item.extDataType === 3) {
+          if (_.isArray(item.dataTypeValue)) {
+            return item.dataTypeValue.filter(selectItem => {
+              return selectItem.value != null
+            }).length > 0
+          }
+          return false
+        }
+        return baseReq
+      })
+    },
     async getExtFieldList() {
       const result = await this.$http.get('/team/teamProfessionalExtFieldList.do', {
         professionalId: this.key
@@ -139,7 +143,7 @@ export default {
                 dataId: field.dataId,
                 dataType: field.extDataType,
                 name: field.extName,
-                value: this.serverData[field.extName]
+                value: this.serverData[field.extName] == null ? '' : this.serverData[field.extName]
               }
             })
           }

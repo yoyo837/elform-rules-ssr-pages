@@ -41,7 +41,7 @@
           {{serverData.idcard}}
         </template>
       </el-form-item>
-      <template v-if="serverData.userProfessionalInfo && serverData.userProfessionalInfo.extFieldList && serverData.userProfessionalInfo.extFieldList.length">
+      <template v-if="serverData.userProfessionalInfo.extFieldList.length">
         <div class="professional">
           {{serverData.userProfessionalInfo.professionalName}}
         </div>
@@ -123,31 +123,39 @@ export default {
     DatetimePicker
   },
   mounted() {
-    const params = {}
-    if (this.teamid) {
-      params['teamId'] = this.teamid
-    }
-    if (this.key) {
-      params['professionalId'] = this.key
-    }
-    if (this.accountId) {
-      params['pubAccountId'] = this.accountId
-    }
-    this.$http.get('/pubUser/userInfo.do', params).then(data => {
+    this.$http.get('/pubUser/userInfo.do', this.mergeParams()).then(data => {
       data = data || {}
+      data.userProfessionalInfo = data.userProfessionalInfo || {}
+      data.userProfessionalInfo.extFieldList = data.userProfessionalInfo.extFieldList || []
       _.assign(this.serverData, data.userInfo, {
         userProfessionalInfo: data.userProfessionalInfo
+      })
+      data.userProfessionalInfo.extFieldList.forEach(field => {
+        this.serverData[field.extName] = field.dataValue
       })
     })
   },
   methods: {
+    mergeParams(params) {
+      params = params || {}
+      if (this.teamid) {
+        params['teamId'] = this.teamid
+      }
+      if (this.key) {
+        params['professionalId'] = this.key
+      }
+      if (this.accountId) {
+        params['pubAccountId'] = this.accountId
+      }
+      return params
+    },
     changeMbl() {
       this.$router.push('/user/changemobile')
     },
     submitForm() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          this.$http.postJSON('/pubUser/saveUserInfo.do', {
+          const params = {
             realName: this.serverData.realName,
             gender: this.serverData.gender,
             birthday: this.serverData.birthday,
@@ -159,10 +167,12 @@ export default {
                 dataId: field.dataId,
                 dataType: field.extDataType,
                 name: field.extName,
-                value: this.serverData[field.extName]
+                value: this.serverData[field.extName] == null ? '' : this.serverData[field.extName]
               }
             })
-          }).then(() => {
+          }
+          this.mergeParams(params)
+          this.$http.postJSON('/pubUser/saveUserInfo.do', params).then(() => {
             this.$router.push('/user/my')
           })
         }

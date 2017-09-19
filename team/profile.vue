@@ -20,10 +20,12 @@
       </el-col>
       <el-col :span="4" class="text-right">
         <div class="text-overflow members-list">
-          <div class="member">
-            <div class="member-like">{{serverData.memberCount}}</div>
-            <div class="text-overflow">123</div>
-          </div>
+          <nuxt-link :to="`/team/members?teamid=${teamid}`">
+            <div class="member">
+              <div class="member-like">{{serverData.memberCount}}</div>
+              <div class="text-overflow">&nbsp;</div>
+            </div>
+          </nuxt-link>
         </div>
       </el-col>
     </el-row>
@@ -130,6 +132,11 @@ Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
 
 export default {
+  head() {
+    return {
+      title: `团队-${this.serverData.teamInfo.teamName || ''}`
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel

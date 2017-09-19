@@ -67,6 +67,9 @@ export default {
   },
   watch: {
     value(val, oldVal) {
+      if (val == null && oldVal == null) {
+        return
+      }
       let temp = val
       if (temp == null) {
         this.innerValue = this.actualValue = null
