@@ -98,12 +98,12 @@
 
     <div class="fixed-bt">
       <template v-if="serverData.roleIsTeamMember">
-        <el-button type="danger" key="share">邀请加入团队</el-button>
+        <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button>
         <el-button key="quit" @click="toQuit">退出团队</el-button>
       </template>
       <template v-else-if="serverData.roleIsTeamAdmin">
-        <el-button type="danger" key="share">邀请加入团队</el-button>
-        <el-button type="info" key="eidt">修改团队信息</el-button>
+        <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button>
+        <el-button type="info" key="eidt" @click="toEdit">修改团队信息</el-button>
         <el-button key="disband" @click="toDisband">解散团队</el-button>
       </template>
       <template v-else>
@@ -117,6 +117,7 @@
 import _ from 'lodash'
 import Vue from 'vue'
 import utils from '../../components/utils'
+import popup from '../../components/popup'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 import { Row, Col, Button } from 'element-ui'
@@ -147,19 +148,31 @@ export default {
       })
     },
     toQuit() {
-      this.$http.post('/team/delTeamMember.do', {
-        teamId: this.teamid
-        // memberIds 不给表示自己退出
-      }).then(data => {
-        this.$router.push('/team/my')
+      popup.confirm('确认退出该团队吗？').then(action => {
+        this.$http.post('/team/delTeamMember.do', {
+          teamId: this.teamid
+          // memberIds 不给表示自己退出
+        }).then(data => {
+          this.$router.push('/team/my')
+        })
+      }).catch(e => {
       })
     },
     toDisband() {
-      this.$http.post('/team/disbandTeam.do', {
-        teamId: this.teamid
-      }).then(data => {
-        this.$router.push('/team/my')
+      popup.confirm('确认解散该团队吗？').then(action => {
+        this.$http.post('/team/disbandTeam.do', {
+          teamId: this.teamid
+        }).then(data => {
+          this.$router.push('/team/my')
+        })
+      }).catch(e => {
       })
+    },
+    toEdit() {
+      this.$router.push(`/team/edit?teamid=${this.teamid}`)
+    },
+    toShare() {
+
     }
   },
   data() {
