@@ -114,13 +114,31 @@ export default {
     submitForm() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          // console.log(this.serverData)
-          this.$http.postJSON('/team/saveTeam.do', {
+          const params = {
             teamInfo: {
-
+              teamName: this.serverData.teamName,
+              teamCreateDate: this.serverData.teamCreateDate,
+              teamIntro: this.serverData.teamIntro,
+              contact: this.serverData.contact,
+              address: this.serverData.address,
+              professionalId: this.serverData.professional,
+              industry: this.serverData.industry
             },
-            extInfoList: []
-          }).then(data => {
+            extInfoList: (this.serverData.extFieldList || []).map(field => {
+              return {
+                id: field.id,
+                dataId: field.dataId,
+                dataType: field.extDataType,
+                name: field.extName,
+                value: this.serverData[field.extName]
+              }
+            })
+          }
+          if (this.teamid) {
+            params.teamInfo.id = this.teamid
+          }
+
+          this.$http.postJSON('/team/saveTeam.do', params).then(data => {
             console.log(data)
           })
         }

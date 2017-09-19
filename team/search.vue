@@ -13,15 +13,15 @@
     <mt-loadmore :top-method="load" :bottom-all-loaded="allLoaded" ref="loadmore">
       <nuxt-link :to="`/team/profile?teamid=${item.id}`" v-for="item in list" :key="item.id">
         <el-row class="nav-panel">
-          <el-col :span="18">
+          <el-col :span="4">
             <img :src="defaultTeamImg">
-            <span>{{item.teamName}}</span>
+          </el-col>
+          <el-col :span="14">
+            <div class="inner-row text-overflow">{{item.teamName}}</div>
+            <div class="inner-row text-overflow">团号:{{item.id}} 创建人{{item.createRealName}}</div>
           </el-col>
           <el-col :span="6" class="text-right">
-            <template v-if="item.needPending">
-              待审核
-            </template>
-            <template v-else-if="item.isTeamAdmin">
+            <template v-if="item.roleIsTeamMember">
             </template>
             <el-button v-else type="primary" size="small">申请加入</el-button>
           </el-col>
@@ -128,6 +128,16 @@ export default {
   .el-button--small {
     margin-top: 5.5px;
   }
+}
+
+.inner-row {
+  height: 50%;
+  width: 100%;
+}
+
+.inner-row+.inner-row {
+  color: #999;
+  font-size: 14px;
 }
 </style>
 
