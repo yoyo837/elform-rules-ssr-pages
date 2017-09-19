@@ -10,7 +10,7 @@
     <el-row class="members-box">
       <el-col :span="20">
         <div class="text-overflow members-list">
-          <nuxt-link v-for="member in serverData.memberList" :key="member.pubAccountId" :to="`/user/profile?pubAccountId=${member.pubAccountId}&teamId=${teamid}`">
+          <nuxt-link v-for="member in serverData.memberList" :key="member.pubAccountId" :to="`/user/profile?accountid=${member.pubAccountId}&teamid=${teamid}`">
             <div class="member">
               <img :src="`${member.avatar || defUserAvatar}60X60.jpg`">
               <div class="text-overflow">{{member.realName}}</div>

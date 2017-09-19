@@ -41,6 +41,31 @@
           {{serverData.idcard}}
         </template>
       </el-form-item>
+      <template v-if="serverData.userProfessionalInfo && serverData.userProfessionalInfo.extFieldList && serverData.userProfessionalInfo.extFieldList.length">
+        <div class="professional">
+          {{serverData.userProfessionalInfo.professionalName}}
+        </div>
+        <template v-for="field in serverData.userProfessionalInfo.extFieldList">
+          <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
+            <template v-if="serverData.canEdit">
+              <template v-if="field.extDataType == 0 || field.extDataType == 1 || field.extDataType == 2">
+                <el-input v-model="serverData[field.extName]" :placeholder="field.descr"></el-input>
+              </template>
+              <template v-else-if="field.extDataType == 3">
+                <el-radio-group v-model="serverData[field.extName]">
+                  <el-radio v-for="item in field.dataTypeValue" :label="item.value" :key="item.value">{{item.name || item.value}}</el-radio>
+                </el-radio-group>
+              </template>
+              <template v-else-if="field.extDataType == 4">
+                <el-input v-model="serverData[field.extName]" placeholder="选择文件待完善"></el-input>
+              </template>
+            </template>
+            <template v-else>
+              {{field.dataShowValue}}
+            </template>
+          </el-form-item>
+        </template>
+      </template>
     </el-form>
 
     <div class="fixed-bt" v-if="serverData.canEdit">
@@ -105,6 +130,9 @@ export default {
     if (this.key) {
       params['professionalId'] = this.key
     }
+    if (this.accountId) {
+      params['pubAccountId'] = this.accountId
+    }
     this.$http.get('/pubUser/userInfo.do', params).then(data => {
       data = data || {}
       _.assign(this.serverData, data.userInfo, {
@@ -119,12 +147,21 @@ export default {
     submitForm() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          this.$http.post('/pubUser/saveUserInfo.do', {
+          this.$http.postJSON('/pubUser/saveUserInfo.do', {
             realName: this.serverData.realName,
             gender: this.serverData.gender,
             birthday: this.serverData.birthday,
             idcardType: this.serverData.idcardType,
-            idcard: this.serverData.idcard
+            idcard: this.serverData.idcard,
+            extFields: this.serverData.userProfessionalInfo.extFieldList.map(field => {
+              return {
+                id: field.id,
+                dataId: field.dataId,
+                dataType: field.extDataType,
+                name: field.extName,
+                value: this.serverData[field.extName]
+              }
+            })
           }).then(() => {
             this.$router.push('/user/my')
           })
@@ -157,17 +194,21 @@ export default {
         }]
       },
       serverData: {
+        canEdit: false,
         realName: null,
         mobile: null,
         gender: 0,
         idcard: null,
         birthday: null,
         userProfessionalInfo: {
-          extFieldList: []
+          extFieldList: [],
+          professionalId: null,
+          professionalName: null
         }
       },
       teamid: this.$route.query['teamid'],
-      key: this.$route.query['key']
+      key: this.$route.query['key'],
+      accountId: this.$route.query['account']
     }
   }
 }
@@ -178,3 +219,13 @@ body.bd-pt-user-profile {
   padding-bottom: 60px;
 }
 </style>
+
+<style lang="scss" scoped>
+.professional {
+  border-bottom: 1px solid #ccc;
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+</style>
+

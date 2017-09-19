@@ -16,10 +16,10 @@
         <el-input v-model="serverData.address" placeholder="请输入团队联系地址"></el-input>
       </el-form-item>
       <el-form-item label="所属专业">
-        {{serverData.professionalText}}
+        {{serverData.professionalIdValue}}
       </el-form-item>
       <el-form-item label="所属行业">
-        {{serverData.industryText}}
+        {{serverData.industryIdValue}}
       </el-form-item>
       <el-form-item label="团队简介" prop="teamIntro">
         <el-input type="textarea" v-model="serverData.teamIntro"></el-input>
@@ -71,11 +71,15 @@ export default {
   },
   mounted() {
     if (this.teamid) {
-      // this.$http.get('/team/teamInfo.do', {
-      //   teamId: this.teamid
-      // }).then(data => {
-      //   console.log(data)
-      // })
+      this.$http.get('/team/teamEditInfo.do', {
+        teamId: this.teamid
+      }).then(data => {
+        if (!data.roleIsTeamAdmin) {
+          this.$router.replace('/team/my')
+          return
+        }
+        _.assign(this.serverData, data.teamInfo)
+      })
       // serverData.canEdit  如果没权限直接跳走
     } else if (this.key) {
       Promise.all([this.$http.get('/team/getIndustryInfo.do', {
@@ -86,10 +90,10 @@ export default {
         industryInfo.industry = industryInfo.industry || {}
         industryInfo.professional = industryInfo.professional || {}
         _.assign(this.serverData, {
-          industry: industryInfo.industry.key, // 行业
-          industryText: industryInfo.industry.value,
-          professional: industryInfo.professional.key, // 专业
-          professionalText: industryInfo.professional.value
+          industryId: industryInfo.industry.key, // 行业
+          industryIdValue: industryInfo.industry.value,
+          professionalId: industryInfo.professional.key, // 专业
+          professionalIdValue: industryInfo.professional.value
         })
 
         this.serverData.extFieldList = (resultList[1] || []).filter(item => {
@@ -126,8 +130,8 @@ export default {
               teamIntro: this.serverData.teamIntro,
               contact: this.serverData.contact,
               address: this.serverData.address,
-              professionalId: this.serverData.professional,
-              industryId: this.serverData.industry
+              professionalId: this.serverData.professionalId,
+              industryId: this.serverData.industryId
             },
             extInfoList: (this.serverData.extFieldList || []).map(field => {
               return {
@@ -165,10 +169,10 @@ export default {
       },
       serverData: {
         canEdit: true,
-        industry: null, // 行业
-        industryText: null,
-        professional: null, // 专业
-        professionalText: null,
+        industryId: null, // 行业
+        industryIdValue: null,
+        professionalId: null, // 专业
+        professionalIdValue: null,
 
         extFieldList: []
       },
