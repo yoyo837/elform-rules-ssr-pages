@@ -97,18 +97,22 @@
     </el-row>
 
     <div class="fixed-bt">
-      <template v-if="serverData.roleIsTeamMember">
-        <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button>
-        <el-button key="quit" @click="toQuit">退出团队</el-button>
-      </template>
-      <template v-else-if="serverData.roleIsTeamAdmin">
+      <template v-if="serverData.roleIsTeamAdmin">
         <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button>
         <el-button type="info" key="eidt" @click="toEdit">修改团队信息</el-button>
         <el-button key="disband" @click="toDisband">解散团队</el-button>
       </template>
+      <template v-else-if="serverData.roleIsTeamMember">
+        <!-- <el-button type="danger" key="share" @click="toShare">邀请加入团队</el-button> -->
+        <el-button key="quit" @click="toQuit">退出团队</el-button>
+      </template>
       <template v-else>
         <el-button type="danger" @click="toJoin" key="join">申请加入</el-button>
       </template>
+    </div>
+
+    <div class="share-fenx" @click="closeShare" v-show="showShareImg">
+      <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/fenx.png`">
     </div>
   </section>
 </template>
@@ -132,10 +136,9 @@ export default {
     ProfilePanel
   },
   mounted() {
-    const params = {
+    this.$http.get('/team/teamInfo.do', {
       teamId: this.teamid
-    }
-    this.$http.get('/team/teamInfo.do', params).then(data => {
+    }).then(data => {
       _.assign(this.serverData, data)
     })
   },
@@ -172,7 +175,14 @@ export default {
       this.$router.push(`/team/edit?teamid=${this.teamid}`)
     },
     toShare() {
-
+      this.showShareImg = true
+      if (process.browser) {
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      }
+    },
+    closeShare() {
+      this.showShareImg = false
     }
   },
   data() {
@@ -188,7 +198,8 @@ export default {
       teamid: this.$route.query['teamid'],
       // key: this.$route.query['key'],
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-team-profile`,
-      defUserAvatar: utils.DEFAULT_USER_AVATAR_PIC_PATH
+      defUserAvatar: utils.DEFAULT_USER_AVATAR_PIC_PATH,
+      showShareImg: false
     }
   }
 }
@@ -196,7 +207,7 @@ export default {
 
 <style lang="scss">
 body.bd-pt-team-profile {
-  padding-bottom: 100px;
+  padding-bottom: 140px;
 }
 </style>
 
@@ -233,6 +244,18 @@ body.bd-pt-team-profile {
         font-size: 20px;
       }
     }
+  }
+}
+
+.share-fenx {
+  background-color: #333;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% + 140px); // 前面的padding-bottom
+  img {
+    width: 100%;
   }
 }
 </style>

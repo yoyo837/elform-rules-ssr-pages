@@ -71,6 +71,11 @@ export default {
   },
   mounted() {
     if (this.teamid) {
+      // this.$http.get('/team/teamInfo.do', {
+      //   teamId: this.teamid
+      // }).then(data => {
+      //   console.log(data)
+      // })
       // serverData.canEdit  如果没权限直接跳走
     } else if (this.key) {
       Promise.all([this.$http.get('/team/getIndustryInfo.do', {
@@ -122,7 +127,7 @@ export default {
               contact: this.serverData.contact,
               address: this.serverData.address,
               professionalId: this.serverData.professional,
-              industry: this.serverData.industry
+              industryId: this.serverData.industry
             },
             extInfoList: (this.serverData.extFieldList || []).map(field => {
               return {
@@ -139,7 +144,7 @@ export default {
           }
 
           this.$http.postJSON('/team/saveTeam.do', params).then(data => {
-            console.log(data)
+            this.$router.push(`/team/profile?teamid=${data.id}`)
           })
         }
         return false
