@@ -84,7 +84,7 @@
           {{field.extShowName}}
         </el-col>
         <el-col :span="18" class="text-right">
-          {{field.dataShowValue}}
+          {{field.dataValue}}
         </el-col>
       </el-row>
     </template>
@@ -94,7 +94,7 @@
         团队简介
       </el-col>
       <el-col :span="18" class="text-right">
-        {{serverData.teamInfo.descr}}
+        {{serverData.teamInfo.teamIntro}}
       </el-col>
     </el-row>
 

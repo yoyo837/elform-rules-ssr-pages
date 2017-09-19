@@ -61,7 +61,7 @@
               </template>
             </template>
             <template v-else>
-              {{field.dataShowValue}}
+              {{field.dataValue}}
             </template>
           </el-form-item>
         </template>

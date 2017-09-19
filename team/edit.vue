@@ -80,6 +80,10 @@ export default {
         }
         _.assign(this.serverData, data.teamInfo)
         this.serverData.extFieldList = this.optimizeExtFieldList(data.extFieldList)
+
+        data.extFieldList.forEach(field => {
+          this.serverData[field.extName] = field.dataValue
+        })
       })
       // serverData.canEdit  如果没权限直接跳走
     } else if (this.key) {
