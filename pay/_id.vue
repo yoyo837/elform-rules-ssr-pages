@@ -9,7 +9,7 @@
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="btn">支付</div>
+          <div class="btn" @click="toPay">支付</div>
         </el-col>
       </el-row>
     </div>
@@ -30,6 +30,13 @@ export default {
     return /^\d+$/.test(params.id)
   },
   mixins: [bdStyleMixin],
+  methods: {
+    toPay() {
+      this.$wxConfig(true).then(data => {
+        alert(JSON.stringify(data))
+      })
+    }
+  },
   data() {
     return {
       serverData: {
