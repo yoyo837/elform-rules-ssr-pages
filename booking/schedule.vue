@@ -1,14 +1,22 @@
-<template lang="pug">
-  section.container
-    el-row
-      el-col(:span="21")
-        Slider(:data-list="itemDataList")
-      el-col(:span="3", class="text-center")
-        nuxt-link(to="/user/my")
-          img(:src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_zh1.png`", class="user-icon")
-    Slider(:data-list="dateDataList")
-    .marquee-box(v-if="marqueeText && marqueeText.trim().length")
-      .marquee(:style="{left: marqueeLeft + 'px'}") {{marqueeText}}
+<template>
+  <section class="container">
+    <el-row>
+      <el-col :span="21">
+        <Slider :data-list="itemDataList"></Slider>
+      </el-col>
+      <el-col :span="3" class="text-center">
+        <nuxt-link to="/user/my">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_zh1.png`" class="user-icon">
+        </nuxt-link>
+      </el-col>
+    </el-row>
+    <Slider :data-list="dateDataList"></Slider>
+    <div class="marquee-box" v-if="marqueeText && marqueeText.trim().length">
+      <div class="marquee" :style="{left: marqueeLeft + 'px'}">
+        {{marqueeText}}
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
