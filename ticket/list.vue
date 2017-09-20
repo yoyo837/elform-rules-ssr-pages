@@ -47,7 +47,8 @@
     <div class="sec">
       <div class="sec-content num-content">
         数量
-        <el-input-number v-model="num" :min="1" :max="priceInfo == null ? 1 : priceInfo.surplusNum" :disabled="mountedHasError || priceInfo == null"></el-input-number>
+        <el-input-number size="small" v-model="num" :min="1" :max="max" :disabled="mountedHasError || priceInfo == null"></el-input-number>
+        限购{{priceInfo == null ? 0 : priceInfo.maxBuyNum}}张
         (剩余
         <span>{{priceInfo == null ? 0 : priceInfo.surplusNum}}</span>
         张)
@@ -96,11 +97,17 @@ export default {
     },
     totalPrice() {
       return math.mul(this.num, this.priceInfo == null ? 0 : this.priceInfo.price)
+    },
+    max() {
+      return this.priceInfo == null ? 0 : Math.min(this.priceInfo.maxBuyNum, this.priceInfo.surplusNum)
     }
   },
   watch: {
     priceInfo(val, oldVal) {
-      if (this.num > val.surplusNum) {
+      if (this.max === 0) {
+        this.num = 0
+      }
+      if (this.num > this.max) {
         this.num = 1
       }
     }
@@ -202,7 +209,6 @@ $padding: 10px;
       font-size: 14px;
       .el-input-number {
         margin: 0 5px;
-        width: 150px;
       }
       .el-input-number+span {
         color: #FF5E20;
