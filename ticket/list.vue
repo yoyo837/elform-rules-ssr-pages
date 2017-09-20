@@ -1,47 +1,72 @@
-<template lang="pug">
-  section.container
-    .gap
-    .sec
-      .sec-title 选择场馆
-      ul.sec-content
-        li
-          el-button(type="primary") 场馆1
-          el-button(type="primary") 场馆3
-          el-button(type="primary") 场馆3
-          el-button(type="primary") 场馆3
-          el-button(type="primary") 场馆3
-          el-button(type="primary") 场馆3
-          el-button(type="primary") 场馆3
-    .sec
-      .sec-title 选择场次时间
-      ul.sec-content
-        li
-          el-button(type="primary") 场馆1
-          el-button(type="primary") 场馆1
-          el-button(type="primary") 场馆1
-          el-button(type="primary") 场馆1
-          el-button(type="primary") 场馆1
-    .sec
-      .sec-title 选择价格
-      ul.sec-content
-        li
-          el-button(type="primary") 场馆1
-    .sec
-      .sec-content.num-content
-        | 数量
-        el-input-number(v-model="num", :min="1", :max="10")
-        | (剩余
-        span 6
-        | 张)
+<template>
+  <section class="container">
+    <div class="gap"></div>
+    <div class="sec">
+      <div class="sec-title">选择场馆</div>
+      <ul class="sec-content">
+        <li>
+          <el-button v-for="(platform, i) in serverData.platformList" :key="platform.salesId" :type="current.salesIndex == i ? 'primary' : 'default'" @click="current.salesIndex = i">{{platform.salesName}}</el-button>
+        </li>
+      </ul>
+    </div>
+    <div class="sec">
+      <div class="sec-title">选择场次时间</div>
+      <ul class="sec-content">
+        <li>
+          <el-button v-for="(dateTime, i) in ((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList" :key="dateTime.scheduleId" :type="current.dateTimeIndex == i ? 'primary' : 'default'" @click="current.dateTimeIndex = i">{{dateTime.scheduleTime}}</el-button>
+        </li>
+      </ul>
+    </div>
+    <div class="sec">
+      <div class="sec-title">选择价格</div>
+      <ul class="sec-content">
+        <li>
+          <template v-for="(price, i) in ((((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList || [])[current.dateTimeIndex] || {}).priceList">
+            <div v-if="price.fee > 0 || (price.marketPrice == 0 && price.subPrice == 0)" :key="price.scheduleDetailId" class="el-button" :class="{'el-button--primary': current.priceIndex == i, 'coupon-box-vertical': true}" @click="current.priceIndex = i">
+              <div class="coupon coupon-top" :class="{'coupon-vertical-merge': !(price.fee || price.descr)}">
+                {{price.fee || price.price || '免费'}}
+              </div>
+              <div class="coupon coupon-bottom">
+                {{price.fee ? '积分兑换' : price.descr}}
+              </div>
+            </div class="coupon">
+            <div v-else :key="price.scheduleDetailId" class="el-button" :class="{'el-button--primary': current.priceIndex == i, 'coupon-box-horizontal': true}" @click="current.priceIndex = i">
+              <div class="coupon coupon-left">
+                <div class="market-price">市场票价{{price.marketPrice}}</div>
+                <div class="sub-price">优惠{{price.subPrice}}</div>
+              </div>
+              <div class="coupon coupon-right">
+                <div :class="{'coupon-vertical-merge': !price.descr}">{{price.price > 0 ? price.price : '免费'}}</div>
+                <div>{{price.descr}}</div>
+              </div>
+            </div>
+          </template>
+        </li>
+      </ul>
+    </div>
+    <div class="sec">
+      <div class="sec-content num-content">
+        数量
+        <el-input-number v-model="num" :min="1" :max="priceInfo == null ? 1 : priceInfo.surplusNum" :disabled="mountedHasError || priceInfo == null"></el-input-number>
+        (剩余
+        <span>{{priceInfo == null ? 0 : priceInfo.surplusNum}}</span>
+        张)
+      </div>
+    </div>
 
-    .fixed-bt
-      el-row
-        el-col(:span="12", class="money") 共计0元
-        el-col(:span="12", class="btn") 去支付
+    <div class="fixed-bt" v-if="!mountedHasError">
+      <el-row>
+        <el-col :span="12" class="money">共计{{totalPrice}}元</el-col>
+        <el-col :span="12" class="btn">去支付</el-col>
+      </el-row>
+    </div>
+  </section>
 </template>
 
 <script>
+import _ from 'lodash'
 import Vue from 'vue'
+import math from '../../components/math'
 import { Row, Col, Button, InputNumber } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 
@@ -52,10 +77,53 @@ Vue.component(InputNumber.name, InputNumber)
 
 export default {
   mixins: [bdStyleMixin],
+  mounted() {
+    this.$http.get('/ticket/queryScheduleInfo.do', {
+      dataId: this.dataid
+    }).then(data => {
+      _.assign(this.serverData, {
+        platformList: data
+      })
+      this.mountedHasError = false
+    }).catch(() => {
+      // this.$router.go(-1)
+      this.mountedHasError = true
+    })
+  },
+  computed: {
+    priceInfo() {
+      return (((((this.serverData.platformList || [])[this.current.salesIndex] || {}).dateTimeList || [])[this.current.dateTimeIndex] || {}).priceList || [])[this.current.priceIndex]
+    },
+    totalPrice() {
+      return math.mul(this.num, this.priceInfo == null ? 0 : this.priceInfo.price)
+    }
+  },
+  watch: {
+    priceInfo(val, oldVal) {
+      if (this.num > val.surplusNum) {
+        this.num = 1
+      }
+    }
+  },
   data() {
     return {
+      mountedHasError: true,
+      current: {
+        salesIndex: 0,
+        dateTimeIndex: 0,
+        priceIndex: 0
+      },
+      serverData: {
+        platformList: []
+        // platformList: [{
+        //   dateTimeList: [{
+        //     priceList: [{}]
+        //   }]
+        // }]
+      },
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-ticket-list`,
-      num: 1
+      num: 1,
+      dataid: this.$route.query['id']
     }
   }
 }
@@ -94,11 +162,47 @@ $padding: 10px;
       .el-button {
         margin: 5px 10px 5px 0;
       }
+      $finallySize: 18px;
+      .coupon-box-horizontal {
+        padding: 0;
+        .coupon {
+          display: inline-block;
+        } // .coupon-left,
+        // .coupon-right {
+        //   height: 100%;
+        // }
+        .coupon-left {
+          padding: 10px 7.5px 10px 15px;
+          .market-price {}
+          .sub-price {}
+        }
+        .coupon-right {
+          padding: 10px 5px;
+
+          >* {
+            &:first-child {
+              font-size: $finallySize;
+            }
+          }
+        }
+      }
+      .coupon-box-vertical {
+        .coupon-top {
+          font-size: $finallySize;
+        }
+      }
+      .coupon-vertical-merge {
+        display: inline-block;
+        line-height: 32px;
+        vertical-align: bottom;
+      }
     }
     .num-content {
       border-top: 1px solid #eee;
+      font-size: 14px;
       .el-input-number {
         margin: 0 5px;
+        width: 150px;
       }
       .el-input-number+span {
         color: #FF5E20;
@@ -108,6 +212,7 @@ $padding: 10px;
   .fixed-bt {
     z-index: 1;
     background-color: white;
+    border-top: 1px solid #eee;
     padding: 0;
     .el-row {
       .el-col {
