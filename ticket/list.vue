@@ -128,6 +128,9 @@ export default {
         scheduleDetailId: this.priceInfo.scheduleDetailId,
         num: this.num
       }).then(data => {
+        data = data || {}
+        data.deal = data.deal || {}
+        this.$router.push(`/pay/${data.deal.id}`)
         this.inSaveProcessing = false
       }).catch(e => {
         this.inSaveProcessing = false
