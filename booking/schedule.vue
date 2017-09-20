@@ -1,31 +1,43 @@
 <template>
   <section class="container">
-    <el-row>
-      <el-col :span="21">
-        <Slider :data-list="itemDataList"></Slider>
-      </el-col>
-      <el-col :span="3" class="text-center">
-        <nuxt-link to="/user/my">
-          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_zh1.png`" class="user-icon">
-        </nuxt-link>
-      </el-col>
-    </el-row>
-    <Slider :data-list="dateDataList"></Slider>
-    <div class="marquee-box" v-if="marqueeText && marqueeText.trim().length">
-      <div class="marquee" :style="{left: marqueeLeft + 'px'}">
-        {{marqueeText}}
+    <div class="ohters">
+      <el-row>
+        <el-col :span="21">
+          <Slider :data-list="itemDataList"></Slider>
+        </el-col>
+        <el-col :span="3" class="text-center">
+          <nuxt-link to="/user/my">
+            <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_zh1.png`" class="user-icon">
+          </nuxt-link>
+        </el-col>
+      </el-row>
+      <Slider :data-list="dateDataList"></Slider>
+      <div class="marquee-box" v-if="marqueeText && marqueeText.trim().length">
+        <div class="marquee" :style="{left: marqueeLeft + 'px'}">
+          {{marqueeText}}
+        </div>
       </div>
     </div>
+    <el-table :data="serverData.tableData" border :max-height="tableMaxHeight">
+      <el-table-column prop="date" label="日期" width="100"></el-table-column>
+      <el-table-column prop="date1" label="日期" width="100"></el-table-column>
+      <el-table-column prop="date2" label="日期" width="100"></el-table-column>
+      <el-table-column prop="date3" label="日期" width="100"></el-table-column>
+      <el-table-column prop="date4" label="日期" width="100"></el-table-column>
+    </el-table>
   </section>
 </template>
 
 <script>
 import Vue from 'vue'
-import { Row, Col } from 'element-ui'
 import utils from '../../components/utils'
 import Slider from '../vue-features/components/Slider'
+import { Row, Col, Table, TableColumn } from 'element-ui'
+
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
+Vue.component(Table.name, Table)
+Vue.component(TableColumn.name, TableColumn)
 
 export default {
   components: {
@@ -46,6 +58,12 @@ export default {
         this.marqueeLeft = this.marqueeLeft - 3
         setTimeout(this.mq, 30)
       }
+    }
+  },
+  computed: {
+    tableMaxHeight() {
+      // return utils.screenSize().height -
+      return 0
     }
   },
   data() {
@@ -78,7 +96,10 @@ export default {
       }, {
         id: 2,
         name: '2017-08-12 星期日'
-      }]
+      }],
+      serverData: {
+        tableData: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
+      }
     }
   }
 }
@@ -97,6 +118,7 @@ export default {
   color: white;
   background-color: #dc9811;
   margin: 0 15px;
+  position: relative;
   .marquee {
     width: 1500px;
     position: absolute;
