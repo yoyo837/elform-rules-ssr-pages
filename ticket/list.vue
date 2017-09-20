@@ -83,6 +83,11 @@ Vue.component(Button.name, Button)
 Vue.component(InputNumber.name, InputNumber)
 
 export default {
+  head() {
+    return {
+      title: '购票'
+    }
+  },
   mixins: [bdStyleMixin],
   mounted() {
     this.$http.get('/ticket/queryScheduleInfo.do', {

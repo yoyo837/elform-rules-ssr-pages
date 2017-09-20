@@ -29,6 +29,11 @@ export default {
   validate({ params, query }) {
     return /^\d+$/.test(params.id)
   },
+  head() {
+    return {
+      title: '支付'
+    }
+  },
   mixins: [bdStyleMixin],
   methods: {
     toPay() {
