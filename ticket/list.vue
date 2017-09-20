@@ -48,8 +48,7 @@
       <div class="sec-content num-content">
         数量
         <el-input-number size="small" v-model="num" :min="1" :max="max" :disabled="mountedHasError || priceInfo == null"></el-input-number>
-        限购{{priceInfo == null ? 0 : priceInfo.maxBuyNum}}张
-        (剩余
+        限购{{priceInfo == null ? 0 : priceInfo.maxBuyNum}}张 (剩余
         <span>{{priceInfo == null ? 0 : priceInfo.surplusNum}}</span>
         张)
       </div>
@@ -57,8 +56,14 @@
 
     <div class="fixed-bt" v-if="!mountedHasError">
       <el-row>
-        <el-col :span="12" class="money">共计{{totalPrice}}元</el-col>
-        <el-col :span="12" class="btn">去支付</el-col>
+        <el-col :span="12">
+          <div class="money">
+            共计{{totalPrice}}元
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <div class="btn" @click="toSave">去支付</div>
+        </el-col>
       </el-row>
     </div>
   </section>
@@ -68,6 +73,7 @@
 import _ from 'lodash'
 import Vue from 'vue'
 import math from '../../components/math'
+import popup from '../../components/popup'
 import { Row, Col, Button, InputNumber } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 
@@ -112,8 +118,25 @@ export default {
       }
     }
   },
+  methods: {
+    toSave() {
+      if (this.inSaveProcessing) {
+        popup.alert('请等待上一次操作完成...')
+        return
+      }
+      this.$http.post('/ticket/save.do', {
+        scheduleDetailId: this.priceInfo.scheduleDetailId,
+        num: this.num
+      }).then(data => {
+        this.inSaveProcessing = false
+      }).catch(e => {
+        this.inSaveProcessing = false
+      })
+    }
+  },
   data() {
     return {
+      inSaveProcessing: false,
       mountedHasError: true,
       current: {
         salesIndex: 0,
@@ -222,13 +245,16 @@ $padding: 10px;
     padding: 0;
     .el-row {
       .el-col {
-        padding: 15px 0;
         color: #FF5E20;
         font-size: 14px;
-      }
-      .el-col.btn {
-        background-color: #FF5E20;
-        color: white;
+        .money,
+        .btn {
+          padding: 15px 0;
+        }
+        .btn {
+          background-color: #FF5E20;
+          color: white;
+        }
       }
     }
   }
