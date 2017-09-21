@@ -97,29 +97,29 @@ export default {
   watch: {
     itemId(val, oldVal) {
       if (this.itemId) {
-        // const itemObj = this.serverData.itemDataList.find(item => {
-        //   return item.itemId === this.itemId
-        // })
-        // this.$http.get('/sportPlatform/queryCalendarList.do', {
-        //   salesId: this.salesId,
-        //   itemId: this.itemId
-        // }).then(data => {
-        //   if (itemObj.itemType === 1) {
-        //     // this.$http.get('/sportPlatform/querySportPlatformInfo.do', {
-        //     //   salesId: this.salesId,
-        //     //   itemId: this.itemId,
-        //     //   curDate: this.curDate.getTime()
-        //     // }).then(data => {
+        const itemObj = this.serverData.itemDataList.find(item => {
+          return item.itemId === this.itemId
+        })
+        this.$http.get('/sportPlatform/queryCalendarList.do', {
+          salesId: this.salesId,
+          itemId: this.itemId
+        }).then(data => {
+          if (itemObj.itemType === 1) {
+            // this.$http.get('/sportPlatform/querySportPlatformInfo.do', {
+            //   salesId: this.salesId,
+            //   itemId: this.itemId,
+            //   curDate: this.curDate.getTime()
+            // }).then(data => {
 
-        //     // })
-        //   } else if (itemObj.itemType === 2) {
-        //     // this.$http.get('/ticket/queryScheduleInfo.do', {
-        //     //   dataId
-        //     // }).then(data => {
+            // })
+          } else if (itemObj.itemType === 2) {
+            // this.$http.get('/ticket/queryScheduleInfo.do', {
+            //   dataId
+            // }).then(data => {
 
-        //     // })
-        //   }
-        // })
+            // })
+          }
+        })
       }
     }
   },
