@@ -89,7 +89,7 @@ export default {
     }
   },
   mixins: [bdStyleMixin],
-  mounted() {
+  created() {
     this.$http.get('/ticket/queryScheduleInfo.do', {
       dataId: this.dataid
     }).then(data => {

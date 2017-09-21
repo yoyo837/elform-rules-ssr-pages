@@ -25,7 +25,7 @@ Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 export default {
   name: 'profilePanel',
-  mounted() {
+  created() {
     this.showSlot = Object.keys(this.$slots).length > 0
   },
   props: {

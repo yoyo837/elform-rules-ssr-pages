@@ -7,7 +7,7 @@
 <script>
 import pageConfig from '../vue-features/page-config'
 export default {
-  mounted() {
+  created() {
     pageConfig.getPageData([{
       mapId: 102931
     }]).then(data => {

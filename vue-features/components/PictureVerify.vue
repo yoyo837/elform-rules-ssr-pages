@@ -46,7 +46,7 @@ export default {
       required: true
     }
   },
-  mounted() {
+  created() {
     this.currTimeout = store.session.get(storeKey) || timeout
     if (this.currTimeout > 0 && this.currTimeout < timeout) {
       this.disBtn()

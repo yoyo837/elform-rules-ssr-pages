@@ -122,7 +122,7 @@ export default {
     Picker,
     DatetimePicker
   },
-  mounted() {
+  created() {
     this.$http.get('/pubUser/userInfo.do', this.mergeParams()).then(data => {
       data = data || {}
       data.userProfessionalInfo = data.userProfessionalInfo || {}

@@ -35,7 +35,7 @@ export default {
   components: {
     ProfilePanel
   },
-  mounted() {
+  created() {
     this.$http.get('/team/teamMemberList.do', {
       teamId: this.teamid
     }).then(data => {

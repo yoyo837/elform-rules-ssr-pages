@@ -59,7 +59,7 @@ export default {
   components: {
     PageContainer
   },
-  mounted() {
+  created() {
     this.$http.get('/pubUser/pubAccount.do').then(data => {
       _.assign(this.serverData, data || {})
     })

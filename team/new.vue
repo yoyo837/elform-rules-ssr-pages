@@ -34,7 +34,7 @@ export default {
   components: {
     PageContainer
   },
-  mounted() {
+  created() {
     this.$http.get('/team/teamProfessionalList.do').then(data => {
       this.serverData.splice(0, this.serverData.length)
       this.serverData.push.apply(this.serverData, data || [])

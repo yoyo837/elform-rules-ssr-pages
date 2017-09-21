@@ -43,7 +43,7 @@ export default {
     },
     maxHeight: Number
   },
-  mounted() {
+  created() {
     this.columns = this.$children.map(child => {
       return {
         label: child.label,
@@ -51,15 +51,17 @@ export default {
         width: child.width
       }
     })
-    this.$nextTick(() => {
-      const bodyWrapper = this.$refs['body-wrapper']
-      if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
-        const headerWrapper = this.$refs['header-wrapper']
-        bodyWrapper.addEventListener('scroll', function() {
-          headerWrapper.scrollLeft = this.scrollLeft
-        })
-      }
-    })
+    if (process.browser) {
+      this.$nextTick(() => {
+        const bodyWrapper = this.$refs['body-wrapper']
+        if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
+          const headerWrapper = this.$refs['header-wrapper']
+          bodyWrapper.addEventListener('scroll', function() {
+            headerWrapper.scrollLeft = this.scrollLeft
+          })
+        }
+      })
+    }
   },
   computed: {
     tableWidth() {

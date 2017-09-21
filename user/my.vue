@@ -95,7 +95,7 @@ export default {
   components: {
     ProfilePanel
   },
-  mounted() {
+  created() {
     this.$http.get('/pubUser/my.do').then(data => {
       _.assign(this.serverData, data || {})
     })
