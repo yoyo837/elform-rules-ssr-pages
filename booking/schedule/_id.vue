@@ -11,7 +11,7 @@
           </nuxt-link>
         </el-col>
       </el-row>
-      <Slider :data-list="serverData.dateDataList" type="datetime" v-model="curDate"></Slider>
+      <Slider :data-list="serverData.dateDataList" idkey="day" label="dayName" label2="weekName" type="datetime" v-model="curDate"></Slider>
       <div class="marquee-box" v-if="marqueeText && marqueeText.trim().length">
         <div class="marquee" :style="{left: marqueeLeft + 'px'}">
           {{marqueeText}}
@@ -64,7 +64,7 @@ export default {
     ScheduleTable,
     ScheduleTableColumn
   },
-  created() {
+  mounted() {
     this.$http.get('/sportPlatform/querySalesItemList.do', {
       salesId: this.salesId
     }).then(data => {
@@ -97,29 +97,33 @@ export default {
   watch: {
     itemId(val, oldVal) {
       if (this.itemId) {
-        // const itemObj = this.serverData.itemDataList.find(item => {
-        //   return item.itemId === this.itemId
-        // })
-        // this.$http.get('/sportPlatform/queryCalendarList.do', {
-        //   salesId: this.salesId,
-        //   itemId: this.itemId
-        // }).then(data => {
-        //   if (itemObj.itemType === 1) {
-        //     // this.$http.get('/sportPlatform/querySportPlatformInfo.do', {
-        //     //   salesId: this.salesId,
-        //     //   itemId: this.itemId,
-        //     //   curDate: this.curDate.getTime()
-        //     // }).then(data => {
+        const itemObj = this.serverData.itemDataList.find(item => {
+          return item.itemId === this.itemId
+        })
+        this.$http.get('/sportPlatform/queryCalendarList.do', {
+          salesId: this.salesId,
+          itemId: this.itemId
+        }).then(data => {
+          _.assign(this.serverData, {
+            dateDataList: data || []
+          })
 
-        //     // })
-        //   } else if (itemObj.itemType === 2) {
-        //     // this.$http.get('/ticket/queryScheduleInfo.do', {
-        //     //   dataId
-        //     // }).then(data => {
+          if (itemObj.itemType === 1) {
+            // this.$http.get('/sportPlatform/querySportPlatformInfo.do', {
+            //   salesId: this.salesId,
+            //   itemId: this.itemId,
+            //   curDate: this.curDate.getTime()
+            // }).then(data => {
 
-        //     // })
-        //   }
-        // })
+            // })
+          } else if (itemObj.itemType === 2) {
+            // this.$http.get('/ticket/queryScheduleInfo.do', {
+            //   dataId
+            // }).then(data => {
+
+            // })
+          }
+        })
       }
     }
   },
@@ -149,11 +153,12 @@ export default {
 
 .marquee-box {
   overflow: hidden;
-  height: 40px;
-  line-height: 40px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
   color: white;
   background-color: #dc9811;
-  margin: 0 15px;
+  margin: 0 5px;
   position: relative;
   .marquee {
     width: 1500px;

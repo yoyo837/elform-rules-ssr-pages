@@ -59,7 +59,7 @@ export default {
   components: {
     PageContainer
   },
-  created() {
+  mounted() {
     this.$http.get('/pubUser/userSignin.do').then(data => {
       // test
       // data.sameDay = 0

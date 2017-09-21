@@ -9,7 +9,7 @@ export default {
   validate({ params, query }) {
     return /^\d+$/.test(query.id)
   },
-  created() {
+  mounted() {
     const query = this.$route.query || {}
     const id = query['id']
     delete query.id

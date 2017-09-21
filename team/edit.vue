@@ -69,7 +69,7 @@ export default {
     ProfilePanel,
     DatetimePicker
   },
-  created() {
+  mounted() {
     if (this.teamid) {
       this.$http.get('/team/teamEditInfo.do', {
         teamId: this.teamid

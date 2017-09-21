@@ -1,8 +1,19 @@
 <template>
-  <div class="slider-box text-center" ref="sliderBox">
+  <div class="slider-box text-center" :class="`slider-box-${type}`" ref="sliderBox">
     <ul class="slider" :style="{width: boxWidth + 'px'}">
       <li v-for="(item, i) in dataList" :key="item[idkey]" class="slider-item text-center text-overflow" :class="{selected: item[idkey] == innerValue}" @click="toSelect(item[idkey])">
-        <img v-if="type == 'item'" :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item[idkey]}.png`"> {{item[label]}}
+        <template v-if="type == 'item'">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item[idkey]}.png`"> {{item[label]}}
+        </template>
+        <template v-else-if="type == 'datetime'">
+          <template v-if="item[label] == null || item[label2] == null">
+            {{item[label] || item[label2]}}
+          </template>
+          <template v-else>
+            <div class="dt datetime">{{item[label]}}</div>
+            <div class="dt week">{{item[label2]}}</div>
+          </template>
+        </template>
         <div class="bd-bt"></div>
       </li>
     </ul>
@@ -22,6 +33,9 @@ export default {
     label: {
       type: String,
       default: 'name'
+    },
+    label2: {
+      type: String
     },
     type: {
       type: String,
@@ -89,6 +103,11 @@ export default {
       background-color: #f8f8f8;
       line-height: 40px;
       position: relative;
+      padding: 0 5px;
+      .dt {
+        line-height: 20px;
+        font-size: 12px;
+      }
       img {
         width: 16px;
         height: auto;
@@ -107,9 +126,19 @@ export default {
     }
     li.slider-item.selected {
       background-color: #f1f1f1;
+      color: #20a0ff;
       .bd-bt {
         background-color: #20a0ff;
       }
+    }
+  }
+}
+
+.slider-box-datetime {
+  ul.slider {
+    li.slider-item.selected {
+      color: white;
+      background-color: #20a0ff;
     }
   }
 }

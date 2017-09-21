@@ -48,7 +48,7 @@ export default {
   components: {
     ProfilePanel
   },
-  created() {
+  mounted() {
     this.$http.get('/team/myTeamList.do').then(data => {
       // this.serverData.teamList = data.teamList || []
       _.assign(this.serverData, data || {})

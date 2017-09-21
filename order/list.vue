@@ -62,7 +62,7 @@ export default {
   components: {
     PageContainer
   },
-  created() {
+  mounted() {
     this.loadBottom()
   },
   methods: {

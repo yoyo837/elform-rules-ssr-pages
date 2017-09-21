@@ -482,7 +482,7 @@ export default {
   components: {
     PageContainer
   },
-  created() {
+  mounted() {
     this.$http.get('/deal/detail.do', {
       dealId: this.orderId
     }).then(data => {

@@ -43,7 +43,7 @@ export default {
     },
     maxHeight: Number
   },
-  created() {
+  mounted() {
     this.columns = this.$children.map(child => {
       return {
         label: child.label,
