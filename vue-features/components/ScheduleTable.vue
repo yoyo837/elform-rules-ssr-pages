@@ -52,7 +52,7 @@ export default {
       }
     })
     if (process.browser) {
-      this.$nextTick(() => {
+      this.$nextTick().then(() => {
         const bodyWrapper = this.$refs['body-wrapper']
         if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
           const headerWrapper = this.$refs['header-wrapper']

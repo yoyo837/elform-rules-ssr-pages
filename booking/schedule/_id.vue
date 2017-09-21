@@ -12,9 +12,9 @@
         </el-col>
       </el-row>
       <Slider :data-list="serverData.dateDataList" idkey="day" label="dayName" label2="weekName" type="datetime" v-model="curDate"></Slider>
-      <div class="marquee-box" v-if="marqueeText && marqueeText.trim().length">
+      <div class="marquee-box" v-if="serverData.marqueeText && serverData.marqueeText.trim().length">
         <div class="marquee" :style="{left: marqueeLeft + 'px'}">
-          {{marqueeText}}
+          {{serverData.marqueeText}}
         </div>
       </div>
     </div>
@@ -92,6 +92,13 @@ export default {
     tableMaxHeight() {
       // return utils.screenSize().height -
       return 150
+    },
+    scheduleLoadFlag() {
+      const str = `${this.salesId || 0}-${this.itemId || 0}-${this.curDate || 0}`
+      if (typeof btoa === 'function') {
+        return btoa(str)
+      }
+      return str
     }
   },
   watch: {
@@ -100,28 +107,39 @@ export default {
         const itemObj = this.serverData.itemDataList.find(item => {
           return item.itemId === this.itemId
         })
-        this.$http.get('/sportPlatform/queryCalendarList.do', {
-          salesId: this.salesId,
-          itemId: this.itemId
-        }).then(data => {
-          _.assign(this.serverData, {
-            dateDataList: data || []
+        this.serverData.itemType = itemObj.itemType
+
+        this.$nextTick().then(() => {
+          this.$http.get('/sportPlatform/queryCalendarList.do', {
+            salesId: this.salesId,
+            itemId: this.itemId
+          }).then(data => {
+            _.assign(this.serverData, {
+              dateDataList: data || []
+            })
           })
+        })
+      }
+    },
+    scheduleLoadFlag(val, oldVal) {
+      if (this.curDate) {
+        this.$nextTick().then(() => {
+          const params = {
+            salesId: this.salesId,
+            itemId: this.itemId,
+            curDate: this.curDate
+          }
+          if (this.serverData.itemType === 1) {
+            this.$http.get('/sportPlatform/querySportPlatformInfo.do', params).then(data => {
+              data = data || {}
+              _.assign(this.serverData, {
+                marqueeText: data.bookAlert
+              })
+            })
+          } else if (this.serverData.itemType === 2) {
+            this.$http.get('/sportPlatformTicket/queryTicketList.do', params).then(data => {
 
-          if (itemObj.itemType === 1) {
-            // this.$http.get('/sportPlatform/querySportPlatformInfo.do', {
-            //   salesId: this.salesId,
-            //   itemId: this.itemId,
-            //   curDate: this.curDate.getTime()
-            // }).then(data => {
-
-            // })
-          } else if (itemObj.itemType === 2) {
-            // this.$http.get('/ticket/queryScheduleInfo.do', {
-            //   dataId
-            // }).then(data => {
-
-            // })
+            })
           }
         })
       }
@@ -131,15 +149,16 @@ export default {
     return {
       marquee: true,
       marqueeLeft: 100,
-      marqueeText: '巴拉巴宝莉第三方士大夫第三方士大夫士大夫第三方第三方第三方多少巴拉巴宝莉第三方士大夫第三方士大夫士大夫第三方第三方第三方多少',
       serverData: {
+        marqueeText: null,
         itemDataList: [],
         dateDataList: [],
         tableData: [{}, {}, {}, {}, {}, {}]
       },
       salesId: this.$route.params['id'],
       itemId: null,
-      curDate: null
+      curDate: null,
+      itemType: null
     }
   }
 }
