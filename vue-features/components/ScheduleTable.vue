@@ -6,7 +6,7 @@
     <div class="schedule-table__header-wrapper" ref="header-wrapper">
       <table cellspacing="0" cellpadding="0" border="0" class="schedule-table__header" :style="{width: tableWidth + 'px'}">
         <colgroup>
-          <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth * (col.subCount || 1)" :name="`schedule-table_column_${i + 1}`">
+          <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth" :name="`schedule-table_column_${i + 1}`">
         </colgroup>
         <thead>
           <tr v-for="(level, j) in columns" :key="j">
@@ -20,7 +20,7 @@
     <div class="schedule-table__body-wrapper" ref="body-wrapper" :style="{'max-height': maxHeight ? maxHeight + 'px' : false}">
       <table cellspacing="0" cellpadding="0" border="0" class="schedule-table__body" :style="{width: tableWidth + 'px'}">
         <colgroup>
-          <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth * (col.subCount || 1)" :name="`schedule-table_column_${i + 1}`">
+          <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth" :name="`schedule-table_column_${i + 1}`">
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in rows" :key="j">
