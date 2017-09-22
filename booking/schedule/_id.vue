@@ -32,6 +32,7 @@
       <el-table-column prop="date2" label="日期" width="100"></el-table-column>
       <el-table-column prop="date3" label="日期" width="100"></el-table-column>
       <el-table-column prop="date4" label="日期" width="100"></el-table-column>
+      <el-table-column prop="date5" label="日期" width="100"></el-table-column>
     </el-table>
   </section>
 </template>
@@ -129,18 +130,23 @@ export default {
             itemId: this.itemId,
             curDate: this.curDate
           }
-          if (this.serverData.itemType === 1) {
-            this.$http.get('/sportPlatform/querySportPlatformInfo.do', params).then(data => {
-              data = data || {}
-              _.assign(this.serverData, {
-                marqueeText: data.bookAlert
+          this.$http.get('/sportPlatform/querySportPlatformInfo.do', params).then(data => {
+            data = data || {}
+            data.timeSlotList = data.timeSlotList || []
+            _.assign(this.serverData, {
+              marqueeText: data.bookAlert,
+              tableData: data.timeSlotList.map(timeSlot => {
+                return timeSlot
               })
             })
-          } else if (this.serverData.itemType === 2) {
-            this.$http.get('/sportPlatformTicket/queryTicketList.do', params).then(data => {
+          })
+          // if (this.serverData.itemType === 1) {
 
-            })
-          }
+          // } else if (this.serverData.itemType === 2) {
+          //   this.$http.get('/sportPlatformTicket/queryTicketList.do', params).then(data => {
+
+          //   })
+          // }
         })
       }
     }
@@ -153,7 +159,7 @@ export default {
         marqueeText: null,
         itemDataList: [],
         dateDataList: [],
-        tableData: [{}, {}, {}, {}, {}, {}]
+        tableData: []
       },
       salesId: this.$route.params['id'],
       itemId: null,

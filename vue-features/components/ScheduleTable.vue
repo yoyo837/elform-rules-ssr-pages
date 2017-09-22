@@ -28,6 +28,11 @@
               <div class="table-cell">{{item[col.prop]}}</div>
             </td>
           </tr>
+          <tr v-if="data == null || data.length ==0">
+            <td :colspan="columns.length" class="text-center schedule-table__empty-text">
+              暂无数据
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -103,6 +108,14 @@ export default {
   }
   .schedule-table__body-wrapper {
     overflow: auto;
+    .schedule-table__body {
+      tr {
+        &:hover>td {
+          background-color: #eef1f6;
+          background-clip: padding-box;
+        }
+      }
+    }
   }
   table {
     table-layout: fixed;
@@ -124,6 +137,9 @@ export default {
       line-height: 30px;
       width: 100%;
       padding: 0 15px;
+    }
+    .schedule-table__empty-text {
+      color: #5e7382;
     }
   }
 }
