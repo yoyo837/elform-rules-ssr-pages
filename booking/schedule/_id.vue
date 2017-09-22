@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <div class="ohters">
+    <div ref="others">
       <el-row>
         <el-col :span="21">
           <Slider :data-list="serverData.itemDataList" idkey="itemId" label="itemIdValue" type="item" v-model="itemId"></Slider>
@@ -18,38 +18,34 @@
         </div>
       </div>
     </div>
-    <ScheduleTable :data="serverData.tableData" :max-height="tableMaxHeight" style="margin: 10px 0">
-      <ScheduleTableColumn prop="abc0" width="100" label="abc0"></ScheduleTableColumn>
-      <ScheduleTableColumn prop="abc1" width="100" label="abc0"></ScheduleTableColumn>
-      <ScheduleTableColumn prop="abc2" width="100" label="abc0"></ScheduleTableColumn>
-      <ScheduleTableColumn prop="abc2" width="100" label="abc0"></ScheduleTableColumn>
-      <ScheduleTableColumn prop="abc2" width="100" label="abc0"></ScheduleTableColumn>
-      <ScheduleTableColumn prop="abc2" width="100" label="abc0"></ScheduleTableColumn>
-    </ScheduleTable>
-    <el-table :data="serverData.tableData" border :max-height="tableMaxHeight">
-      <el-table-column prop="date" label="日期" width="100"></el-table-column>
-      <el-table-column prop="date1" label="日期" width="100"></el-table-column>
-      <el-table-column prop="date2" label="日期" width="100"></el-table-column>
-      <el-table-column prop="date3" label="日期" width="100"></el-table-column>
-      <el-table-column prop="date4" label="日期" width="100"></el-table-column>
-      <el-table-column prop="date5" label="日期" width="100"></el-table-column>
-    </el-table>
+    <ScheduleTable :data="serverData.tableData" :max-height="tableMaxHeight"></ScheduleTable>
+
+    <div class="fixed-bt" ref="operation">
+      <el-row>
+        <el-col :span="16">
+          <div class="money">
+            共计{{serverData.totalPrice || 0}}元
+          </div>
+        </el-col>
+        <el-col :span="8">
+          <div class="btn">下一步</div>
+        </el-col>
+      </el-row>
+    </div>
   </section>
 </template>
 
 <script>
 import _ from 'lodash'
+import { throttle } from 'throttle-debounce'
 import Vue from 'vue'
 import utils from '../../../components/utils'
 import Slider from '../../vue-features/components/Slider'
 import ScheduleTable from '../../vue-features/components/ScheduleTable'
-import ScheduleTableColumn from '../../vue-features/components/ScheduleTableColumn'
-import { Row, Col, Table, TableColumn } from 'element-ui'
+import { Row, Col } from 'element-ui'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
-Vue.component(Table.name, Table)
-Vue.component(TableColumn.name, TableColumn)
 
 export default {
   validate({ params, query }) {
@@ -62,8 +58,7 @@ export default {
   },
   components: {
     Slider,
-    ScheduleTable,
-    ScheduleTableColumn
+    ScheduleTable
   },
   mounted() {
     this.$http.get('/sportPlatform/querySalesItemList.do', {
@@ -73,12 +68,26 @@ export default {
         itemDataList: data || []
       })
     })
+    if (process.browser) {
+      window.addEventListener('resize', this.windowResizeListener)
+    }
     this.mq()
   },
   beforeDestroy() {
     this.marquee = false
   },
   methods: {
+    windowResizeListener: throttle(50, function() {
+      this.recalculateMaxHeight()
+    }),
+    recalculateMaxHeight() {
+      // 40 表头
+      this.tableMaxHeight = utils.screenSize().height - 40 - ['operation', 'others'].map(name => {
+        return this.$refs[name]
+      }).reduce((prev, current, i, list) => {
+        return prev + Math.max(current.offsetHeight, current.clientHeight)
+      }, 0) || 0
+    },
     mq() {
       if (this.marquee) {
         if (this.marqueeLeft < -1500) {
@@ -90,10 +99,6 @@ export default {
     }
   },
   computed: {
-    tableMaxHeight() {
-      // return utils.screenSize().height -
-      return 150
-    },
     scheduleLoadFlag() {
       const str = `${this.salesId || 0}-${this.itemId || 0}-${this.curDate || 0}`
       if (typeof btoa === 'function') {
@@ -133,11 +138,11 @@ export default {
           this.$http.get('/sportPlatform/querySportPlatformInfo.do', params).then(data => {
             data = data || {}
             data.timeSlotList = data.timeSlotList || []
+            data.sportPlatformList = data.sportPlatformList || []
+            data.dataList = data.dataList || []
             _.assign(this.serverData, {
               marqueeText: data.bookAlert,
-              tableData: data.timeSlotList.map(timeSlot => {
-                return timeSlot
-              })
+              tableData: data || {}
             })
           })
           // if (this.serverData.itemType === 1) {
@@ -149,45 +154,82 @@ export default {
           // }
         })
       }
+    },
+    'serverData.tableData': function() {
+      this.recalculateMaxHeight()
     }
   },
   data() {
     return {
       marquee: true,
       marqueeLeft: 100,
+      tableMaxHeight: 0,
       serverData: {
         marqueeText: null,
+        totalPrice: 0,
         itemDataList: [],
         dateDataList: [],
-        tableData: []
+        tableData: {
+          dataList: []
+        }
       },
       salesId: this.$route.params['id'],
       itemId: null,
       curDate: null,
       itemType: null
     }
+  },
+  destroyed() {
+    if (process.browser) {
+      if (this.windowResizeListener) {
+        window.removeEventListener('rezise', this.windowResizeListener)
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.user-icon {
-  width: 26px;
-  margin-top: 7px;
-}
+.container {
+  .user-icon {
+    width: 26px;
+    margin-top: 7px;
+  }
 
-.marquee-box {
-  overflow: hidden;
-  height: 30px;
-  line-height: 30px;
-  font-size: 13px;
-  color: white;
-  background-color: #dc9811;
-  margin: 0 5px;
-  position: relative;
-  .marquee {
-    width: 1500px;
-    position: absolute;
+  .marquee-box {
+    overflow: hidden;
+    height: 30px;
+    line-height: 30px;
+    font-size: 13px;
+    color: white;
+    background-color: #dc9811;
+    margin: 0 5px;
+    position: relative;
+    .marquee {
+      width: 1500px;
+      position: absolute;
+    }
+  }
+
+  .fixed-bt {
+    z-index: 1;
+    background-color: white;
+    border-top: 1px solid #eee;
+    padding: 0;
+    .el-row {
+      .el-col {
+        color: #FF5E20;
+        font-size: 14px;
+        .money,
+        .btn {
+          padding: 15px 0;
+        }
+        .btn {
+          background-color: #FF5E20;
+          color: white;
+        }
+      }
+    }
   }
 }
 </style>

@@ -1,17 +1,17 @@
 <template>
-  <div class="schedule-table">
+  <div class="schedule-table text-center">
     <div class="schedule-table__hidden-columns" ref="hiddenColumns">
-      <slot></slot>
+      <!-- <slot></slot> -->
     </div>
     <div class="schedule-table__header-wrapper" ref="header-wrapper">
       <table cellspacing="0" cellpadding="0" border="0" class="schedule-table__header" :style="{width: tableWidth + 'px'}">
         <colgroup>
-          <col v-for="(col, i) in columns" :key="col.prop" :name="`schedule-table_column_${i + 1}`" :width="col.width">
+          <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth * (col.subCount || 1)" :name="`schedule-table_column_${i + 1}`">
         </colgroup>
         <thead>
-          <tr>
-            <th v-for="(col, i) in columns" :key="col.prop" colspan="1" rowspan="1" :class="`schedule-table_column_${i + 1}`">
-              <div class="table-cell">{{col.label}}</div>
+          <tr v-for="(level, j) in columns" :key="j">
+            <th v-for="(col, i) in level" :key="col.platformId" :colspan="col.subCount || 1" :class="`schedule-table_column_${i + 1}`">
+              <div class="table-cell">{{col.platformName}}</div>
             </th>
           </tr>
         </thead>
@@ -20,16 +20,16 @@
     <div class="schedule-table__body-wrapper" ref="body-wrapper" :style="{'max-height': maxHeight ? maxHeight + 'px' : false}">
       <table cellspacing="0" cellpadding="0" border="0" class="schedule-table__body" :style="{width: tableWidth + 'px'}">
         <colgroup>
-          <col v-for="(col, i) in columns" :key="col.prop" :name="`schedule-table_column_${i + 1}`" :width="col.width">
+          <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth * (col.subCount || 1)" :name="`schedule-table_column_${i + 1}`">
         </colgroup>
         <tbody>
-          <tr v-for="(item, j) in data" :key="j">
-            <td v-for="(col, i) in columns" :key="col.prop" colspan="1" rowspan="1" :class="`schedule-table_column_${i + 1}`">
-              <div class="table-cell">{{item[col.prop]}}</div>
+          <tr v-for="(cols, j) in rows" :key="j">
+            <td v-for="(col, i) in cols" :key="col.prop" colspan="1" rowspan="1" :class="`schedule-table_column_${i + 1}`">
+              <div class="table-cell">123</div>
             </td>
           </tr>
-          <tr v-if="data == null || data.length ==0">
-            <td :colspan="columns.length" class="text-center schedule-table__empty-text">
+          <tr v-if="(rows == null || rows.length == 0) && columns.level1.length">
+            <td :colspan="colLength" class="text-center schedule-table__empty-text">
               暂无数据
             </td>
           </tr>
@@ -40,46 +40,91 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   props: {
     data: {
-      type: Array,
-      default: []
+      type: Object,
+      default: {}
     },
     maxHeight: Number
   },
   mounted() {
-    this.columns = this.$children.map(child => {
-      return {
-        label: child.label,
-        prop: child.prop,
-        width: child.width
-      }
-    })
     if (process.browser) {
       this.$nextTick().then(() => {
         const bodyWrapper = this.$refs['body-wrapper']
-        if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
-          const headerWrapper = this.$refs['header-wrapper']
-          bodyWrapper.addEventListener('scroll', function() {
-            headerWrapper.scrollLeft = this.scrollLeft
-          })
-        }
+        // if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
+        const headerWrapper = this.$refs['header-wrapper']
+        bodyWrapper.addEventListener('scroll', function() {
+          headerWrapper.scrollLeft = this.scrollLeft
+        })
+        // }
       })
     }
   },
+  methods: {
+
+  },
   computed: {
-    tableWidth() {
-      let width = 0
-      this.columns.forEach(col => {
-        width += +col.width || 0
+    columns() {
+      let level2Temp = []
+      const config = {
+        level1: [],
+        level2: []
+      }
+      const plist = this.dataCopy.sportPlatformList || []
+      plist.map(item => {
+        if (item.parentId === 0) {
+          config.level1.push(item)
+        } else {
+          level2Temp.push(item)
+        }
       })
-      return width
+      config.level1.forEach(item => {
+        const other = []
+        item.subCount = 0
+        level2Temp.forEach(function(subItem) {
+          if (subItem.parentId === item.platformId) {
+            subItem.parentPlatformName = item.platformName // 关联冗余字段,后台未提供，方便后面使用
+            item.subCount++
+            config.level2.push(subItem)
+          } else {
+            other.push(subItem)
+          }
+        })
+        level2Temp = other
+      })
+
+      return config
+    },
+    colLength() { // 总列数量
+      let length = 0
+      this.columns.level1.forEach(col => {
+        length += col.subCount || 1
+      })
+      return length
+    },
+    tableWidth() {
+      return this.colLength * this.colWidth
+    },
+    rows() {
+      const tsList = this.dataCopy.timeSlotList || []
+      return tsList.map(row => {
+        return new Array(this.colLength).fill({
+
+        })
+      })
+    }
+  },
+  watch: {
+    data() {
+      this.dataCopy = _.cloneDeep(this.data) || {}
     }
   },
   data() {
     return {
-      columns: []
+      colWidth: 80,
+      dataCopy: {}
     }
   }
 }
@@ -135,8 +180,7 @@ export default {
       word-wrap: normal;
       text-overflow: ellipsis;
       line-height: 30px;
-      width: 100%;
-      padding: 0 15px;
+      width: 100%; // padding: 0 15px;
     }
     .schedule-table__empty-text {
       color: #5e7382;
