@@ -158,13 +158,15 @@ export default {
             })
 
             _.assign(this.serverData, {
-              marqueeText: platformData.bookAlert,
               tableData: platformData
             })
 
             this.dataCopy = _.cloneDeep(this.serverData.tableData)
 
-            this.$emit('datareload')
+            this.$emit('dataReload', {
+              salesName: platformData.salesName,
+              marqueeText: platformData.bookAlert
+            })
           })
         })
       }
@@ -174,7 +176,6 @@ export default {
     return {
       colWidth: 80,
       serverData: {
-        marqueeText: null,
         tableData: null
       },
       dataCopy: {}

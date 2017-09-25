@@ -12,20 +12,20 @@
         </el-col>
       </el-row>
       <Slider :data-list="serverData.dateDataList" idkey="day" label="dayName" label2="weekName" type="datetime" v-model="curDate"></Slider>
-      <div class="marquee-box" v-if="serverData.marqueeText && serverData.marqueeText.trim().length">
+      <div class="marquee-box" v-if="flushData.marqueeText && flushData.marqueeText.trim().length">
         <div class="marquee" :style="{left: marqueeLeft + 'px'}">
-          {{serverData.marqueeText}}
+          {{flushData.marqueeText}}
         </div>
       </div>
     </div>
 
-    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @datareload="onDataReload"></ScheduleTable>
+    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @dataReload="onDataReload"></ScheduleTable>
 
     <div class="fixed-bt" ref="operation">
       <el-row>
         <el-col :span="16">
           <div class="money">
-            共计{{serverData.totalPrice || 0}}元
+            共计{{totalPrice || 0}}元
           </div>
         </el-col>
         <el-col :span="8">
@@ -54,7 +54,7 @@ export default {
   },
   head() {
     return {
-      title: '预定'
+      title: this.flushData.salesName || '预定'
     }
   },
   components: {
@@ -95,7 +95,10 @@ export default {
         setTimeout(this.mq, 30)
       }
     },
-    onDataReload() {
+    onDataReload(flushData) {
+      flushData = flushData || {}
+      this.flushData = flushData
+
       this.recalculateMaxHeight()
     }
   },
@@ -118,6 +121,10 @@ export default {
           })
         })
       }
+    },
+    'flushData.marqueeText'() {
+      console.log(this.flushData)
+      this.marqueeLeft = 100
     }
   },
   data() {
@@ -125,9 +132,9 @@ export default {
       marquee: true,
       marqueeLeft: 100,
       tableMaxHeight: 0,
+      totalPrice: 0,
+      flushData: {}, // 表格反馈的数据
       serverData: {
-        marqueeText: null,
-        totalPrice: 0,
         itemDataList: [],
         dateDataList: []
       },
@@ -164,7 +171,7 @@ export default {
     font-size: 13px;
     color: white;
     background-color: #dc9811;
-    margin: 0 5px;
+    margin: 0 3px 3px 3px;
     position: relative;
     .marquee {
       width: 1500px;
