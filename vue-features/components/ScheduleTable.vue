@@ -49,9 +49,9 @@ import _ from 'lodash'
 import { throttle } from 'throttle-debounce'
 export default {
   props: {
-    data: {
+    params: {
       type: Object,
-      default: {}
+      required: true
     },
     maxHeight: Number
   },
@@ -73,6 +73,13 @@ export default {
     })
   },
   computed: {
+    scheduleLoadFlag() {
+      const str = `${this.params.salesId || 0}-${this.params.itemId || 0}-${this.params.dateTime || 0}`
+      if (typeof btoa === 'function') {
+        return btoa(str)
+      }
+      return str
+    },
     columns() {
       let level2Temp = []
       const config = {
@@ -128,14 +135,48 @@ export default {
     }
   },
   watch: {
-    data() {
-      console.log(this.data)
-      this.dataCopy = _.cloneDeep(this.data) || {}
+    scheduleLoadFlag(val, oldVal) {
+      if (this.params.dateTime) {
+        this.$nextTick().then(() => {
+          const params = {
+            salesId: this.params.salesId,
+            itemId: this.params.itemId,
+            curDate: this.params.dateTime
+          }
+          const isTicket = this.params.itemType === 2
+          Promise.all([this.$http.get('/sportPlatform/querySportPlatformInfo.do', params), isTicket
+            ? this.$http.get('/sportPlatformTicket/queryTicketList.do', params)
+            : this.$http.get('/deal/queryDealMiniInfo.do', params)
+          ]).then((dataList) => {
+            const platformData = dataList[0] || {}
+            const orderData = dataList[1] || []
+
+            const dataKey = isTicket ? '_ticketStatus' : '_platformOrders'
+
+            _.assign(platformData, {
+              [dataKey]: orderData
+            })
+
+            _.assign(this.serverData, {
+              marqueeText: platformData.bookAlert,
+              tableData: platformData
+            })
+
+            this.dataCopy = _.cloneDeep(this.serverData.tableData)
+
+            this.$emit('datareload')
+          })
+        })
+      }
     }
   },
   data() {
     return {
       colWidth: 80,
+      serverData: {
+        marqueeText: null,
+        tableData: null
+      },
       dataCopy: {}
     }
   },
@@ -207,7 +248,8 @@ export default {
         font-size: 12px;
       }
     }
-    td.disable, th.disable {
+    td.disable,
+    th.disable {
       color: #9c9c9c;
     }
     .schedule-table__empty-text {

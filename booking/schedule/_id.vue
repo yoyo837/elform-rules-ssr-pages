@@ -18,7 +18,8 @@
         </div>
       </div>
     </div>
-    <ScheduleTable :data="serverData.tableData" :max-height="tableMaxHeight"></ScheduleTable>
+
+    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @datareload="onDataReload"></ScheduleTable>
 
     <div class="fixed-bt" ref="operation">
       <el-row>
@@ -73,9 +74,6 @@ export default {
     }
     this.mq()
   },
-  beforeDestroy() {
-    this.marquee = false
-  },
   methods: {
     windowResizeListener: throttle(50, function() {
       this.recalculateMaxHeight()
@@ -96,15 +94,9 @@ export default {
         this.marqueeLeft = this.marqueeLeft - 3
         setTimeout(this.mq, 30)
       }
-    }
-  },
-  computed: {
-    scheduleLoadFlag() {
-      const str = `${this.salesId || 0}-${this.itemId || 0}-${this.curDate || 0}`
-      if (typeof btoa === 'function') {
-        return btoa(str)
-      }
-      return str
+    },
+    onDataReload() {
+      this.recalculateMaxHeight()
     }
   },
   watch: {
@@ -126,39 +118,6 @@ export default {
           })
         })
       }
-    },
-    scheduleLoadFlag(val, oldVal) {
-      if (this.curDate) {
-        this.$nextTick().then(() => {
-          const params = {
-            salesId: this.salesId,
-            itemId: this.itemId,
-            curDate: this.curDate
-          }
-          const isTicket = this.serverData.itemType === 2
-          Promise.all([this.$http.get('/sportPlatform/querySportPlatformInfo.do', params), isTicket
-            ? this.$http.get('/sportPlatformTicket/queryTicketList.do', params)
-            : this.$http.get('/deal/queryDealMiniInfo.do', params)
-          ]).then((dataList) => {
-            const platformData = dataList[0] || {}
-            const orderData = dataList[1] || []
-
-            const dataKey = isTicket ? '_ticketStatus' : '_platformOrders'
-
-            _.assign(platformData, {
-              [dataKey]: orderData
-            })
-
-            _.assign(this.serverData, {
-              marqueeText: platformData.bookAlert,
-              tableData: platformData
-            })
-          })
-        })
-      }
-    },
-    'serverData.tableData': function() {
-      this.recalculateMaxHeight()
     }
   },
   data() {
@@ -170,14 +129,16 @@ export default {
         marqueeText: null,
         totalPrice: 0,
         itemDataList: [],
-        dateDataList: [],
-        tableData: {}
+        dateDataList: []
       },
       salesId: this.$route.params['id'],
       itemId: null,
       curDate: null,
       itemType: null
     }
+  },
+  beforeDestroy() {
+    this.marquee = false
   },
   destroyed() {
     if (process.browser) {
