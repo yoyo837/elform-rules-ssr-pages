@@ -29,7 +29,12 @@
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
                 </template>
-                {{col.priceText}}
+                <div>
+                  {{col.priceText}}
+                  <!-- <template v-if="params.itemType == 2">
+                        {{}}
+                      </template> -->
+                </div>
               </div>
             </td>
           </tr>
@@ -122,6 +127,7 @@ export default {
       return this.colLength * this.colWidth
     },
     rows() {
+      // const isTicket = this.params.itemType === 2
       const tsList = this.dataCopy.timeSlotList || []
       return tsList.map((slotTime, i) => {
         return new Array(this.colLength).fill({
@@ -151,10 +157,8 @@ export default {
             const platformData = dataList[0] || {}
             const orderData = dataList[1] || []
 
-            const dataKey = isTicket ? '_ticketStatus' : '_platformOrders'
-
             _.assign(platformData, {
-              [dataKey]: orderData
+              [isTicket ? '_ticketStatus' : '_platformOrders']: orderData
             })
 
             _.assign(this.serverData, {

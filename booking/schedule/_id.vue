@@ -108,7 +108,7 @@ export default {
         const itemObj = this.serverData.itemDataList.find(item => {
           return item.itemId === this.itemId
         })
-        this.serverData.itemType = itemObj.itemType
+        this.itemType = itemObj.itemType
 
         this.$nextTick().then(() => {
           this.$http.get('/sportPlatform/queryCalendarList.do', {
@@ -123,7 +123,6 @@ export default {
       }
     },
     'flushData.marqueeText'() {
-      console.log(this.flushData)
       this.marqueeLeft = 100
     }
   },
