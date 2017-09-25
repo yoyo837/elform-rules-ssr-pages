@@ -9,8 +9,8 @@
           <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth" :name="`schedule-table_column_${i + 1}`">
         </colgroup>
         <thead>
-          <tr v-for="(level, j) in columns" :key="j">
-            <th v-for="(col, i) in level" :key="col.platformId" :colspan="col.subCount || 1" :class="`schedule-table_column_${i + 1}`">
+          <tr v-for="(level, key, j) in columns" :key="key">
+            <th v-for="(col, i) in level" :key="col.platformId" :colspan="col.subCount || 1" :rowspan="j == 0 && col.subCount == 0 && columns.level2 && columns.level2.length ? 2 : 1" :class="`schedule-table_column_${i + 1}`">
               <div class="table-cell">{{col.platformName}}</div>
             </th>
           </tr>
@@ -41,6 +41,7 @@
 
 <script>
 import _ from 'lodash'
+import { throttle } from 'throttle-debounce'
 export default {
   props: {
     data: {
@@ -54,16 +55,17 @@ export default {
       this.$nextTick().then(() => {
         const bodyWrapper = this.$refs['body-wrapper']
         // if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
-        const headerWrapper = this.$refs['header-wrapper']
-        bodyWrapper.addEventListener('scroll', function() {
-          headerWrapper.scrollLeft = this.scrollLeft
-        })
+        bodyWrapper.addEventListener('scroll', this.tableScrollFn)
         // }
       })
     }
   },
   methods: {
-
+    tableScrollFn: throttle(5, function() {
+      const headerWrapper = this.$refs['header-wrapper']
+      const bodyWrapper = this.$refs['body-wrapper']
+      headerWrapper.scrollLeft = bodyWrapper.scrollLeft
+    })
   },
   computed: {
     columns() {
@@ -125,6 +127,14 @@ export default {
     return {
       colWidth: 80,
       dataCopy: {}
+    }
+  },
+  destroyed() {
+    if (process.browser) {
+      if (this.tableScrollFn) {
+        const bodyWrapper = this.$refs['body-wrapper']
+        bodyWrapper.removeEventListener('scroll', this.tableScrollFn)
+      }
     }
   }
 }
