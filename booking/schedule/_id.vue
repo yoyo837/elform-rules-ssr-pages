@@ -135,23 +135,25 @@ export default {
             itemId: this.itemId,
             curDate: this.curDate
           }
-          this.$http.get('/sportPlatform/querySportPlatformInfo.do', params).then(data => {
-            data = data || {}
-            data.timeSlotList = data.timeSlotList || []
-            data.sportPlatformList = data.sportPlatformList || []
-            data.dataList = data.dataList || []
+          const isTicket = this.serverData.itemType === 2
+          Promise.all([this.$http.get('/sportPlatform/querySportPlatformInfo.do', params), isTicket
+            ? this.$http.get('/sportPlatformTicket/queryTicketList.do', params)
+            : this.$http.get('/deal/queryDealMiniInfo.do', params)
+          ]).then((dataList) => {
+            const platformData = dataList[0] || {}
+            const orderData = dataList[1] || []
+
+            const dataKey = isTicket ? '_ticketStatus' : '_platformOrders'
+
+            _.assign(platformData, {
+              [dataKey]: orderData
+            })
+
             _.assign(this.serverData, {
-              marqueeText: data.bookAlert,
-              tableData: data || {}
+              marqueeText: platformData.bookAlert,
+              tableData: platformData
             })
           })
-          // if (this.serverData.itemType === 1) {
-
-          // } else if (this.serverData.itemType === 2) {
-          //   this.$http.get('/sportPlatformTicket/queryTicketList.do', params).then(data => {
-
-          //   })
-          // }
         })
       }
     },
@@ -169,9 +171,7 @@ export default {
         totalPrice: 0,
         itemDataList: [],
         dateDataList: [],
-        tableData: {
-          dataList: []
-        }
+        tableData: {}
       },
       salesId: this.$route.params['id'],
       itemId: null,

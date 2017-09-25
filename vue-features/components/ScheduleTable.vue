@@ -24,8 +24,13 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in rows" :key="j">
-            <td v-for="(col, i) in cols" :key="col.prop" colspan="1" rowspan="1" :class="`schedule-table_column_${i + 1}`">
-              <div class="table-cell">123</div>
+            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="`schedule-table_column_${i + 1}`">
+              <div class="table-cell">
+                <template v-if="col.startTimeText || col.endTimeText">
+                  {{col.startTimeText}}-{{col.endTimeText}}
+                </template>
+                {{col.priceText}}
+              </div>
             </td>
           </tr>
           <tr v-if="(rows == null || rows.length == 0) && columns.level1.length">
@@ -55,7 +60,7 @@ export default {
       this.$nextTick().then(() => {
         const bodyWrapper = this.$refs['body-wrapper']
         // if (bodyWrapper.scrollWidth > bodyWrapper.clientWidth) { // 有横向滚动
-        bodyWrapper.addEventListener('scroll', this.tableScrollFn)
+        bodyWrapper && bodyWrapper.addEventListener('scroll', this.tableScrollFn)
         // }
       })
     }
@@ -111,15 +116,20 @@ export default {
     },
     rows() {
       const tsList = this.dataCopy.timeSlotList || []
-      return tsList.map(row => {
+      return tsList.map((slotTime, i) => {
         return new Array(this.colLength).fill({
-
+          startTimeText: slotTime.startTimeValue,
+          endTimeText: slotTime.endTimeValue,
+          priceText: slotTime.priceValue || 0,
+          colspan: 1,
+          rowspan: 1
         })
       })
     }
   },
   watch: {
     data() {
+      console.log(this.data)
       this.dataCopy = _.cloneDeep(this.data) || {}
     }
   },
@@ -133,7 +143,7 @@ export default {
     if (process.browser) {
       if (this.tableScrollFn) {
         const bodyWrapper = this.$refs['body-wrapper']
-        bodyWrapper.removeEventListener('scroll', this.tableScrollFn)
+        bodyWrapper && bodyWrapper.removeEventListener('scroll', this.tableScrollFn)
       }
     }
   }
@@ -182,15 +192,23 @@ export default {
       vertical-align: middle;
       border-bottom: 1px solid #dfe6ec;
       border-right: 1px solid #dfe6ec;
+      .table-cell {
+        word-wrap: normal;
+        text-overflow: ellipsis;
+        line-height: 22px;
+        width: 100%; // padding: 0 15px;
+      }
     }
     th {
       background-color: #eef1f6;
     }
-    .table-cell {
-      word-wrap: normal;
-      text-overflow: ellipsis;
-      line-height: 30px;
-      width: 100%; // padding: 0 15px;
+    td {
+      .table-cell {
+        font-size: 12px;
+      }
+    }
+    td.disable, th.disable {
+      color: #9c9c9c;
     }
     .schedule-table__empty-text {
       color: #5e7382;

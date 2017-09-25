@@ -109,7 +109,7 @@ export default {
         font-size: 12px;
       }
       img {
-        width: 16px;
+        width: 20px;
         height: auto;
         vertical-align: middle;
       }
