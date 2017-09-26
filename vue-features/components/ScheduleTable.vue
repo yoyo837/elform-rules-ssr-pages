@@ -24,7 +24,7 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in rows" :key="j">
-            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="`schedule-table_column_${i + 1}`" :data-platform-id="col.platformId">
+            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : changeDayForTimestamp(col.endTime) < changeDayForTimestamp(now)}" :data-platform-id="col.platformId">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
@@ -51,6 +51,7 @@
 
 <script>
 import _ from 'lodash'
+import moment from 'moment'
 import { throttle } from 'throttle-debounce'
 export default {
   props: {
@@ -68,6 +69,7 @@ export default {
         bodyWrapper && bodyWrapper.addEventListener('scroll', this.tableScrollFn)
         // }
       })
+      this.mq()
     }
   },
   methods: {
@@ -75,7 +77,22 @@ export default {
       const headerWrapper = this.$refs['header-wrapper']
       const bodyWrapper = this.$refs['body-wrapper']
       headerWrapper.scrollLeft = bodyWrapper.scrollLeft
-    })
+    }),
+    mq() { // 刷新当前时间
+      this.now = moment()
+      if (this.timerSwitch) {
+        setTimeout(this.mq, 1000 * 1)
+      }
+    },
+    changeDayForTimestamp(long) { // 服务器端的startTime和endTime始终是2013年，只有时分秒是正确的
+      if (_.isNumber(long)) {
+        const mmt = moment(long)
+        const newMmt = moment(this.params.dateTime)
+        newMmt.hour(mmt.hour()).minute(mmt.minute()).second(mmt.second()).millisecond(mmt.millisecond())
+        return newMmt.format('x')
+      }
+      return long
+    }
   },
   computed: {
     isTicket() {
@@ -165,7 +182,9 @@ export default {
         for (let j = 0; j < this.colLength; j++) {
           const platformInfo = this.platformInColumns[j]
           const col = {
+            startTime: slotTime.startTime,
             startTimeText: slotTime.startTimeValue,
+            endTime: slotTime.endTime,
             endTimeText: slotTime.endTimeValue,
             priceText: slotTime.priceValue || 0,
             colspan: 1,
@@ -222,14 +241,17 @@ export default {
   },
   data() {
     return {
+      timerSwitch: true,
       colWidth: 80,
       serverData: {
         tableData: null
       },
-      dataCopy: {}
+      dataCopy: {},
+      now: moment()
     }
   },
   destroyed() {
+    this.timerSwitch = false
     if (process.browser) {
       if (this.tableScrollFn) {
         const bodyWrapper = this.$refs['body-wrapper']
@@ -297,8 +319,8 @@ export default {
         font-size: 12px;
       }
     }
-    td.disable,
-    th.disable {
+    td.disabled,
+    th.disabled {
       color: #9c9c9c;
     }
     .schedule-table__empty-text {
