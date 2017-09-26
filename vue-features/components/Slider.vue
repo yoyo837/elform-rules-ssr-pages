@@ -21,6 +21,7 @@
 </template>
 
 <script>
+// import store from '../../../components/store'
 export default {
   props: {
     dataList: {
@@ -40,6 +41,16 @@ export default {
     type: {
       type: String,
       required: true
+    },
+    storeKey: {
+      type: String,
+      default: function() {
+        const str = `${this.type}-${this.idkey}-${this.label}-${this.label2}`
+        if (typeof btoa === 'function') {
+          return btoa(str)
+        }
+        return str
+      }
     },
     value: null
   },
@@ -63,14 +74,30 @@ export default {
       }
       if (this.innerValue) {
         if (val.some(item => {
-          return item[this.idkey] != null
+          return item[this.idkey] === this.innerValue
         })) {
           return
         }
+        this.innerValue = null
       }
-      this.innerValue = this.innerValue || val[0][this.idkey]
+      // if (this.innerValue == null) {
+      //   if (this.storeKey) {
+      //     const stVal = store.session.get(this.storeKey)
+      //     if (stVal && val.find(item => { // 是已有的
+      //       return item[this.idkey] === stVal
+      //     })) {
+      //       this.innerValue = stVal
+      //     }
+      //   }
+      // }
+      if (this.innerValue == null) { // 前面都匹配不上，默认第一个
+        this.innerValue = val[0][this.idkey]
+      }
     },
     innerValue(val, oldVal) {
+      // if (this.storeKey) {
+      //   store.session.put(this.storeKey, this.innerValue)
+      // }
       this.$emit('input', this.innerValue)
     }
   },

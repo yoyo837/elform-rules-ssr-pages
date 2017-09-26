@@ -78,6 +78,7 @@
 import _ from 'lodash'
 import Vue from 'vue'
 import { Row, Col, Button } from 'element-ui'
+import store from '../../components/store'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
 Vue.component(Row.name, Row)
@@ -117,6 +118,7 @@ export default {
   methods: {
     toLogout() {
       this.$http.post('/pubUser/logout.do').then(() => {
+        store.session.clear()
         this.$router.push('/')
       })
     }
