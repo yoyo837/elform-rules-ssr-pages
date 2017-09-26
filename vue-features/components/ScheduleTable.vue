@@ -10,7 +10,7 @@
         </colgroup>
         <thead>
           <tr v-for="(level, key, j) in columns" :key="key">
-            <th v-for="(col, i) in level" :key="col.platformId" :colspan="col.subCount || 1" :rowspan="j == 0 && col.subCount == 0 && columns.level2 && columns.level2.length ? 2 : 1" :class="`schedule-table_column_${i + 1}`">
+            <th v-for="(col, i) in level" :key="col.platformId" :colspan="col.subCount || 1" :rowspan="j == 0 && col.subCount == 0 && columns.level2 && columns.level2.length ? 2 : 1" :class="`schedule-table_column_${i + 1}`" :data-platform-id="col.platformId">
               <div class="table-cell">{{col.platformName}}</div>
             </th>
           </tr>
@@ -24,16 +24,16 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in rows" :key="j">
-            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="`schedule-table_column_${i + 1}`">
+            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="`schedule-table_column_${i + 1}`" :data-platform-id="col.platformId">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
                 </template>
                 <div>
                   {{col.priceText}}
-                  <!-- <template v-if="params.itemType == 2">
-                        {{}}
-                      </template> -->
+                  <template v-if="params.itemType == 2">
+                    余票 {{col.ticketInfo.surplusNum || 0}}
+                  </template>
                 </div>
               </div>
             </td>
@@ -78,6 +78,9 @@ export default {
     })
   },
   computed: {
+    isTicket() {
+      return this.params.itemType === 2
+    },
     scheduleLoadFlag() {
       const str = `${this.params.salesId || 0}-${this.params.itemId || 0}-${this.params.dateTime || 0}`
       if (typeof btoa === 'function') {
@@ -116,6 +119,35 @@ export default {
 
       return config
     },
+    platformInColumns() { // 准备platform 关键字段数据
+      if (this.columns.level2.length === 0) {
+        return this.columns.level1.map(platform => {
+          return {
+            platformId: platform.platformId,
+            parentPlatformId: platform.parentId
+          }
+        })
+      }
+      const platformInColumns = []
+      let level2Index = 0
+      this.columns.level1.forEach(platform => {
+        if (platform.subCount === 0) {
+          platformInColumns.push({
+            platformId: platform.platformId,
+            parentPlatformId: platform.parentId
+          })
+        } else {
+          for (let j = 0; j < platform.subCount; j++) {
+            const platform = this.columns.level2[level2Index++]
+            platformInColumns.push({
+              platformId: platform.platformId,
+              parentPlatformId: platform.parentId
+            })
+          }
+        }
+      })
+      return platformInColumns
+    },
     colLength() { // 总列数量
       let length = 0
       this.columns.level1.forEach(col => {
@@ -127,20 +159,33 @@ export default {
       return this.colLength * this.colWidth
     },
     rows() {
-      // const isTicket = this.params.itemType === 2
       const tsList = this.dataCopy.timeSlotList || []
       return tsList.map((slotTime, i) => {
-        return new Array(this.colLength).fill({
-          startTimeText: slotTime.startTimeValue,
-          endTimeText: slotTime.endTimeValue,
-          priceText: slotTime.priceValue || 0,
-          colspan: 1,
-          rowspan: 1
-        })
+        const row = []
+        for (let j = 0; j < this.colLength; j++) {
+          const platformInfo = this.platformInColumns[j]
+          const col = {
+            startTimeText: slotTime.startTimeValue,
+            endTimeText: slotTime.endTimeValue,
+            priceText: slotTime.priceValue || 0,
+            colspan: 1,
+            rowspan: 1,
+            // 关联数据
+            platformInfo
+          }
+          if (this.isTicket) {
+            col.ticketInfo = (this.serverData.tableData['_ticketStatus'] || [])[j] || {}
+          }
+          row.push(col)
+        }
+        return row
       })
     }
   },
   watch: {
+    // platformInColumns() {
+    //   console.log(this.platformInColumns)
+    // },
     scheduleLoadFlag(val, oldVal) {
       if (this.params.dateTime) {
         this.$nextTick().then(() => {
@@ -149,8 +194,7 @@ export default {
             itemId: this.params.itemId,
             curDate: this.params.dateTime
           }
-          const isTicket = this.params.itemType === 2
-          Promise.all([this.$http.get('/sportPlatform/querySportPlatformInfo.do', params), isTicket
+          Promise.all([this.$http.get('/sportPlatform/querySportPlatformInfo.do', params), this.isTicket
             ? this.$http.get('/sportPlatformTicket/queryTicketList.do', params)
             : this.$http.get('/deal/queryDealMiniInfo.do', params)
           ]).then((dataList) => {
@@ -158,7 +202,7 @@ export default {
             const orderData = dataList[1] || []
 
             _.assign(platformData, {
-              [isTicket ? '_ticketStatus' : '_platformOrders']: orderData
+              [this.isTicket ? '_ticketStatus' : '_platformOrders']: orderData
             })
 
             _.assign(this.serverData, {
