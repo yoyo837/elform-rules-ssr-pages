@@ -24,12 +24,12 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in rows" :key="j">
-            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : changeDayForTimestamp(col.endTime) < changeDayForTimestamp(now)}" :data-platform-id="col.platformId">
+            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
                 </template>
-                <template v-if="changeDayForTimestamp(col.endTime) < changeDayForTimestamp(now)">
+                <template v-if="col.expired">
                   <div>已过期</div>
                 </template>
                 <template v-else>
@@ -90,13 +90,24 @@ export default {
       }
     },
     changeDayForTimestamp(long) { // 服务器端的startTime和endTime始终是2013年，只有时分秒是正确的
+      let mmt = null
+      if (long instanceof moment) {
+        mmt = long
+      }
       if (_.isNumber(long)) {
-        const mmt = moment(long)
+        mmt = moment(long)
+      }
+      if (mmt instanceof moment) {
         const newMmt = moment(this.params.dateTime)
         newMmt.hour(mmt.hour()).minute(mmt.minute()).second(mmt.second()).millisecond(mmt.millisecond())
-        return newMmt.format('x')
+        return +newMmt.format('x')
       }
       return long
+    },
+    onSelect(col) {
+      if (col.expired) {
+        // return
+      }
     }
   },
   computed: {
@@ -187,9 +198,9 @@ export default {
         for (let j = 0; j < this.colLength; j++) {
           const platformInfo = this.platformInColumns[j]
           const col = {
-            startTime: slotTime.startTime,
+            startTime: this.changeDayForTimestamp(slotTime.startTime),
             startTimeText: slotTime.startTimeValue,
-            endTime: slotTime.endTime,
+            endTime: this.changeDayForTimestamp(slotTime.endTime),
             endTimeText: slotTime.endTimeValue,
             priceText: slotTime.priceValue || 0,
             colspan: 1,
@@ -197,6 +208,7 @@ export default {
             // 关联数据
             platformInfo
           }
+          col.expired = col.endTime < this.now.format('x')
           if (this.isTicket) {
             col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
           }
