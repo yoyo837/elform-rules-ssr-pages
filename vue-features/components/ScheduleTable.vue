@@ -174,7 +174,7 @@ export default {
             platformInfo
           }
           if (this.isTicket) {
-            col.ticketInfo = (this.serverData.tableData['_ticketStatus'] || [])[j] || {}
+            col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
           }
           row.push(col)
         }
