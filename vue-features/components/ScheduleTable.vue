@@ -29,12 +29,17 @@
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
                 </template>
-                <div>
-                  {{col.priceText}}
-                  <template v-if="params.itemType == 2">
-                    余票 {{col.ticketInfo.surplusNum || 0}}
-                  </template>
-                </div>
+                <template v-if="changeDayForTimestamp(col.endTime) < changeDayForTimestamp(now)">
+                  <div>已过期</div>
+                </template>
+                <template v-else>
+                  <div>
+                    {{col.priceText}} 元
+                    <template v-if="params.itemType == 2">
+                      余票 {{col.ticketInfo.surplusNum || 0}}
+                    </template>
+                  </div>
+                </template>
               </div>
             </td>
           </tr>
