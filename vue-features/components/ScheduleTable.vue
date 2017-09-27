@@ -63,6 +63,7 @@
 <script>
 import _ from 'lodash'
 import moment from 'moment'
+import math from '../../../components/math'
 import { throttle } from 'throttle-debounce'
 export default {
   props: {
@@ -111,17 +112,45 @@ export default {
       return long
     },
     onSelect(col) {
-      console.log(col.abc)
       if (col.expired) {
         return
       }
       if (col.selected) { // 取消选中
-        console.log('取消选中')
         col.selected = false
+        this.totalPrice = math.sub(this.totalPrice, col.price)
       } else { // 选中
-        console.log('选中')
         col.selected = true
+        this.totalPrice = math.add(this.totalPrice, col.price)
       }
+      this.$emit('priceReload', this.totalPrice)
+    },
+    buildRows() { // 原始数据不在里面关联动态修改内容，避免重复计算, 放computed里updateComponent时会重新触发计算
+      const tsList = this.dataCopy.timeSlotList || []
+      return tsList.map((slotTime, i) => {
+        const row = []
+        for (let j = 0; j < this.colLength; j++) {
+          const platformInfo = this.platformInColumns[j]
+          const col = {
+            startTime: this.changeDayForTimestamp(slotTime.startTime),
+            startTimeText: slotTime.startTimeValue,
+            endTime: this.changeDayForTimestamp(slotTime.endTime),
+            endTimeText: slotTime.endTimeValue,
+            price: slotTime.price || 0,
+            priceText: slotTime.priceValue,
+            colspan: 1,
+            rowspan: 1,
+            showPrice: this.dataCopy.isViewPrice === 0,
+            freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
+            // 关联数据
+            platformInfo
+          }
+          if (this.isTicket) {
+            col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
+          }
+          row.push(col)
+        }
+        return row
+      })
     }
   },
   computed: {
@@ -205,34 +234,34 @@ export default {
     tableWidth() {
       return this.colLength * this.colWidth
     },
-    rows() { // 原始数据不在里面关联动态修改内容，避免重复计算
-      const tsList = this.dataCopy.timeSlotList || []
-      return tsList.map((slotTime, i) => {
-        const row = []
-        for (let j = 0; j < this.colLength; j++) {
-          const platformInfo = this.platformInColumns[j]
-          const col = {
-            startTime: this.changeDayForTimestamp(slotTime.startTime),
-            startTimeText: slotTime.startTimeValue,
-            endTime: this.changeDayForTimestamp(slotTime.endTime),
-            endTimeText: slotTime.endTimeValue,
-            price: slotTime.price || 0,
-            priceText: slotTime.priceValue,
-            colspan: 1,
-            rowspan: 1,
-            showPrice: this.dataCopy.isViewPrice === 0,
-            freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
-            // 关联数据
-            platformInfo
-          }
-          if (this.isTicket) {
-            col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
-          }
-          row.push(col)
-        }
-        return row
-      })
-    },
+    // rows() { // 原始数据不在里面关联动态修改内容，避免重复计算
+    //   const tsList = this.dataCopy.timeSlotList || []
+    //   return tsList.map((slotTime, i) => {
+    //     const row = []
+    //     for (let j = 0; j < this.colLength; j++) {
+    //       const platformInfo = this.platformInColumns[j]
+    //       const col = {
+    //         startTime: this.changeDayForTimestamp(slotTime.startTime),
+    //         startTimeText: slotTime.startTimeValue,
+    //         endTime: this.changeDayForTimestamp(slotTime.endTime),
+    //         endTimeText: slotTime.endTimeValue,
+    //         price: slotTime.price || 0,
+    //         priceText: slotTime.priceValue,
+    //         colspan: 1,
+    //         rowspan: 1,
+    //         showPrice: this.dataCopy.isViewPrice === 0,
+    //         freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
+    //         // 关联数据
+    //         platformInfo
+    //       }
+    //       if (this.isTicket) {
+    //         col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
+    //       }
+    //       row.push(col)
+    //     }
+    //     return row
+    //   })
+    // },
     viewRows() { // 布局用, 可修改, 可维护状态，避免rows重复计算始终生成新的col
       const nowTime = +this.now.format('x')
       this.rows.forEach(row => {
@@ -279,6 +308,8 @@ export default {
 
             this.dataCopy = _.cloneDeep(this.serverData.tableData)
 
+            this.rows = this.buildRows()
+
             this.$emit('dataReload', {
               salesName: this.dataCopy.salesName,
               marqueeText: this.dataCopy.bookAlert
@@ -296,7 +327,9 @@ export default {
         tableData: null
       },
       dataCopy: {},
-      now: moment()
+      rows: [],
+      now: moment(),
+      totalPrice: 0
     }
   },
   destroyed() {
@@ -378,8 +411,7 @@ export default {
         td.no-open,
         th.no-open {
           color: #9c9c9c;
-        }
-        // td.no-open,
+        } // td.no-open,
         // th.no-open {
         //   .not-yet-open-time {
         //     color: #999;

@@ -19,13 +19,14 @@
       </div>
     </div>
 
-    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @dataReload="onDataReload"></ScheduleTable>
+    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @dataReload="onDataReload" @priceReload="onPriceReload"></ScheduleTable>
 
     <div class="fixed-bt" ref="operation">
       <el-row>
         <el-col :span="16">
           <div class="money">
-            共计{{totalPrice || 0}}元
+            共计￥
+            <span>{{totalPriceText || 0}}</span> 元
           </div>
         </el-col>
         <el-col :span="8">
@@ -41,6 +42,7 @@ import _ from 'lodash'
 import { throttle } from 'throttle-debounce'
 import Vue from 'vue'
 import utils from '../../../components/utils'
+import math from '../../../components/math'
 import Slider from '../../vue-features/components/Slider'
 import ScheduleTable from '../../vue-features/components/ScheduleTable'
 import { Row, Col } from 'element-ui'
@@ -100,6 +102,10 @@ export default {
       this.flushData = flushData
 
       this.recalculateMaxHeight()
+    },
+    onPriceReload(price) {
+      this.totalPrice = price
+      this.totalPriceText = math.div(this.totalPrice, 100)
     }
   },
   watch: {
@@ -132,6 +138,7 @@ export default {
       marqueeLeft: 100,
       tableMaxHeight: 0,
       totalPrice: 0,
+      totalPriceText: 0,
       flushData: {}, // 表格反馈的数据
       serverData: {
         itemDataList: [],
@@ -185,15 +192,21 @@ export default {
     padding: 0;
     .el-row {
       .el-col {
-        color: #FF5E20;
         font-size: 14px;
         .money,
         .btn {
-          padding: 15px 0;
+          padding: 10px 0;
+        }
+        .money {
+          span {
+            color: #FF5E20;
+            font-size: 22px;
+          }
         }
         .btn {
           background-color: #FF5E20;
           color: white;
+          line-height: 25px;
         }
       }
     }
