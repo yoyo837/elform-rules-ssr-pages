@@ -23,7 +23,7 @@
           <col v-for="(col, i) in columns.level1" :key="col.platformId" :span="col.subCount || 1" :width="colWidth" :name="`schedule-table_column_${i + 1}`">
         </colgroup>
         <tbody>
-          <tr v-for="(cols, j) in rows" :key="j">
+          <tr v-for="(cols, j) in viewRows" :key="j">
             <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
@@ -41,7 +41,7 @@
                     <template v-if="col.price > 0">
                       元
                     </template>
-                    <template v-if="isTicket">
+                    <template v-if="col.ticketInfo">
                       余票 {{col.ticketInfo.surplusNum || 0}}
                     </template>
                   </div>
@@ -49,7 +49,7 @@
               </div>
             </td>
           </tr>
-          <tr v-if="(rows == null || rows.length == 0) && columns.level1.length">
+          <tr v-if="(viewRows == null || viewRows.length == 0) && columns.level1.length">
             <td :colspan="colLength" class="text-center schedule-table__empty-text">
               暂无数据
             </td>
@@ -111,8 +111,16 @@ export default {
       return long
     },
     onSelect(col) {
+      console.log(col.abc)
       if (col.expired) {
-        // return
+        return
+      }
+      if (col.selected) { // 取消选中
+        console.log('取消选中')
+        col.selected = false
+      } else { // 选中
+        console.log('选中')
+        col.selected = true
       }
     }
   },
@@ -127,7 +135,7 @@ export default {
       }
       return str
     },
-    columns() {
+    columns() { // 原始数据不在里面关联动态修改内容，避免重复计算
       let level2Temp = []
       const config = {
         level1: [],
@@ -158,7 +166,7 @@ export default {
 
       return config
     },
-    platformInColumns() { // 准备platform 关键字段数据
+    platformInColumns() { // 准备platform 关键字段数据, 原始数据不在里面关联动态修改内容，避免重复计算
       if (this.columns.level2.length === 0) {
         return this.columns.level1.map(platform => {
           return {
@@ -197,9 +205,8 @@ export default {
     tableWidth() {
       return this.colLength * this.colWidth
     },
-    rows() {
+    rows() { // 原始数据不在里面关联动态修改内容，避免重复计算
       const tsList = this.dataCopy.timeSlotList || []
-      const nowTime = +this.now.format('x')
       return tsList.map((slotTime, i) => {
         const row = []
         for (let j = 0; j < this.colLength; j++) {
@@ -214,9 +221,22 @@ export default {
             colspan: 1,
             rowspan: 1,
             showPrice: this.dataCopy.isViewPrice === 0,
+            freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
             // 关联数据
             platformInfo
           }
+          if (this.isTicket) {
+            col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
+          }
+          row.push(col)
+        }
+        return row
+      })
+    },
+    viewRows() { // 布局用, 可修改, 可维护状态，避免rows重复计算始终生成新的col
+      const nowTime = +this.now.format('x')
+      this.rows.forEach(row => {
+        row.forEach((col, j) => {
           col.expired = col.endTime < nowTime
           if (this.isTicket) {
             col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
@@ -225,10 +245,9 @@ export default {
             const mmt = moment(this.dataCopy.bookStartTime)
             col.notYetOpenTimeText = mmt.format('MM月DD日HH点mm分')
           }
-          row.push(col)
-        }
-        return row
+        })
       })
+      return this.rows
     }
   },
   watch: {
@@ -315,54 +334,66 @@ export default {
   }
   .schedule-table__body-wrapper {
     overflow: auto;
-    .schedule-table__body {
+    table {
       tr {
-        &:hover>td {
-          background-color: #eef1f6;
-          background-clip: padding-box;
+        &:hover {
+          td {
+            background-color: #eef1f6;
+            background-clip: padding-box;
+          }
         }
       }
     }
   }
-  table {
-    table-layout: fixed;
-    td,
-    th {
-      height: 40px;
-      min-width: 0;
-      text-overflow: ellipsis;
-      vertical-align: middle;
-      border-bottom: 1px solid #dfe6ec;
-      border-right: 1px solid #dfe6ec;
-      .table-cell {
-        word-wrap: normal;
-        text-overflow: ellipsis;
-        line-height: 22px;
-        width: 100%; // padding: 0 15px;
+  .schedule-table__header-wrapper,
+  .schedule-table__body-wrapper {
+    table {
+      table-layout: fixed;
+      tr {
+        td,
+        th {
+          height: 40px;
+          min-width: 0;
+          text-overflow: ellipsis;
+          vertical-align: middle;
+          border-bottom: 1px solid #dfe6ec;
+          border-right: 1px solid #dfe6ec;
+          .table-cell {
+            word-wrap: normal;
+            text-overflow: ellipsis;
+            line-height: 22px;
+            width: 100%; // padding: 0 15px;
+          }
+        }
+        th {
+          background-color: #eef1f6;
+        }
+        td {
+          .table-cell {
+            font-size: 12px;
+          }
+        }
+        td.disabled,
+        th.disabled,
+        td.no-open,
+        th.no-open {
+          color: #9c9c9c;
+        }
+        // td.no-open,
+        // th.no-open {
+        //   .not-yet-open-time {
+        //     color: #999;
+        //   }
+        // }
+        td.selected,
+        th.selected {
+          background-color: #20a0ff;
+          color: white;
+        }
+        .schedule-table__empty-text {
+          color: #5e7382;
+        }
       }
-    }
-    th {
-      background-color: #eef1f6;
-    }
-    td {
-      .table-cell {
-        font-size: 12px;
-      }
-    }
-    td.disabled,
-    th.disabled,
-    td.no-open,
-    th.no-open {
-      color: #9c9c9c;
-    }
-    // td.no-open,
-    // th.no-open {
-    //   .not-yet-open-time {
-    //     color: #999;
-    //   }
-    // }
-    .schedule-table__empty-text {
-      color: #5e7382;
     }
   }
 }
