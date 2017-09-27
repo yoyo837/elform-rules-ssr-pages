@@ -1,6 +1,58 @@
 <template>
   <section class="container">
-    支付{{dealId}}
+    <div class="main-box">
+      <el-row>
+        <el-col :span="24">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/deal_s.png`">
+          <span>订单信息</span>
+        </el-col>
+        <el-col :span="24" class="ctx-bg">
+          <div class="pay-item" v-for="dealTicket in serverData.dealInfo.dealTicketList" :key="dealTicket.id">
+            <el-row>
+              <el-col :span="6">票名/数量: </el-col>
+              <el-col :span="18">{{dealTicket.platformParentName}} {{dealTicket.ticketName}}/{{dealTicket.salesNum}}张</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6">地址: </el-col>
+              <el-col :span="18">{{dealTicket.salesName}}</el-col>
+            </el-row>
+            <el-row v-if="dealTicket.platformMapId">
+              <el-col :span="6">座位号：</el-col>
+              <el-col :span="18">{{dealTicket.platformMapName}}</el-col>
+            </el-row>
+            <el-row v-if="dealTicket.orderDate">
+              <el-col :span="6">开始时间：</el-col>
+              <el-col :span="18">{{dealTicket.orderDateValue}} {{dealTicket.startTimeValue}}</el-col>
+            </el-row>
+            <el-row v-else>
+              <el-col :span="6">有效期：</el-col>
+              <el-col :span="18">{{dealTicket.fromDateValue}}至{{dealTicket.toDateValue}}</el-col>
+            </el-row>
+          </div>
+          <div class="pay-info">
+
+          </div>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/fw_style.png`">
+          <span>优惠服务</span>
+        </el-col>
+        <el-col :span="24" class="ctx-bg">
+
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/zf_style.png`">
+          <span>支付方式</span>
+        </el-col>
+        <el-col :span="24" class="ctx-bg">
+
+        </el-col>
+      </el-row>
+    </div>
     <div class="fixed-bt">
       <el-row>
         <el-col :span="16">
@@ -17,6 +69,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import Vue from 'vue'
 import { Row, Col, Button } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
@@ -35,6 +88,15 @@ export default {
     }
   },
   mixins: [bdStyleMixin],
+  mounted() {
+    this.$http.get('/pay/main.do', {
+      dealId: this.dealId
+    }).then(data => {
+      data = data || {}
+      data.dealInfo = data.dealInfo || {}
+      _.assign(this.serverData, data)
+    })
+  },
   methods: {
     toPay() {
       this.$wxConfig(true).then(data => {
@@ -45,7 +107,7 @@ export default {
   data() {
     return {
       serverData: {
-
+        dealInfo: {}
       },
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-pay`,
       dealId: this.$route.params['id']
@@ -62,6 +124,34 @@ body.bd-pt-pay {
 
 <style lang="scss" scoped>
 .container {
+  .main-box {
+    >.el-row {
+      font-size: 13px;
+      padding: 5px;
+      >.el-col {
+        padding: 8px;
+        .el-row {
+          .el-col {
+            padding: 8px 0;
+          }
+        }
+        img {
+          height: 20px;
+          vertical-align: middle;
+        }
+        span {
+          vertical-align: middle;
+        }
+      }
+      >.el-col {
+        &:first-child {
+          height: 36px;
+          line-height: 20px;
+          background-color: rgba(218, 218, 218, 0.5);
+        }
+      }
+    }
+  }
   .fixed-bt {
     z-index: 1;
     background-color: white;

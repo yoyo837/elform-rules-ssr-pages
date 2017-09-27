@@ -39,14 +39,13 @@ import _ from 'lodash'
 import Vue from 'vue'
 import bdStyleMixin from '../vue-features/mixins/body-style'
 import { Row, Col } from 'element-ui'
-import { Header, Button } from 'mint-ui'
+import { Header } from 'mint-ui'
 import PageContainer from '../vue-features/components/PageContainer'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 
 Vue.component(Header.name, Header)
-Vue.component(Button.name, Button)
 
 export default {
   name: 'account',
