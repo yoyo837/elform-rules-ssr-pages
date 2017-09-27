@@ -64,6 +64,7 @@
 import _ from 'lodash'
 import moment from 'moment'
 import math from '../../../components/math'
+import store from '../../../components/store'
 import popup from '../../../components/popup'
 import { throttle } from 'throttle-debounce'
 export default {
@@ -233,6 +234,22 @@ export default {
         }
       }
       return true
+    },
+    cache() {
+      if (this.check()) {
+        const dt = this.selectedCols.map(col => {
+          return {
+            platformParentId: col.platformInfo.parentPlatformId,
+            platformId: col.platformInfo.platformId,
+            startTime: col.startTime,
+            endTime: col.endTime,
+            orderDate: moment(this.params.dateTime).format('YYYY-MM-DD')
+          }
+        })
+        store.session.put('platform_cache', dt)
+        console.log(dt)
+        this.$router.push(`/booking/service/${this.params.salesId}`)
+      }
     }
   },
   computed: {

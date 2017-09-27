@@ -109,9 +109,7 @@ export default {
     },
     nextClick() {
       const scheduleTable = this.$refs['scheduleTable']
-      if (scheduleTable.check()) {
-        console.log('123')
-      }
+      scheduleTable.cache()
     }
   },
   watch: {
