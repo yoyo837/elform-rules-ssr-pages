@@ -117,12 +117,43 @@ export default {
       }
       if (col.selected) { // 取消选中
         col.selected = false
-        this.totalPrice = math.sub(this.totalPrice, col.price)
+        this.selectedCols.splice(this.selectedCols.findIndex(item => { // 移除,单个
+          return item === col
+        }), 1)
       } else { // 选中
         col.selected = true
-        this.totalPrice = math.add(this.totalPrice, col.price)
+        this.selectedCols.push(col)
+        if (col.freeRange) {
+          // 固定时段选啥是啥
+        } else {
+          let times = col.endTime - col.startTime // 已选时长
+          const stepTime = this.dataCopy.everyAddTime // 单场地每步最小选中时间长度
+          if (stepTime) { // 设置了stepTime
+            let baseStep = 1
+            let tempCol = col
+            while (times < stepTime) {
+              const nRow = this.rows[tempCol.rowIndex + baseStep] // 往后
+              let nCol = null
+              if (nRow == null || (function() {
+                nCol = nRow[col.colIndex]
+                return nCol.expired || nCol.freeRange || nCol.selected || nCol.hasBeenSpan // 是固定区间or已被选中or被跨
+              }())) { // 末尾了
+                if (baseStep < 0) {
+                  break
+                }
+                // 归位反方向
+                baseStep = -1
+                tempCol = col
+                continue
+              }
+              // console.log(nCol.rowIndex, nCol.colIndex)
+              times += nCol.endTime - nCol.startTime
+              nCol.selected = true
+              tempCol = nCol
+            }
+          }
+        }
       }
-      this.$emit('priceReload', this.totalPrice)
     },
     buildRows() { // 原始数据不在里面关联动态修改内容，避免重复计算, 放computed里updateComponent时会重新触发计算
       const tsList = this.dataCopy.timeSlotList || []
@@ -131,6 +162,9 @@ export default {
         for (let j = 0; j < this.colLength; j++) {
           const platformInfo = this.platformInColumns[j]
           const col = {
+            rowIndex: i,
+            colIndex: j,
+            hasBeenSpan: false, // 被跨行或者跨列
             startTime: this.changeDayForTimestamp(slotTime.startTime),
             startTimeText: slotTime.startTimeValue,
             endTime: this.changeDayForTimestamp(slotTime.endTime),
@@ -234,34 +268,6 @@ export default {
     tableWidth() {
       return this.colLength * this.colWidth
     },
-    // rows() { // 原始数据不在里面关联动态修改内容，避免重复计算
-    //   const tsList = this.dataCopy.timeSlotList || []
-    //   return tsList.map((slotTime, i) => {
-    //     const row = []
-    //     for (let j = 0; j < this.colLength; j++) {
-    //       const platformInfo = this.platformInColumns[j]
-    //       const col = {
-    //         startTime: this.changeDayForTimestamp(slotTime.startTime),
-    //         startTimeText: slotTime.startTimeValue,
-    //         endTime: this.changeDayForTimestamp(slotTime.endTime),
-    //         endTimeText: slotTime.endTimeValue,
-    //         price: slotTime.price || 0,
-    //         priceText: slotTime.priceValue,
-    //         colspan: 1,
-    //         rowspan: 1,
-    //         showPrice: this.dataCopy.isViewPrice === 0,
-    //         freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
-    //         // 关联数据
-    //         platformInfo
-    //       }
-    //       if (this.isTicket) {
-    //         col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
-    //       }
-    //       row.push(col)
-    //     }
-    //     return row
-    //   })
-    // },
     viewRows() { // 布局用, 可修改, 可维护状态，避免rows重复计算始终生成新的col
       const nowTime = +this.now.format('x')
       this.rows.forEach(row => {
@@ -297,6 +303,8 @@ export default {
           ]).then((dataList) => {
             const platformData = dataList[0] || {}
             const orderData = dataList[1] || []
+            // test
+            // platformData.everyAddTime = 1800000 * 2
 
             _.assign(platformData, {
               [this.isTicket ? '_ticketStatus' : '_platformOrders']: orderData
@@ -317,6 +325,13 @@ export default {
           })
         })
       }
+    },
+    selectedCols() { // 汇总价格
+      let price = 0
+      this.selectedCols.forEach(col => {
+        price = math.add(price, col.price)
+      })
+      this.$emit('priceReload', price)
     }
   },
   data() {
@@ -329,7 +344,7 @@ export default {
       dataCopy: {},
       rows: [],
       now: moment(),
-      totalPrice: 0
+      selectedCols: []
     }
   },
   destroyed() {
