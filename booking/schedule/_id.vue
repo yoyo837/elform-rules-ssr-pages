@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @dataReload="onDataReload" @priceReload="onPriceReload"></ScheduleTable>
+    <ScheduleTable :params="{salesId, itemId, dateTime: curDate, itemType}" :max-height="tableMaxHeight" @dataReload="onDataReload" @priceReload="onPriceReload" ref="scheduleTable"></ScheduleTable>
 
     <div class="fixed-bt" ref="operation">
       <el-row>
@@ -30,7 +30,7 @@
           </div>
         </el-col>
         <el-col :span="8">
-          <div class="btn">下一步</div>
+          <div class="btn" @click="nextClick">下一步</div>
         </el-col>
       </el-row>
     </div>
@@ -106,6 +106,12 @@ export default {
     onPriceReload(price) {
       this.totalPrice = price
       this.totalPriceText = math.div(this.totalPrice, 100)
+    },
+    nextClick() {
+      const scheduleTable = this.$refs['scheduleTable']
+      if (scheduleTable.check()) {
+        console.log('123')
+      }
     }
   },
   watch: {

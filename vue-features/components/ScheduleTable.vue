@@ -64,6 +64,7 @@
 import _ from 'lodash'
 import moment from 'moment'
 import math from '../../../components/math'
+import popup from '../../../components/popup'
 import { throttle } from 'throttle-debounce'
 export default {
   props: {
@@ -96,6 +97,9 @@ export default {
         setTimeout(this.mq, 1000 * 1)
       }
     },
+    /**
+     * 转换旧时间(纠正年月日)
+     */
     changeDayForTimestamp(long) { // 服务器端的startTime和endTime始终是2013年，只有时分秒是正确的
       let mmt = null
       if (long instanceof moment) {
@@ -155,6 +159,9 @@ export default {
         }
       }
     },
+    /**
+     * 构造行/列
+     */
     buildRows() { // 原始数据不在里面关联动态修改内容，避免重复计算, 放computed里updateComponent时会重新触发计算
       const tsList = this.dataCopy.timeSlotList || []
       return tsList.map((slotTime, i) => {
@@ -185,6 +192,47 @@ export default {
         }
         return row
       })
+    },
+    /**
+     * 校验时长等
+     */
+    check() {
+      if (this.selectedCols.length === 0) {
+        popup.alert('请先选择场地.')
+        return false
+      }
+      if (this.dataCopy.maxBookTime) { // maxBookTime是校验所有的总时长
+        if (this.selectedCols.reduce((prev, col) => {
+          return prev + (col.endTime - col.startTime)
+        }, 0) > this.dataCopy.maxBookTime) {
+          popup.alert(this.dataCopy.maxBookTimeDescr || '超过最大可预订时长限制,请取消部分后再试.')
+          return false
+        }
+      }
+      if (this.dataCopy.singleMinBookTime) { // singleMinBookTime是校验单个场地
+        const map = {}
+        this.selectedCols.filter(col => {
+          return !col.freeRange
+        }).forEach(col => {
+          map[col.colIndex] = map[col.colIndex] || 0
+          map[col.colIndex] += col.endTime - col.startTime
+        })
+        for (var colIndex in map) {
+          if (map.hasOwnProperty(colIndex)) {
+            if (map[colIndex] < this.dataCopy.singleMinBookTime) { // 不满足时长
+              const inColIndexCols = this.rows.map(row => { // 同一个列下
+                return row[colIndex]
+              }).filter(col => {
+                return !(col.expired || col.freeRange || col.hasBeenSpan || col.selected)
+              })
+              if (inColIndexCols.length) { // 本场地还有空列
+                return false
+              }
+            }
+          }
+        }
+      }
+      return true
     }
   },
   computed: {
@@ -305,6 +353,8 @@ export default {
             const orderData = dataList[1] || []
             // test
             // platformData.everyAddTime = 1800000 * 2
+            // platformData.maxBookTime = 1800000 * 2
+            // platformData.singleMinBookTime = 1800000 * 7
 
             _.assign(platformData, {
               [this.isTicket ? '_ticketStatus' : '_platformOrders']: orderData
@@ -325,6 +375,9 @@ export default {
           })
         })
       }
+    },
+    rows() {
+      this.selectedCols.splice(0, this.selectedCols.length) // 清空
     },
     selectedCols() { // 汇总价格
       let price = 0
