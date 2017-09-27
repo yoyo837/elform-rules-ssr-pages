@@ -24,7 +24,7 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in rows" :key="j">
-            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
+            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
@@ -32,9 +32,15 @@
                 <template v-if="col.expired">
                   <div>已过期</div>
                 </template>
+                <template v-else-if="col.notYetOpenTimeText">
+                  <div class="not-yet-open-time">{{col.notYetOpenTimeText}}开售</div>
+                </template>
                 <template v-else>
                   <div>
-                    {{col.priceText}} 元
+                    {{col.priceText}}
+                    <template v-if="col.price > 0">
+                      元
+                    </template>
                     <template v-if="params.itemType == 2">
                       余票 {{col.ticketInfo.surplusNum || 0}}
                     </template>
@@ -193,6 +199,7 @@ export default {
     },
     rows() {
       const tsList = this.dataCopy.timeSlotList || []
+      const nowTime = +this.now.format('x')
       return tsList.map((slotTime, i) => {
         const row = []
         for (let j = 0; j < this.colLength; j++) {
@@ -202,15 +209,20 @@ export default {
             startTimeText: slotTime.startTimeValue,
             endTime: this.changeDayForTimestamp(slotTime.endTime),
             endTimeText: slotTime.endTimeValue,
-            priceText: slotTime.priceValue || 0,
+            price: slotTime.price || 0,
+            priceText: slotTime.priceValue,
             colspan: 1,
             rowspan: 1,
             // 关联数据
             platformInfo
           }
-          col.expired = col.endTime < this.now.format('x')
+          col.expired = col.endTime < nowTime
           if (this.isTicket) {
             col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
+          }
+          if (this.dataCopy.bookStartTime && this.dataCopy.bookStartTime > nowTime) {
+            const mmt = moment(this.dataCopy.bookStartTime)
+            col.notYetOpenTimeText = mmt.format('MM月DD日HH点mm分')
           }
           row.push(col)
         }
@@ -248,8 +260,8 @@ export default {
             this.dataCopy = _.cloneDeep(this.serverData.tableData)
 
             this.$emit('dataReload', {
-              salesName: platformData.salesName,
-              marqueeText: platformData.bookAlert
+              salesName: this.dataCopy.salesName,
+              marqueeText: this.dataCopy.bookAlert
             })
           })
         })
@@ -337,9 +349,17 @@ export default {
       }
     }
     td.disabled,
-    th.disabled {
+    th.disabled,
+    td.no-open,
+    th.no-open {
       color: #9c9c9c;
     }
+    // td.no-open,
+    // th.no-open {
+    //   .not-yet-open-time {
+    //     color: #999;
+    //   }
+    // }
     .schedule-table__empty-text {
       color: #5e7382;
     }
