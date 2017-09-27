@@ -36,12 +36,12 @@
                   <div class="not-yet-open-time">{{col.notYetOpenTimeText}}开售</div>
                 </template>
                 <template v-else>
-                  <div>
+                  <div v-if="col.showPrice">
                     {{col.priceText}}
                     <template v-if="col.price > 0">
                       元
                     </template>
-                    <template v-if="params.itemType == 2">
+                    <template v-if="isTicket">
                       余票 {{col.ticketInfo.surplusNum || 0}}
                     </template>
                   </div>
@@ -213,6 +213,7 @@ export default {
             priceText: slotTime.priceValue,
             colspan: 1,
             rowspan: 1,
+            showPrice: this.dataCopy.isViewPrice === 0,
             // 关联数据
             platformInfo
           }
