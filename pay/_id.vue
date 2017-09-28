@@ -96,7 +96,12 @@
           <span>优惠服务</span>
         </el-col>
         <el-col :span="24" class="ctx-bg">
+          <template v-if="serverData.pubServiceAccount && serverData.pubServiceAccount.length">
 
+          </template>
+          <template v-else>
+            您暂无可用会员优惠服务,请先购买优惠服务!
+          </template>
         </el-col>
       </el-row>
       <el-row>
@@ -105,7 +110,26 @@
           <span>支付方式</span>
         </el-col>
         <el-col :span="24" class="ctx-bg">
-
+          <div class="pay-mode">
+            <el-row v-if="serverData.publicAccount.amountAvail > 0">
+              <el-col :span="18">
+                <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
+              </el-col>
+              <el-col :span="6" class="text-right">
+                <el-checkbox v-model="form.useBalance">&nbsp;</el-checkbox>
+              </el-col>
+            </el-row>
+          </div>
+          <div class="pay-mode" v-for="(commonPayMean, i) in serverData.commonPayMeans" :key="commonPayMean.payMode" v-if="payModeIcons[commonPayMean.payMode]">
+            <el-row>
+              <el-col :span="18">
+                <img :src="`${CDN_STATIC_HOST}${payModeIcons[commonPayMean.payMode]}`"> {{commonPayMean.payMeansName}}
+              </el-col>
+              <el-col :span="6" class="text-right">
+                <el-radio class="radio" v-model="form.payMode" :label="commonPayMean.payMode">&nbsp;</el-radio>
+              </el-col>
+            </el-row>
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -113,7 +137,7 @@
       <el-row>
         <el-col :span="16">
           <div class="money">
-            共计{{serverData.totalPrice}}元
+            实付{{totalPrice}}元
           </div>
         </el-col>
         <el-col :span="8">
@@ -127,12 +151,16 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import { Row, Col, Button } from 'element-ui'
+import utils from '../../components/utils'
+import popup from '../../components/popup'
+import { Row, Col, Button, Radio, Checkbox } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
+Vue.component(Radio.name, Radio)
+Vue.component(Checkbox.name, Checkbox)
 
 export default {
   validate({ params, query }) {
@@ -151,20 +179,40 @@ export default {
       data = data || {}
       data.dealInfo = data.dealInfo || {}
       _.assign(this.serverData, data)
+
+      this.form.useBalance = (this.serverData.publicAccount || {}).amountAvail > 0
+      this.form.payMode = ((this.serverData.commonPayMeans || [])[0] || {}).payMode
     })
   },
   methods: {
     toPay() {
-      this.$wxConfig(true).then(data => {
-        alert(JSON.stringify(data))
-      })
+      if (this.form.payMode === 7 && !utils.isWeiXin()) { // 选择微信支付但不在微信中
+        popup.alert('正在呼起微信App, 请在微信中继续操作...')
+        //
+      }
+      // this.$wxConfig(true).then(data => {
+      //   alert(JSON.stringify(data))
+      // })
     }
   },
   data() {
     return {
+      payModeIcons: {
+        '2': '/themes/mobile/common/images/zf.png',
+        '5': '/themes/mobile/common/images/vip.png',
+        '7': '/themes/mobile/common/images/wx.png',
+        '8': '/themes/mobile/common/images/fee.png'
+      },
+      form: {
+        useBalance: false,
+        payMode: null
+      },
       serverData: {
+        pubServiceAccount: [],
+        publicAccount: {},
         dealInfo: {}
       },
+      totalPrice: 0,
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-pay`,
       dealId: this.$route.params['id']
     }
@@ -197,6 +245,19 @@ body.bd-pt-pay {
         }
         span {
           vertical-align: middle;
+        }
+        .pay-mode {
+          height: 45px;
+          border-bottom: 1px solid #eee;
+          .el-row {
+            .el-col {
+              img {
+                height: auto;
+                width: 30px;
+                vertical-align: middle;
+              }
+            }
+          }
         }
       }
       >.el-col {
