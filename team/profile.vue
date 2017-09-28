@@ -146,6 +146,8 @@ export default {
       teamId: this.teamid
     }).then(data => {
       _.assign(this.serverData, data)
+    }).catch(e => {
+      this.$router.replace('/team/my')
     })
 
     this.$wxConfig()
