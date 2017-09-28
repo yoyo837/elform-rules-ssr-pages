@@ -7,6 +7,43 @@
           <span>订单信息</span>
         </el-col>
         <el-col :span="24" class="ctx-bg">
+          <!-- 订场 -->
+          <div class="pay-item" v-for="dealPlatform in serverData.dealInfo.dealPlatformList" :key="dealPlatform.id">
+            <el-row>
+              <el-col :span="6">场地：</el-col>
+              <el-col :span="18">{{dealPlatform.orderDateValue}} {{dealPlatform.startTimeValue}}-{{dealPlatform.endTimeValue}} {{dealPlatform.platformParentName}}{{dealPlatform.platformName}}</el-col>
+              <el-col :span="24" class="text-right" v-if="dealPlatform.isFightDeal">约战</el-col>
+              <el-col :span="24" class="text-right">￥{{dealPlatform.transactionPriceValue}}</el-col>
+            </el-row>
+          </div>
+          <!-- 服务人员 -->
+          <div class="pay-item" v-for="dealServiceUser in serverData.dealInfo.dealServiceUserList" :key="dealServiceUser.id">
+            <el-row>
+              <el-col :span="6">教练：</el-col>
+              <el-col :span="18">{{dealServiceUser.orderDateValue}} {{dealServiceUser.startTimeValue}}-{{dealServiceUser.endTimeValue}} {{dealServiceUser.realName}}</el-col>
+              <el-col :span="24" class="text-right" v-if="dealServiceUser.isFight">约战付一半</el-col>
+              <el-col :span="24" class="text-right">￥{{dealServiceUser.transactionPriceValue}}</el-col>
+            </el-row>
+          </div>
+          <!-- 商品 -->
+          <div class="pay-item" v-for="(dealItemList, i) in serverData.dealInfo.dealItemList" :key="i">
+            <template v-for="dealItemSnap in dealItemList">
+              <el-row :key="dealItemSnap.id">
+                <el-col :span="6">商品：</el-col>
+                <el-col :span="18">{{dealItemSnap.itemName}} {{dealItemSnap.attrOptionValue1}} {{dealItemSnap.attrOptionValue2}}/{{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}</el-col>
+                <el-col :span="24" class="text-right">￥{{dealItemSnap.transactionTotalPriceValue}}</el-col>
+              </el-row>
+            </template>
+          </div>
+          <!-- 报名 -->
+          <div class="pay-item" v-for="dealSignup in serverData.dealInfo.dealSignupList" :key="dealSignup.id">
+            <el-row>
+              <el-col :span="6">报名：</el-col>
+              <el-col :span="18">{{dealSignup.exerciseList.exerciseName}}</el-col>
+              <el-col :span="24" class="text-right">￥{{dealSignup.transactionPriceValue}}</el-col>
+            </el-row>
+          </div>
+          <!-- 票务 -->
           <div class="pay-item" v-for="dealTicket in serverData.dealInfo.dealTicketList" :key="dealTicket.id">
             <el-row>
               <el-col :span="6">票名/数量: </el-col>
@@ -29,8 +66,27 @@
               <el-col :span="18">{{dealTicket.fromDateValue}}至{{dealTicket.toDateValue}}</el-col>
             </el-row>
           </div>
+          <!-- 服务 -->
+          <div class="pay-item" v-for="dealServicePub in serverData.dealInfo.dealServicePubList" :key="dealServicePub.id">
+            <el-row>
+              <el-col :span="6">服务名称：</el-col>
+              <el-col :span="18">{{dealServicePub.serviceName}}</el-col>
+              <el-col :span="24" class="text-right">￥{{dealServicePub.transactionTotalPriceValue}}</el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6">数量：</el-col>
+              <el-col :span="18">{{dealServicePub.buyNum}}张</el-col>
+            </el-row>
+          </div>
           <div class="pay-info">
-
+            <el-row>
+              <el-col :span="8">订单总金额：</el-col>
+              <el-col :span="16" class="text-right"></el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8">需支付金额：</el-col>
+              <el-col :span="16" class="text-right"></el-col>
+            </el-row>
           </div>
         </el-col>
       </el-row>
