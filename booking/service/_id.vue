@@ -295,14 +295,12 @@ export default {
         font-size: 14px;
         padding: 0;
         border: 2px solid transparent;
+        margin: 0 5px 5px 0;
         .user-img {
           width: 100%;
           height: auto;
           vertical-align: middle;
         }
-      }
-      .user-item+.user-item {
-        margin-left: 5px;
       }
       .user-item.disabled {
         opacity: .5;
