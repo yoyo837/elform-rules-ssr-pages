@@ -13,7 +13,7 @@
         <el-row class="service-user">
           <template v-for="(name, typeId) in careerTypes" v-if="getUserList(dealPlatform, typeId)">
             <el-col :span="24" :key="name">{{name}}：</el-col>
-            <el-col :span="8" class="user-item text-center" :class="{disabled: !user.isChoice || user.disabled ,selected: user.isSelected}" v-for="user in getUserList(dealPlatform, typeId)" :key="user.sysUserId">
+            <el-col :span="8" class="user-item text-center" :class="{disabled: !user.isChoice || (user.conflictPlatformIds && user.conflictPlatformIds.length) ,selected: user.isSelected}" v-for="user in getUserList(dealPlatform, typeId)" :key="user.sysUserId">
               <div @click="onSelect(dealPlatform, user)">
                 <img class="user-img" :src="`${(user.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}200X200.jpg`">
                 <div>{{user.realName}}</div>
@@ -26,7 +26,7 @@
           <el-col :span="6">选择球队：</el-col>
           <el-col :span="18">
             <el-form-item prop="sportTeamId">
-              <el-select v-model="dealPlatform.sportTeamId" size="small" placeholder="请选择">
+              <el-select v-model="dealPlatform.sportTeamId" placeholder="请选择" style="width: 100%;">
                 <el-option v-for="team in serverData.sportTeamList" :key="team.sportTeamId" :label="team.sportName" :value="team.sportTeamId"></el-option>
               </el-select>
             </el-form-item>
@@ -35,6 +35,18 @@
           <el-col :span="18">
             <el-form-item prop="sportTeamColor">
               <ColorSelect :data="serverData.ballColorList" v-model="dealPlatform.sportTeamColor"></ColorSelect>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">联系方式：</el-col>
+          <el-col :span="18">
+            <el-form-item prop="fightMobile">
+              <el-input v-model="dealPlatform.fightMobile" placeholder="请输入团队联系方式"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">约战备注：</el-col>
+          <el-col :span="18">
+            <el-form-item prop="fightDeclaration">
+              <el-input v-model="dealPlatform.fightDeclaration" placeholder="请输入团队约战"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -62,7 +74,7 @@ import Vue from 'vue'
 import math from '../../../components/math'
 import store from '../../../components/store'
 import popup from '../../../components/popup'
-import { Row, Col, Select, Option, Form, FormItem } from 'element-ui'
+import { Row, Col, Select, Option, Form, FormItem, Input } from 'element-ui'
 import { Badge } from 'mint-ui'
 import bdStyleMixin, { DefaultConfig } from '../../vue-features/mixins/body-style'
 import ColorSelect from '../../vue-features/components/ColorSelect'
@@ -71,6 +83,7 @@ Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 Vue.component(Select.name, Select)
 Vue.component(Option.name, Option)
+Vue.component(Input.name, Input)
 Vue.component(Form.name, Form)
 Vue.component(FormItem.name, FormItem)
 Vue.component(Badge.name, Badge)
@@ -111,7 +124,7 @@ export default {
       return list.length === 0 ? null : list
     },
     onSelect(currentPlatform, currentUser) {
-      if (currentUser.disabled || !currentUser.isChoice) { // 不可操作/禁用
+      if ((currentUser.conflictPlatformIds && currentUser.conflictPlatformIds.length) || !currentUser.isChoice) { // 不可操作/禁用
         return
       }
       currentUser.isSelected = !currentUser.isSelected // 设置选中
@@ -133,10 +146,18 @@ export default {
             (platform.endTime <= currentPlatform.endTime && platform.startTime === currentPlatform.startTime)
           ) {
             // 与当前platform冲突的人
-            if (currentUser.isSelected) { // 当前是勾选
-              user.disabled = true
-            } else { // 当前是去勾选
-              user.disabled = false
+            if (currentUser.sysUserId === user.sysUserId && currentUser.careerId === user.careerId) {
+              user.conflictPlatformIds = user.conflictPlatformIds || [] // 冲突的场地id
+              if (currentUser.isSelected) { // 当前是勾选
+                user.conflictPlatformIds.push(platform.platformId)
+              } else { // 当前是去勾选
+                const index = user.conflictPlatformIds.findIndex((id, i) => {
+                  return id === platform.platformId
+                })
+                if (index >= 0) {
+                  user.conflictPlatformIds.splice(index, 1)
+                }
+              }
             }
           }
         })
@@ -164,6 +185,8 @@ export default {
             })
             platform.sportTeamId = temp.sportTeamId
             platform.sportTeamColor = temp.sportTeamColor
+            platform.fightDeclaration = temp.fightDeclaration
+            platform.fightMobile = temp.fightMobile
             return platform
           }),
           dealServiceUserList: (() => {
@@ -224,6 +247,16 @@ export default {
         sportTeamColor: [{
           required: true,
           message: '请选择队服颜色'
+        }],
+        fightMobile: [{
+          required: true,
+          message: '请填写团队联系方式',
+          trigger: 'blur'
+        }],
+        fightDeclaration: [{
+          required: true,
+          message: '请填写团队约战备注',
+          trigger: 'blur'
         }]
       },
       careerTypes: {
@@ -280,7 +313,7 @@ export default {
     }
     .el-row.team-fight {
       .el-col {
-        line-height: 30px;
+        line-height: 36px;
         font-size: 14px; // .el-form-item {
         //   margin: 0;
         // }
