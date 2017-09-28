@@ -10,17 +10,15 @@
             ￥{{mul(dealPlatform.platformPrice ||0, dealPlatform.bookingTime || 0)}}元
           </el-col>
         </el-row>
-        <el-row class="service-user">
-          <template v-for="(name, typeId) in careerTypes" v-if="getUserList(dealPlatform, typeId)">
-            <el-col :span="24" :key="name">{{name}}：</el-col>
-            <el-col :span="8" class="user-item text-center" :class="{disabled: !user.isChoice || (user.conflictPlatformIds && user.conflictPlatformIds.length) ,selected: user.isSelected}" v-for="user in getUserList(dealPlatform, typeId)" :key="user.sysUserId">
-              <div @click="onSelect(dealPlatform, user)">
-                <img class="user-img" :src="`${(user.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}200X200.jpg`">
-                <div>{{user.realName}}</div>
-                <div>{{user.servicePrice}}元</div>
-              </div>
-            </el-col>
-          </template>
+        <el-row class="service-user" v-for="(name, typeId) in careerTypes" v-if="getUserList(dealPlatform, typeId)" :key="name">
+          <el-col :span="24">{{name}}：</el-col>
+          <el-col :span="8" class="user-item text-center" :class="{disabled: !user.isChoice || (user.conflictPlatformIds && user.conflictPlatformIds.length) ,selected: user.isSelected}" v-for="user in getUserList(dealPlatform, typeId)" :key="user.sysUserId">
+            <div @click="onSelect(dealPlatform, user)">
+              <img class="user-img" :src="`${(user.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}200X200.jpg`">
+              <div>{{user.realName}}</div>
+              <div>{{user.servicePrice}}元</div>
+            </div>
+          </el-col>
         </el-row>
         <el-row class="team-fight" v-if="dealPlatform.isFight">
           <el-col :span="6">选择球队：</el-col>
