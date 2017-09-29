@@ -160,6 +160,37 @@ export default {
         }
       }
     },
+    buildColumns() { // 原始数据不在里面关联动态修改内容，避免重复计算
+      let level2Temp = []
+      const config = {
+        level1: [],
+        level2: []
+      }
+      const plist = this.dataCopy.sportPlatformList || []
+      plist.map(item => {
+        if (item.parentId === 0) {
+          config.level1.push(item)
+        } else {
+          level2Temp.push(item)
+        }
+      })
+      config.level1.forEach(item => {
+        const other = []
+        item.subCount = 0
+        level2Temp.forEach(function(subItem) {
+          if (subItem.parentId === item.platformId) {
+            subItem.parentPlatformName = item.platformName // 关联冗余字段,后台未提供，方便后面使用
+            item.subCount++
+            config.level2.push(subItem)
+          } else {
+            other.push(subItem)
+          }
+        })
+        level2Temp = other
+      })
+
+      return config
+    },
     /**
      * 构造行/列
      */
@@ -239,17 +270,70 @@ export default {
     },
     cache() {
       if (this.check()) {
-        const dt = this.selectedCols.map(col => {
+        const dt = []
+        const buildDealPlatform = (col, allSub) => {
           return {
-            platformParentId: col.platformInfo.parentPlatformId,
-            platformId: col.platformInfo.platformId,
+            platformParentId: allSub ? 0 : col.platformInfo.parentPlatformId,
+            platformId: allSub ? col.platformInfo.parentPlatformId : col.platformInfo.platformId,
+            orderDate: moment(this.params.dateTime).format('YYYY-MM-DD'),
             startTime: col._startTime,
             endTime: col._endTime,
-            orderDate: moment(this.params.dateTime).format('YYYY-MM-DD')
+            colspan: allSub ? col.platformInfo.brother : 1,
+            rowspan: 1,
+            colIndex: col.colIndex,
+            rowIndex: col.rowIndex
+          }
+        }
+        // 由上至下，由左至右, 横向纵向不同时存在合并
+        this.selectedCols.sort((col1, col2) => { // 不可能相等
+          if (col1.rowIndex < col2.rowIndex) {
+            return -1
+          }
+          if (col1.colIndex < col2.colIndex) {
+            return -1
+          }
+          return 1
+        }).forEach(col => { // 遍历已选中的
+          const platformParentId = col.platformInfo.parentPlatformId
+          const platformId = col.platformInfo.platformId
+          const selectBrother = this.selectedCols.filter(innerCol => {
+            return innerCol.platformInfo.parentPlatformId === platformParentId && col.rowIndex === innerCol.rowIndex
+          })
+          if (platformParentId === 0 || selectBrother.length < col.platformInfo.brother) { // 不含子场或者没全选所有子场  // 不横向
+            // 找上面的看能不能接上
+            if (col.rowIndex === 0) { // 是第一行的
+              dt.push(buildDealPlatform(col)) // 直接放
+              return
+            }
+            // 找到本列比当前早的
+            const foundCols = dt.filter(dtCol => {
+              return dtCol.platformId === platformId && dtCol.colIndex === col.colIndex && dtCol.rowIndex < col.rowIndex
+            })
+
+            if (foundCols.length === 0) { // 没有更早的
+              dt.push(buildDealPlatform(col)) // 直接放
+              return
+            }
+
+            const lastColInFound = foundCols[foundCols.length - 1] // 因为是按顺序放的，所以直接拿最后一个来判断
+            if (lastColInFound.rowIndex + 1 === col.rowIndex) { // 紧挨着的，纵向合并
+              lastColInFound.endTime = col._endTime // 改结束时间
+              lastColInFound.rowspan++
+              lastColInFound.rowIndex++
+              return
+            }
+            dt.push(buildDealPlatform(col)) // 直接放
+          } else { // 横向的全合并
+            if (!dt.find(dtCol => {
+              return dtCol.platformParentId === 0 && dtCol.platformId === platformParentId && dtCol.rowIndex === col.rowIndex
+            })) {
+              dt.push(buildDealPlatform(col, true))
+            }
           }
         })
+
+        // console.log(dt)
         store.session.put('platform_cache', dt)
-        console.log(dt)
         this.$router.push(`/booking/service/${this.params.salesId}`)
       }
     }
@@ -265,75 +349,34 @@ export default {
       }
       return str
     },
-    columns() { // 原始数据不在里面关联动态修改内容，避免重复计算
-      let level2Temp = []
-      const config = {
-        level1: [],
-        level2: []
-      }
-      const plist = this.dataCopy.sportPlatformList || []
-      plist.map(item => {
-        if (item.parentId === 0) {
-          config.level1.push(item)
-        } else {
-          level2Temp.push(item)
-        }
-      })
-      config.level1.forEach(item => {
-        const other = []
-        item.subCount = 0
-        level2Temp.forEach(function(subItem) {
-          if (subItem.parentId === item.platformId) {
-            subItem.parentPlatformName = item.platformName // 关联冗余字段,后台未提供，方便后面使用
-            item.subCount++
-            config.level2.push(subItem)
-          } else {
-            other.push(subItem)
-          }
-        })
-        level2Temp = other
-      })
-
-      return config
+    colLength() { // 总列数量
+      return this.platformInColumns.length
+    },
+    tableWidth() {
+      return this.colLength * this.colWidth
     },
     platformInColumns() { // 准备platform 关键字段数据, 原始数据不在里面关联动态修改内容，避免重复计算
-      if (this.columns.level2.length === 0) {
-        return this.columns.level1.map(platform => {
-          return {
-            platformId: platform.platformId,
-            parentPlatformId: platform.parentId
-          }
-        })
-      }
       const platformInColumns = []
       let level2Index = 0
       this.columns.level1.forEach(platform => {
         if (platform.subCount === 0) {
           platformInColumns.push({
             platformId: platform.platformId,
-            parentPlatformId: platform.parentId
+            parentPlatformId: platform.parentId,
+            brother: 1
           })
         } else {
           for (let j = 0; j < platform.subCount; j++) {
-            const platform = this.columns.level2[level2Index++]
+            const subPlatform = this.columns.level2[level2Index++]
             platformInColumns.push({
-              platformId: platform.platformId,
-              parentPlatformId: platform.parentId
+              platformId: subPlatform.platformId,
+              parentPlatformId: subPlatform.parentId,
+              brother: platform.subCount
             })
           }
         }
       })
       return platformInColumns
-    },
-    colLength() { // 总列数量
-      let length = 0
-      this.columns.level1.forEach(col => {
-        length += col.subCount || 1
-      })
-      return length
-    },
-    tableWidth() {
-      return this.colLength * this.colWidth
     },
     viewRows() { // 布局用, 可修改, 可维护状态，避免rows重复计算始终生成新的col
       const nowTime = +this.now.format('x')
@@ -353,9 +396,6 @@ export default {
     }
   },
   watch: {
-    // platformInColumns() {
-    //   console.log(this.platformInColumns)
-    // },
     scheduleLoadFlag(val, oldVal) {
       if (this.params.dateTime) {
         this.$nextTick().then(() => {
@@ -372,24 +412,29 @@ export default {
             const orderData = dataList[1] || []
             // test
             // platformData.everyAddTime = 1800000 * 2
-            // platformData.maxBookTime = 1800000 * 2
+            platformData.maxBookTime = 0
             // platformData.singleMinBookTime = 1800000 * 7
 
             _.assign(platformData, {
               [this.isTicket ? '_ticketStatus' : '_platformOrders']: orderData
             })
 
-            _.assign(this.serverData, {
-              tableData: platformData
-            })
+            _.assign(this.serverData, platformData)
 
-            this.dataCopy = _.cloneDeep(this.serverData.tableData)
+            this.dataCopy = _.cloneDeep(this.serverData)
 
-            this.rows = this.buildRows()
+            this.columns = this.buildColumns() || {}
 
-            this.$emit('dataReload', {
-              salesName: this.dataCopy.salesName,
-              marqueeText: this.dataCopy.bookAlert
+            this.rows = this.buildRows() || []
+
+            const hd = this.$refs['header-wrapper']
+
+            this.$nextTick().then(() => {
+              this.$emit('dataReload', {
+                salesName: this.dataCopy.salesName,
+                marqueeText: this.dataCopy.bookAlert,
+                headerHeight: Math.max(hd.offsetHeight, hd.clientHeight)
+              })
             })
           })
         })
@@ -410,11 +455,13 @@ export default {
     return {
       timerSwitch: true,
       colWidth: 80,
-      serverData: {
-        tableData: null
+      columns: {
+        level1: [],
+        level2: []
       },
-      dataCopy: {},
       rows: [],
+      serverData: {},
+      dataCopy: {},
       now: moment(),
       selectedCols: []
     }

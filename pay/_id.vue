@@ -110,8 +110,8 @@
           <span>支付方式</span>
         </el-col>
         <el-col :span="24" class="ctx-bg">
-          <div class="pay-mode">
-            <el-row v-if="serverData.publicAccount.amountAvail > 0">
+          <div class="pay-mode" v-if="serverData.publicAccount && serverData.publicAccount.amountAvail > 0">
+            <el-row>
               <el-col :span="18">
                 <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
               </el-col>

@@ -82,7 +82,7 @@ export default {
     }),
     recalculateMaxHeight() {
       // 40 表头
-      this.tableMaxHeight = utils.screenSize().height - 40 - ['operation', 'others'].map(name => {
+      this.tableMaxHeight = utils.screenSize().height - (this.flushData.headerHeight || 0) - ['operation', 'others'].map(name => {
         return this.$refs[name]
       }).reduce((prev, current, i, list) => {
         return prev + Math.max(current.offsetHeight, current.clientHeight)
