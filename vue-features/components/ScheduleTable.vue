@@ -222,6 +222,7 @@ export default {
           }
           if (this.isTicket) {
             col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
+          } else {
           }
           row.push(col)
         }

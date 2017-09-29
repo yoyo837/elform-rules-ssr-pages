@@ -7,7 +7,7 @@
           <el-col :span="18" class="text-right">{{dealPlatform.platformParentName}} {{dealPlatform.platformName}}</el-col>
           <el-col :span="24" class="text-right">{{dealPlatform.orderDateValue}} {{dealPlatform.startTimeValue}}-{{dealPlatform.endTimeValue}}共{{dealPlatform.bookingTime}}小时</el-col>
           <el-col :span="24" class="text-right">
-            ￥{{mul(dealPlatform.platformPrice ||0, dealPlatform.bookingTime || 0)}}元
+            ￥{{dealPlatform.platformPrice}}元
           </el-col>
         </el-row>
         <el-row class="service-user" v-for="(name, typeId) in careerTypes" v-if="getUserList(dealPlatform, typeId)" :key="name">
@@ -111,7 +111,6 @@ export default {
     })
   },
   methods: {
-    mul: math.mul,
     getUserList(dealPlatform, typeId) {
       if (dealPlatform == null || dealPlatform.sportPlatformUserList == null || typeId == null) {
         return null
@@ -217,7 +216,7 @@ export default {
   computed: {
     platformTotalPrice() {
       return this.serverData.dealPlatformList.reduce((prev, platform) => {
-        return prev + math.mul(platform.platformPrice || 0, platform.bookingTime || 0)
+        return math.add(prev, platform.platformPrice || 0)
       }, 0)
     },
     totalPrice() {
@@ -225,7 +224,7 @@ export default {
       this.serverData.dealPlatformList.forEach(function(platform) {
         platform.sportPlatformUserList.forEach(function(user) {
           if (user.isSelected) {
-            price += math.add(price, math.mul(user.servicePrice || 0, platform.bookingTime || 0))
+            price = math.add(price, (user.servicePrice || 0))
           }
         })
       })
