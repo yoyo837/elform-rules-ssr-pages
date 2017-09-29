@@ -200,6 +200,7 @@ export default {
         const row = []
         for (let j = 0; j < this.colLength; j++) {
           const platformInfo = this.platformInColumns[j]
+          const priceBean = this.getPrice(slotTime, platformInfo)
           const col = {
             rowIndex: i,
             colIndex: j,
@@ -210,8 +211,8 @@ export default {
             endTime: this.changeDayForTimestamp(slotTime.endTime),
             _endTime: slotTime.endTime,
             endTimeText: slotTime.endTimeValue,
-            price: slotTime.price || 0,
-            priceText: slotTime.priceValue,
+            price: priceBean.price || 0,
+            priceText: priceBean.priceValue,
             colspan: 1,
             rowspan: 1,
             showPrice: this.dataCopy.isViewPrice === 0,
@@ -225,6 +226,18 @@ export default {
           row.push(col)
         }
         return row
+      })
+    },
+    getPrice(slotTime, platformInfo) {
+      if (slotTime == null || platformInfo == null) {
+        return {}
+      }
+      const priceList = this.dataCopy.sportPlatformPriceList
+      if (priceList == null || priceList.length === 0) {
+        return {}
+      }
+      return priceList.find(bean => {
+        return bean.priceTagId === platformInfo.platformPriceId && bean.startTime <= slotTime.startTime && bean.endTime >= slotTime.endTime
       })
     },
     /**
@@ -363,6 +376,7 @@ export default {
           platformInColumns.push({
             platformId: platform.platformId,
             parentPlatformId: platform.parentId,
+            platformPriceId: platform.platformPriceId,
             brother: 1
           })
         } else {
@@ -371,6 +385,7 @@ export default {
             platformInColumns.push({
               platformId: subPlatform.platformId,
               parentPlatformId: subPlatform.parentId,
+              platformPriceId: platform.platformPriceId,
               brother: platform.subCount
             })
           }
