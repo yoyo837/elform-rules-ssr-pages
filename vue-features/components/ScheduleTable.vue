@@ -239,7 +239,7 @@ export default {
               return subPlatform.parentId === platform.platformId
             }).forEach(subPlatform => {
               // 已被合并处理
-              if (skipSubIds.includes(subPlatform.platformId)) {
+              if (skipSubIds.includes(subPlatform.platformId.toString())) {
                 return
               }
 
@@ -281,6 +281,7 @@ export default {
         })
         rows.push(row)
       })
+      console.log(rows)
       return rows
     },
     /**
