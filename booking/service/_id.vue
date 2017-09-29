@@ -70,7 +70,6 @@
 import _ from 'lodash'
 import Vue from 'vue'
 import math from '../../../components/math'
-import store from '../../../components/store'
 import popup from '../../../components/popup'
 import { Row, Col, Select, Option, Form, FormItem, Input } from 'element-ui'
 import { Badge } from 'mint-ui'
@@ -264,7 +263,7 @@ export default {
         dealPlatformList: [],
         sportTeamList: []
       },
-      platformCache: store.session.get('platform_cache'),
+      platformCache: this.$webStore.session.get('platform_cache'),
       salesId: this.$route.params['id'],
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-service-user`
     }

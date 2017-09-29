@@ -64,7 +64,6 @@
 import _ from 'lodash'
 import moment from 'moment'
 import math from '../../../components/math'
-import store from '../../../components/store'
 import popup from '../../../components/popup'
 import { throttle } from 'throttle-debounce'
 export default {
@@ -487,7 +486,7 @@ export default {
         })
 
         // console.log(dt)
-        store.session.put('platform_cache', dt)
+        this.$webStore.session.put('platform_cache', dt)
         this.$router.push(`/booking/service/${this.params.salesId}`)
       }
     }

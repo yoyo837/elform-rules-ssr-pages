@@ -22,7 +22,6 @@
 import Vue from 'vue'
 import popup from '../../../components/popup'
 import utils from '../../../components/utils'
-import store from '../../../components/store'
 import { Form, FormItem, Button, Row, Col, Dialog } from 'element-ui'
 Vue.component(Dialog.name, Dialog)
 Vue.component(Form.name, Form)
@@ -47,7 +46,7 @@ export default {
     }
   },
   mounted() {
-    this.currTimeout = store.session.get(storeKey) || timeout
+    this.currTimeout = this.$webStore.session.get(storeKey) || timeout
     if (this.currTimeout > 0 && this.currTimeout < timeout) {
       this.disBtn()
     }
@@ -81,7 +80,7 @@ export default {
         }
         this.currTimeout--
         this.smsBtnText = `${this.currTimeout}秒后重发`
-        store.session.put(storeKey, this.currTimeout)
+        this.$webStore.session.put(storeKey, this.currTimeout)
         setTimeout(fn, 1000 * 1)
       }
       fn()
