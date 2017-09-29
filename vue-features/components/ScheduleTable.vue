@@ -24,7 +24,7 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in viewRows" :key="j">
-            <td v-for="(col, i) in cols" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
+            <td v-for="(col, i) in cols" v-if="col" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
@@ -196,38 +196,175 @@ export default {
      */
     buildRows() { // 原始数据不在里面关联动态修改内容，避免重复计算, 放computed里updateComponent时会重新触发计算
       const tsList = this.dataCopy.timeSlotList || []
-      return tsList.map((slotTime, i) => {
+      const platformOrderInfo = this.dataCopy['_platformOrders'] || []
+      const rows = []
+      tsList.map((slot, rowIndex) => {
         const row = []
-        for (let j = 0; j < this.colLength; j++) {
-          const platformInfo = this.platformInColumns[j]
-          const priceBean = this.getPrice(slotTime, platformInfo)
-          const col = {
-            rowIndex: i,
-            colIndex: j,
-            hasBeenSpan: false, // 被跨行或者跨列
-            startTime: this.changeDayForTimestamp(slotTime.startTime),
-            _startTime: slotTime.startTime,
-            startTimeText: slotTime.startTimeValue,
-            endTime: this.changeDayForTimestamp(slotTime.endTime),
-            _endTime: slotTime.endTime,
-            endTimeText: slotTime.endTimeValue,
-            price: priceBean.price || 0,
-            priceText: priceBean.priceValue,
-            colspan: 1,
-            rowspan: 1,
-            showPrice: this.dataCopy.isViewPrice === 0,
-            freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
-            // 关联数据
-            platformInfo
-          }
-          if (this.isTicket) {
-            col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
+        // 先找出当前时段的
+        const currentTimeSlotOrders = platformOrderInfo.filter((order) => {
+          // 一个order的最小时间区间就是一个slot的区间，所以只会是order的范围大于等于一个slot
+          // return slot.startTime <= order.endTime && slot.endTime >= order.startTime;
+          return order.startTime <= slot.startTime && order.endTime >= slot.endTime
+        })
+
+        // 准备列
+        // 先参考第一层
+        this.columns.level1.forEach(platform => {
+          // 符合当前第一层列头的订单
+          // 先找到上层(包括其所有子层的数据,后面每层再顾虑来使用)
+          const currentTimeSlotColFstOrders = currentTimeSlotOrders.filter((order) => {
+            // 指向第一层时，可能只有一层，也可能是基于第一层依靠platformSubIds指向第二层
+            // 订单的数据指向的platformId可能是第一层也可能是第二层
+            // if (platform.subZoneCount == 0) {
+            if (order.platformId === platform.platformId) {
+              return true
+            }
+            // }
+            // 订单的数据有可能是platformId就直接指向具体成，此时的order.platformId不等于platform.id
+            // 订单的数据指向的platformId可能是第一层也可能是第二层
+            if (order.platformSubIds == null || order.platformSubIds.length === 0) {
+              return this.columns.level2.filter(lv => { // 去下层找
+                return lv.parentId === platform.platformId && lv.platformId === order.platformId
+              }).length > 0
+            }
+            return false
+          })
+
+          // 如果有子层
+          if (platform.subCount > 0) {
+            // 需要跳过的子id
+            const skipSubIds = []
+
+            this.columns.level2.filter(subPlatform => {
+              return subPlatform.parentId === platform.platformId
+            }).forEach(subPlatform => {
+              // 已被合并处理
+              if (skipSubIds.includes(subPlatform.platformId)) {
+                return
+              }
+
+              // 再基于子层过滤
+              const currentTimeSlotColSecdOrders = currentTimeSlotColFstOrders.filter(order => {
+                if (order.platformId === subPlatform.platformId) {
+                  return true
+                }
+                if (this.isTicket) { // isTicket没有按platformSubIds的方式指定
+                  return true
+                }
+                if (order.platformSubIds) {
+                  return order.platformSubIds.split(',').includes(subPlatform.platformId.toString())
+                }
+                return false
+              })
+
+              // 场馆类型的时候通常是互斥的，所以ods最多是1个
+              const order = currentTimeSlotColSecdOrders[0]
+
+              const oldLength = skipSubIds.length
+              if (order) {
+                if (order.platformSubIds) {
+                  skipSubIds.push.apply(skipSubIds, order.platformSubIds.split(','))
+                } else {
+                  skipSubIds.push(order.platformId.toString())
+                }
+              }
+
+              const colspan = skipSubIds.length - oldLength
+
+              // build
+              this.push$fill(row, this.buildRow(rows, order, tsList, slot, rowIndex, row.length, colspan))
+            })
           } else {
+            // build
+            this.push$fill(row, this.buildRow(rows, currentTimeSlotColFstOrders[0], tsList, slot, rowIndex, row.length))
           }
-          row.push(col)
-        }
-        return row
+        })
+        rows.push(row)
       })
+      return rows
+    },
+    /**
+     * 构建单元格信息
+     */
+    buildRow(rows, orderInfo, allSlots, slotTime, rowIndex, colIndex, colspan) {
+      let rowspan = 1
+      colspan = colspan || 1
+
+      // 从第一行开始查找前面行的跨行数据
+      if (rows.filter((row, i) => { // 过滤一下是因为，避免逻辑调整导致本行整行完成前有可能本行已经添加到rows里了
+        return i < rowIndex
+      }).some((row, i, list) => {
+        // 遍历到的目标行的此列跨行数量+距离本行的行数大于1，说明本行此列被合并了
+        const col = row[colIndex]
+        if (col == null) {
+          return false
+        }
+        return col.rowspan + i - rowIndex > 0
+      })) {
+        return null // 此行此列被合并了,一旦发现是被合并的，不再识别此行对象
+      }
+
+      let startTime = slotTime.startTime
+      let endTime = slotTime.endTime
+
+      // 按照目前的单元格合并方式:
+      // 场地有半场的概念的，可能存在横向合并，没有半场概念的只有纵向合并，因为不夸场地合并；
+      // 存在横向合并时，有限横向合并，既，是这样的话会打断条件成立的纵向合并；
+      // 基于以上两条，不存在同时需要两个方向合并第一个；
+      if (colspan < 2 && orderInfo) {
+        let currentIndex = rowIndex
+        // 先只处理跨行
+        while (true) {
+          const nextSlot = allSlots[currentIndex + 1]
+          if (nextSlot == null) {
+            break
+          }
+          if (nextSlot.endTime <= orderInfo.endTime) { // 跨行
+            rowspan++
+          }
+          currentIndex++
+        }
+      }
+
+      if (orderInfo) {
+        startTime = orderInfo.startTime
+        endTime = orderInfo.endTime
+      }
+
+      const platformInfo = this.platformInColumns[colIndex]
+      const priceBean = this.getPrice(slotTime, platformInfo)
+      return {
+        rowIndex,
+        colIndex,
+        hasBeenSpan: false, // 被跨行或者跨列
+        startTime: this.changeDayForTimestamp(startTime),
+        _startTime: startTime,
+        startTimeText: moment(startTime).format('HH:mm'),
+        endTime: this.changeDayForTimestamp(endTime),
+        _endTime: endTime,
+        endTimeText: moment(endTime).format('HH:mm'),
+        price: priceBean.price || 0,
+        priceText: priceBean.priceValue,
+        colspan,
+        rowspan,
+        showPrice: this.dataCopy.isViewPrice === 0,
+        freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
+        // 关联数据
+        platformInfo
+      }
+    },
+    push$fill(row, col) {
+      if (row == null) {
+        return
+      }
+      row.push(col)
+      if (col) {
+        if (col.colspan > 1) {
+          for (let m = 1; m < col.colspan; m++) {
+            row.push(null) // 占位
+          }
+        }
+      }
     },
     getPrice(slotTime, platformInfo) {
       if (slotTime == null || platformInfo == null) {
@@ -398,6 +535,9 @@ export default {
       const nowTime = +this.now.format('x')
       this.rows.forEach(row => {
         row.forEach((col, j) => {
+          if (col == null) {
+            return
+          }
           col.expired = col.endTime < nowTime
           if (this.isTicket) {
             col.ticketInfo = (this.dataCopy['_ticketStatus'] || [])[j] || {}
