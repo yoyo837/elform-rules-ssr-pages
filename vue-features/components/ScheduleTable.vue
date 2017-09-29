@@ -174,8 +174,10 @@ export default {
             colIndex: j,
             hasBeenSpan: false, // 被跨行或者跨列
             startTime: this.changeDayForTimestamp(slotTime.startTime),
+            _startTime: slotTime.startTime,
             startTimeText: slotTime.startTimeValue,
             endTime: this.changeDayForTimestamp(slotTime.endTime),
+            _endTime: slotTime.endTime,
             endTimeText: slotTime.endTimeValue,
             price: slotTime.price || 0,
             priceText: slotTime.priceValue,
@@ -241,8 +243,8 @@ export default {
           return {
             platformParentId: col.platformInfo.parentPlatformId,
             platformId: col.platformInfo.platformId,
-            startTime: col.startTime,
-            endTime: col.endTime,
+            startTime: col._startTime,
+            endTime: col._endTime,
             orderDate: moment(this.params.dateTime).format('YYYY-MM-DD')
           }
         })
