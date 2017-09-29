@@ -207,7 +207,7 @@ export default {
             return list
           })()
         }).then(data => {
-
+          this.$router.push(`/pay/${data}`)
         })
       }).catch(e => {
         popup.alert('请完善表单项后再试')
