@@ -195,8 +195,7 @@ export default {
                   list.push({
                     careerId: user.careerId,
                     platformId: platform.platformId,
-                    userId: user.sysUserId,
-                    platformUserId: user.pplatformUserId,
+                    platformUserId: user.platformUserId,
                     endtime: platform.endTime,
                     startTime: platform.startTime,
                     orderdate: platform.orderDate,
