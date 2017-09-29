@@ -24,7 +24,7 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in viewRows" :key="j">
-            <td v-for="(col, i) in cols" v-if="col" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
+            <td v-for="(col, i) in cols" v-if="col" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, [col.className]: true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
@@ -350,7 +350,9 @@ export default {
         showPrice: this.dataCopy.isViewPrice === 0,
         freeRange: slotTime.viewType === 2, // 1=循环时段 2=固定时段
         // 关联数据
-        platformInfo
+        platformInfo,
+        orderInfo,
+        className: orderInfo ? this.availableStateCls[orderInfo.dealState] : ''
       }
     },
     push$fill(row, col) {
@@ -571,9 +573,14 @@ export default {
             platformData.maxBookTime = 0
             // platformData.singleMinBookTime = 1800000 * 7
 
-            _.assign(platformData, {
-              [this.isTicket ? '_ticketStatus' : '_platformOrders']: orderData
-            })
+            if (this.isTicket) {
+              platformData['_ticketStatus'] = orderData
+            } else {
+              const stateList = Object.keys(this.availableStateCls)
+              platformData['_platformOrders'] = orderData.filter(item => {
+                return stateList.includes(item.dealState.toString()) // 过滤掉不需要的
+              })
+            }
 
             _.assign(this.serverData, platformData)
 
@@ -619,7 +626,12 @@ export default {
       serverData: {},
       dataCopy: {},
       now: moment(),
-      selectedCols: []
+      selectedCols: [],
+      availableStateCls: {
+        '1': 'col-inprocess',
+        '2': 'col-scheduled',
+        '88': 'col-completed'
+      }
     }
   },
   destroyed() {
@@ -696,10 +708,17 @@ export default {
             font-size: 12px;
           }
         }
+        td.col-inprocess {
+          background-color: #ff948e;
+        }
+        td.col-scheduled {
+          background-color: #daf6bc;
+        }
+        td.col-completed {
+          background-color: #c3c8d5;
+        }
         td.disabled,
-        th.disabled,
-        td.no-open,
-        th.no-open {
+        td.no-open {
           color: #9c9c9c;
         } // td.no-open,
         // th.no-open {
@@ -707,8 +726,7 @@ export default {
         //     color: #999;
         //   }
         // }
-        td.selected,
-        th.selected {
+        td.selected {
           background-color: #20a0ff;
           color: white;
         }
