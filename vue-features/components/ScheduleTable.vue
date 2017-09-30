@@ -116,16 +116,31 @@ export default {
       return long
     },
     onSelect(event, col) {
-      // const dom = event.currentTarget
+      const dom = event.currentTarget
       if (col.expired || col.className) {
         return
       }
       if (col.selected) { // 取消选中
+        // class dom也同时操作，提升性能
+        const classList = dom.className.split(' ').filter(name => {
+          return name && name.trim().length
+        })
+        const foundIndxe = classList.findIndex(name => {
+          return name === this.selectedCls
+        })
         col.selected = false
+        if (foundIndxe >= 0) {
+          classList.splice(foundIndxe, 1)
+          dom.className = classList.join(' ')
+        }
+
         this.selectedCols.splice(this.selectedCols.findIndex(item => { // 移除,单个
           return item === col
         }), 1)
       } else { // 选中
+        // class dom也同时操作，提升性能
+        dom.className += ` ${this.selectedCls}`
+
         col.selected = true
         this.selectedCols.push(col)
         if (col.freeRange) {
@@ -628,6 +643,7 @@ export default {
       dataCopy: {},
       now: moment(),
       selectedCols: [],
+      selectedCls: 'selected',
       availableStateCls: {
         '1': 'col-inprocess',
         '2': 'col-scheduled',
