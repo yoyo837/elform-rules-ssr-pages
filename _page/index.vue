@@ -13,7 +13,7 @@ export default {
     const query = this.$route.query || {}
     const id = query['id']
     delete query.id
-    this.$router.replace(`/page/${id}?${utils.serialize(query)}`)
+    this.$router.replace(`/page/${id}${Object.keys(query).length > 0 ? '?' : ''}${utils.serialize(query)}`)
   }
 }
 </script>
