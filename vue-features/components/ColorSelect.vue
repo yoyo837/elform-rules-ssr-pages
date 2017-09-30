@@ -43,12 +43,15 @@ export default {
   position: relative;
   .mint-badge {
     margin: 0 5px 5px 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
   }
   i {
     display: none;
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 5px;
+    top: 5px;
   }
   &.selected {
     .mint-badge {

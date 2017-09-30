@@ -3,7 +3,7 @@
     <div class="main-box" v-for="dealPlatform in serverData.dealPlatformList" :key="dealPlatform.platformId">
       <el-form :model="dealPlatform" :rules="rules" ref="form">
         <el-row class="platform-header">
-          <el-col :span="6">场地：</el-col>
+          <el-col :span="6">场地</el-col>
           <el-col :span="18" class="text-right">{{dealPlatform.platformParentName}} {{dealPlatform.platformName}}</el-col>
           <el-col :span="24" class="text-right">{{dealPlatform.orderDateValue}} {{dealPlatform.startTimeValue}}-{{dealPlatform.endTimeValue}}共{{dealPlatform.bookingTime}}小时</el-col>
           <el-col :span="24" class="text-right">
@@ -11,7 +11,7 @@
           </el-col>
         </el-row>
         <el-row class="service-user" v-for="(name, typeId) in careerTypes" v-if="getUserList(dealPlatform, typeId)" :key="name">
-          <el-col :span="24">{{name}}：</el-col>
+          <el-col :span="24">{{name}}</el-col>
           <el-col :span="8" class="user-item text-center" :class="{disabled: !user.isChoice || (user.conflictPlatformIds && user.conflictPlatformIds.length) ,selected: user.isSelected}" v-for="user in getUserList(dealPlatform, typeId)" :key="user.sysUserId">
             <div @click="onSelect(dealPlatform, user)">
               <img class="user-img" :src="`${(user.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}200X200.jpg`">
@@ -21,27 +21,32 @@
           </el-col>
         </el-row>
         <el-row class="team-fight" v-if="dealPlatform.isFight">
-          <el-col :span="6">选择球队：</el-col>
-          <el-col :span="18">
+          <el-col :span="6">选择球队</el-col>
+          <el-col :span="14">
             <el-form-item prop="sportTeamId">
               <el-select v-model="dealPlatform.sportTeamId" placeholder="请选择" style="width: 100%;">
                 <el-option v-for="team in serverData.sportTeamList" :key="team.sportTeamId" :label="team.sportName" :value="team.sportTeamId"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">队服颜色：</el-col>
+          <el-col :span="4" class="text-center">
+            <el-button type="primary" size="small" @click="addNewTeam(dealPlatform)">
+              <i class="el-icon-plus"></i>
+            </el-button>
+          </el-col>
+          <el-col :span="6">队服颜色</el-col>
           <el-col :span="18">
             <el-form-item prop="sportTeamColor">
               <ColorSelect :data="serverData.ballColorList" v-model="dealPlatform.sportTeamColor"></ColorSelect>
             </el-form-item>
           </el-col>
-          <el-col :span="6">联系方式：</el-col>
+          <el-col :span="6">联系方式</el-col>
           <el-col :span="18">
             <el-form-item prop="fightMobile">
               <el-input v-model="dealPlatform.fightMobile" placeholder="请输入团队联系方式"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="6">约战备注：</el-col>
+          <el-col :span="6">约战备注</el-col>
           <el-col :span="18">
             <el-form-item prop="fightDeclaration">
               <el-input v-model="dealPlatform.fightDeclaration" placeholder="请输入团队约战"></el-input>
@@ -71,7 +76,7 @@ import _ from 'lodash'
 import Vue from 'vue'
 import math from '../../../components/math'
 import popup from '../../../components/popup'
-import { Row, Col, Select, Option, Form, FormItem, Input } from 'element-ui'
+import { Row, Col, Select, Option, Form, FormItem, Input, Button } from 'element-ui'
 import { Badge } from 'mint-ui'
 import bdStyleMixin, { DefaultConfig } from '../../vue-features/mixins/body-style'
 import ColorSelect from '../../vue-features/components/ColorSelect'
@@ -84,6 +89,7 @@ Vue.component(Input.name, Input)
 Vue.component(Form.name, Form)
 Vue.component(FormItem.name, FormItem)
 Vue.component(Badge.name, Badge)
+Vue.component(Button.name, Button)
 
 export default {
   validate({ params, query }) {
@@ -210,6 +216,23 @@ export default {
       }).catch(e => {
         popup.alert('请完善表单项后再试')
       })
+    },
+    addNewTeam(dealPlatform) {
+      popup.prompt('请填写团队名称').then(result => {
+        const teamName = result.value || ''
+        if ((this.serverData.sportTeamList || []).some(team => {
+          return team.sportName === teamName
+        })) {
+          popup.alert('已存在此名称的团队，请更换名称再试')
+          return
+        }
+        this.$http.post('/sportPlatformTeam/add.do', {
+          teamName,
+          professionalId: dealPlatform.professionalId
+        }).then(data => {
+
+        })
+      }).catch(x => { })
     }
   },
   computed: {
