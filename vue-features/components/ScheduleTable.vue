@@ -24,7 +24,7 @@
         </colgroup>
         <tbody>
           <tr v-for="(cols, j) in viewRows" :key="j">
-            <td v-for="(col, i) in cols" v-if="col" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, [col.className]: true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect(col)">
+            <td v-for="(col, i) in cols" v-if="col" :key="col.prop" :colspan="col.colspan || 1" :rowspan="col.rowspan || 1" :class="{[`schedule-table_column_${i + 1}`] : true, [col.className]: true, disabled : col.expired, 'no-open': col.notYetOpenTimeText, selected : col.selected}" :data-platform-id="col.platformId" @click="onSelect($event, col)">
               <div class="table-cell">
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
@@ -115,8 +115,9 @@ export default {
       }
       return long
     },
-    onSelect(col) {
-      if (col.expired) {
+    onSelect(event, col) {
+      // const dom = event.currentTarget
+      if (col.expired || col.className) {
         return
       }
       if (col.selected) { // 取消选中
@@ -280,7 +281,7 @@ export default {
         })
         rows.push(row)
       })
-      console.log(rows)
+      // console.log(rows)
       return rows
     },
     /**
