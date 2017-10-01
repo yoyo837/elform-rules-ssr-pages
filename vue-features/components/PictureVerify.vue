@@ -37,8 +37,7 @@ export default {
   name: 'pictureVerify',
   props: {
     mobile: {
-      type: String,
-      required: true
+      type: String
     },
     type: {
       type: Number,
