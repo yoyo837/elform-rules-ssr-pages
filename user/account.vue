@@ -27,9 +27,14 @@
         <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/fw_style.png`">
         <span>优惠服务</span>
       </el-col>
-      <el-col :span="24" v-for="item in serverData.pubServiceAccountVoList" :key="item.id" class="ctx-bg">
-        {{item.serviceName}}
-      </el-col>
+      <template v-for="item in serverData.pubServiceAccountVoList">
+        <el-col :span="24" :key="item.id" class="ctx-bg service-title">
+          {{item.serviceName}}
+        </el-col>
+        <el-col :span="24" :key="item.id" class="ctx-bg service-content">
+          {{item.dataContent}}
+        </el-col>
+      </template>
     </el-row>
   </PageContainer>
 </template>
@@ -68,7 +73,8 @@ export default {
       serverData: {
         isFee: false,
         accountFee: 0,
-        amountAvail: 0
+        amountAvail: 0,
+        pubServiceAccountVoList: []
       }
     }
   }
@@ -87,8 +93,8 @@ export default {
   padding: 5px;
   .el-col {
     padding: 8px;
-    height: 46px;
     line-height: 30px;
+
     img {
       height: 20px;
       vertical-align: middle;
@@ -103,6 +109,13 @@ export default {
       line-height: 20px;
       background-color: rgba(218, 218, 218, 0.5);
     }
+  }
+  .service-title {
+    font-weight: bolder;
+  }
+
+  .service-content {
+    padding-left: 20px;
   }
 }
 </style>

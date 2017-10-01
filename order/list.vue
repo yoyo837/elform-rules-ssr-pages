@@ -14,13 +14,24 @@
             <i class="el-icon-arrow-right"></i>
           </el-col>
         </el-row>
-        <el-row v-for="(value, key, idx) in item.fields" class="nav-panel nav-panel-auto" :key="idx">
-          <el-col :span="8">
-            {{key}}
+        <el-row class="nav-panel nav-panel-auto" v-for="(list, key) in item.fields" :key="key" v-if="orderTypes[key]">
+          <el-col :span="24" class="order-type">
+            {{orderTypes[key]}}
           </el-col>
-          <el-col :span="16" class="text-right">
-            {{value}}
-          </el-col>
+          <template v-for="field in list">
+            <template v-for="(value, key) in field">
+              <el-col :span="24" class="order-content">
+                <el-row>
+                  <el-col :span="8">
+                    {{key}}
+                  </el-col>
+                  <el-col :span="16" class="text-right">
+                    {{value}}
+                  </el-col>
+                </el-row>
+              </el-col>
+            </template>
+          </template>
         </el-row>
         <el-row class="nav-panel nav-panel-auto">
           <el-col :span="8">
@@ -105,6 +116,14 @@ export default {
       serverData: {
         page: 0,
         total: 0
+      },
+      orderTypes: {
+        '49': '场地',
+        '50': '服务人员',
+        '55': '商品',
+        '57': '会员服务',
+        '99': '票务',
+        '100': '报名'
       }
     }
   }
@@ -117,6 +136,14 @@ export default {
   img {
     margin: 2px;
   }
+}
+
+.order-type {
+  font-size: 16px;
+}
+
+.order-content {
+  font-size: 14px;
 }
 
 .order-item {

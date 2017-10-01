@@ -2,6 +2,15 @@
   <section class="container">
     <div class="main-box">
       <el-row>
+        <template v-if="payTimeText">
+          <el-col :span="24" v-show="false"></el-col>
+          <el-col :span="24" class="ctx-bg auto-cancel-tip">
+            <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/pay_lock.png`">您的订单已提交，请在
+            <span class="how-long">{{waitTimeText}}</span>内完成支付，
+            <span class="when-time">{{payTimeText}}</span>后将自动取消订单
+            <el-button type="danger" size="mini" @click="toCancel">现在取消</el-button>
+          </el-col>
+        </template>
         <el-col :span="24">
           <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/deal_s.png`">
           <span>订单信息</span>
@@ -81,11 +90,11 @@
           <div class="pay-info">
             <el-row>
               <el-col :span="8">订单总金额：</el-col>
-              <el-col :span="16" class="text-right"></el-col>
+              <el-col :span="16" class="text-right">{{serverData.dealInfo.commonPay.payFeeTotalValue}}</el-col>
             </el-row>
             <el-row>
               <el-col :span="8">需支付金额：</el-col>
-              <el-col :span="16" class="text-right"></el-col>
+              <el-col :span="16" class="text-right">{{totalPrice}}</el-col>
             </el-row>
           </div>
         </el-col>
@@ -97,7 +106,29 @@
         </el-col>
         <el-col :span="24" class="ctx-bg">
           <template v-if="serverData.pubServiceAccount && serverData.pubServiceAccount.length">
-
+            <div v-for="item in serverData.pubServiceAccount" :key="item.id" class="stamp">
+              <el-row>
+                <el-col :span="20">
+                  <div class="description">
+                    <span class="desc-avail">可用</span>
+                    <span class="desc-name">{{item.serviceName}}</span>
+                  </div>
+                  <div class="description">
+                    <span class="desc-desc">服务储值金额：{{0}}元</span>
+                  </div>
+                  <div class="description">
+                    <span class="desc-enjoy">享有</span>
+                    <span class="desc-desc">{{item.dataContent}}</span>
+                  </div>
+                  <div class="description">
+                    <span class="desc-desc">有效期：{{item.startDateValue}}至{{item.endDateValue}}</span>
+                  </div>
+                </el-col>
+                <el-col :span="4" class="text-right">
+                  <el-radio class="radio" v-model="form.pubServiceId" :label="item.id" :disabled="!canPay">&nbsp;</el-radio>
+                </el-col>
+              </el-row>
+            </div>
           </template>
           <template v-else>
             您暂无可用会员优惠服务,请先购买优惠服务!
@@ -116,7 +147,7 @@
                 <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
               </el-col>
               <el-col :span="6" class="text-right">
-                <el-checkbox v-model="form.useBalance">&nbsp;</el-checkbox>
+                <el-checkbox v-model="form.useBalance" :disabled="!canPay">&nbsp;</el-checkbox>
               </el-col>
             </el-row>
           </div>
@@ -126,14 +157,14 @@
                 <img :src="`${CDN_STATIC_HOST}${payModeIcons[commonPayMean.payMode]}`"> {{commonPayMean.payMeansName}}
               </el-col>
               <el-col :span="6" class="text-right">
-                <el-radio class="radio" v-model="form.payMode" :label="commonPayMean.payMode">&nbsp;</el-radio>
+                <el-radio class="radio" v-model="form.payMode" :label="commonPayMean.payMode" :disabled="!canPay">&nbsp;</el-radio>
               </el-col>
             </el-row>
           </div>
         </el-col>
       </el-row>
     </div>
-    <div class="fixed-bt">
+    <div class="fixed-bt" v-if="canPay">
       <el-row>
         <el-col :span="16">
           <div class="money">
@@ -150,6 +181,7 @@
 
 <script>
 import _ from 'lodash'
+import moment from 'moment'
 import Vue from 'vue'
 import utils from '../../components/utils'
 import popup from '../../components/popup'
@@ -178,13 +210,25 @@ export default {
     }).then(data => {
       data = data || {}
       data.dealInfo = data.dealInfo || {}
+      data.dealInfo.commonPay = data.dealInfo.commonPay || {}
+
       _.assign(this.serverData, data)
 
       this.form.useBalance = (this.serverData.publicAccount || {}).amountAvail > 0
       this.form.payMode = ((this.serverData.commonPayMeans || [])[0] || {}).payMode
     })
+    if (process.browser) {
+      this.mq()
+    }
   },
   methods: {
+    toCancel() {
+      this.$http.post('/deal/cancel.do', {
+        dealId: this.serverData.dealInfo.deal.id
+      }).then(data => {
+        this.$router.push('/order/list')
+      })
+    },
     toPay() {
       if (this.form.payMode === 7 && !utils.isWeiXin()) { // 选择微信支付但不在微信中
         popup.alert('正在呼起微信App, 请在微信中继续操作...')
@@ -193,6 +237,67 @@ export default {
       // this.$wxConfig(true).then(data => {
       //   alert(JSON.stringify(data))
       // })
+    },
+    mq() { // 刷新当前时间
+      this.now = moment()
+      if (this.timerSwitch) {
+        setTimeout(this.mq, 1000 * 1)
+      }
+    },
+    calTimeText(targetTime, nowTime = 0) {
+      if (targetTime) {
+        let left = targetTime - nowTime
+        if (left > 0) {
+          const str = []
+          const days = Math.floor(left / (1000 * 60 * 60 * 24))
+          left = left % (1000 * 60 * 60)
+          const hours = Math.floor(left / (1000 * 60 * 60))
+          left = left % (1000 * 60 * 60)
+          const minutes = Math.floor(left / (1000 * 60))
+          left = left % (1000 * 60)
+          const secends = Math.floor(left / 1000)
+
+          if (days) {
+            str.push(days)
+            str.push('天')
+          }
+          if (hours) {
+            str.push(hours)
+            str.push('时')
+          }
+          if (minutes) {
+            str.push(minutes)
+            str.push('分')
+          }
+          if (secends) {
+            str.push(secends)
+            str.push('秒')
+          }
+          return str.join('')
+        }
+      }
+      return null
+    }
+  },
+  computed: {
+    /**
+     * 优惠金额
+     */
+    couponPrice() {
+      return 0
+    },
+    /**
+     * 支付金额
+     */
+    totalPrice() {
+      return Math.max((this.serverData.dealInfo.commonPay.payFeeTotal || 0) - this.couponPrice, 0)
+    },
+    waitTimeText() {
+      return this.calTimeText(this.serverData.payWaitTime)
+    },
+    payTimeText() {
+      const time = +this.now.format('x')
+      return this.calTimeText(this.serverData.payExpireTime, time)
     }
   },
   data() {
@@ -205,17 +310,29 @@ export default {
       },
       form: {
         useBalance: false,
-        payMode: null
+        payMode: null,
+        pubServiceId: null
       },
       serverData: {
         pubServiceAccount: [],
+        payWaitTime: 0,
+        payExpireTime: 0,
         publicAccount: {},
-        dealInfo: {}
+        dealInfo: {
+          deal: {},
+          commonPay: {}
+        }
       },
-      totalPrice: 0,
+      now: moment(),
+      timerSwitch: true,
+      // couponCacheMap: new Map(),
+      canPay: false,
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-pay`,
       dealId: this.$route.params['id']
     }
+  },
+  destroyed() {
+    this.timerSwitch = false
   }
 }
 </script>
@@ -234,6 +351,28 @@ body.bd-pt-pay {
       padding: 5px;
       >.el-col {
         padding: 8px;
+        .stamp {
+          .description {
+            padding: 3px 0;
+            .desc-avail,
+            .desc-enjoy {
+              margin-right: 5px;
+            }
+            .desc-avail {
+              color: #f52;
+            }
+            .desc-enjoy {
+              color: #1cc3b5;
+            }
+            .desc-name {
+              font-size: 15px;
+              font-weight: bolder;
+            }
+            .desc-desc {
+              color: #666;
+            }
+          }
+        }
         .el-row {
           .el-col {
             padding: 8px 0;
@@ -258,6 +397,22 @@ body.bd-pt-pay {
               }
             }
           }
+        }
+      }
+      .auto-cancel-tip {
+        color: #1cc3b5;
+        font-size: 15px;
+        .how-long,
+        .when-time {
+          color: #ff4949;
+        }
+        img {
+          width: 35px;
+          height: auto;
+          margin-right: 5px;
+        }
+        span {
+          vertical-align: baseline;
         }
       }
       >.el-col {

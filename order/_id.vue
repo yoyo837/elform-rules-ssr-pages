@@ -457,7 +457,7 @@
       </el-row>
     </div>
     <div class="fixed-bt">
-      <el-button type="danger" v-if="serverData.data && serverData.data.isCancel">取消</el-button>
+      <el-button type="danger" v-if="serverData.data && serverData.data.isCancel" @click="toCancel">取消</el-button>
       <el-button type="warning" v-if="serverData.operationState == 1 || serverData.operationState == 2" @click.stop="toPay">去支付</el-button>
     </div>
   </PageContainer>
@@ -466,16 +466,22 @@
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
-import { Row, Col } from 'element-ui'
+import { Row, Col, Button } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 import PageContainer from '../vue-features/components/PageContainer'
+
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
+Vue.component(Button.name, Button)
+
 export default {
   name: 'order',
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   head() {
     return {
-      title: this.title
+      title: `订单详情-${this.orderId}`
     }
   },
   mixins: [bdStyleMixin],
@@ -490,20 +496,20 @@ export default {
     })
   },
   methods: {
+    toCancel() {
+      this.$http.post('/deal/cancel.do', {
+        dealId: this.orderId
+      }).then(data => {
+        this.$router.push('/order/list')
+      })
+    },
     toPay() {
       this.$router.push(`/pay/${this.orderId}`)
     }
   },
-  computed: {
-    orderId() {
-      return this.$route.params['id']
-    },
-    title() {
-      return `订单详情-${this.orderId}`
-    }
-  },
   data() {
     return {
+      orderId: this.$route.params['id'],
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-order`,
       serverData: {
         data: {},
