@@ -22,7 +22,9 @@
               <el-col :span="6">场地：</el-col>
               <el-col :span="18">{{dealPlatform.orderDateValue}} {{dealPlatform.startTimeValue}}-{{dealPlatform.endTimeValue}} {{dealPlatform.platformParentName}}{{dealPlatform.platformName}}</el-col>
               <el-col :span="24" class="text-right" v-if="dealPlatform.isFightDeal">约战</el-col>
-              <el-col :span="24" class="text-right">￥{{dealPlatform.transactionPriceValue}}</el-col>
+              <el-col :span="24" class="text-right">￥
+                <span class="price">{{dealPlatform.transactionPriceValue}}</span>
+              </el-col>
             </el-row>
           </div>
           <!-- 服务人员 -->
@@ -31,7 +33,9 @@
               <el-col :span="6">教练：</el-col>
               <el-col :span="18">{{dealServiceUser.orderDateValue}} {{dealServiceUser.startTimeValue}}-{{dealServiceUser.endTimeValue}} {{dealServiceUser.realName}}</el-col>
               <el-col :span="24" class="text-right" v-if="dealServiceUser.isFight">约战付一半</el-col>
-              <el-col :span="24" class="text-right">￥{{dealServiceUser.transactionPriceValue}}</el-col>
+              <el-col :span="24" class="text-right">￥
+                <span class="price">{{dealServiceUser.transactionPriceValue}}</span>
+              </el-col>
             </el-row>
           </div>
           <!-- 商品 -->
@@ -40,7 +44,9 @@
               <el-row :key="dealItemSnap.id">
                 <el-col :span="6">商品：</el-col>
                 <el-col :span="18">{{dealItemSnap.itemName}} {{dealItemSnap.attrOptionValue1}} {{dealItemSnap.attrOptionValue2}}/{{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}</el-col>
-                <el-col :span="24" class="text-right">￥{{dealItemSnap.transactionTotalPriceValue}}</el-col>
+                <el-col :span="24" class="text-right">￥
+                  <span class="price">{{dealItemSnap.transactionTotalPriceValue}}</span>
+                </el-col>
               </el-row>
             </template>
           </div>
@@ -49,7 +55,9 @@
             <el-row>
               <el-col :span="6">报名：</el-col>
               <el-col :span="18">{{dealSignup.exerciseList.exerciseName}}</el-col>
-              <el-col :span="24" class="text-right">￥{{dealSignup.transactionPriceValue}}</el-col>
+              <el-col :span="24" class="text-right">￥
+                <span class="price">{{dealSignup.transactionPriceValue}}</span>
+              </el-col>
             </el-row>
           </div>
           <!-- 票务 -->
@@ -90,11 +98,15 @@
           <div class="pay-info">
             <el-row>
               <el-col :span="8">订单总金额：</el-col>
-              <el-col :span="16" class="text-right">{{serverData.dealInfo.commonPay.payFeeTotalValue}}</el-col>
+              <el-col :span="16" class="text-right">
+                <span class="price">{{serverData.dealInfo.commonPay.payFeeTotalValue}}</span>
+              </el-col>
             </el-row>
             <el-row>
               <el-col :span="8">需支付金额：</el-col>
-              <el-col :span="16" class="text-right">{{totalPrice}}</el-col>
+              <el-col :span="16" class="text-right">
+                <span class="price">{{priceText(totalPrice)}}</span>
+              </el-col>
             </el-row>
           </div>
         </el-col>
@@ -167,8 +179,19 @@
     <div class="fixed-bt" v-if="canPay">
       <el-row>
         <el-col :span="16">
-          <div class="money">
-            实付{{totalPrice}}元
+          <div class="money" :class="{'mg-money': usePubService}">
+            实付￥
+            <span class="price">{{priceText(totalPrice)}}</span> 元
+            <div class="sub-money" v-show="usePubService">
+              <span v-show="couponPrice > 0">
+                优惠￥
+                <span class="price">{{priceText(couponPrice)}}</span> 元
+              </span>
+              <span v-show="deductionPrice > 0">
+                服务抵扣￥
+                <span class="price">{{priceText(deductionPrice)}}</span> 元
+              </span>
+            </div>
           </div>
         </el-col>
         <el-col :span="8">
@@ -185,6 +208,7 @@ import moment from 'moment'
 import Vue from 'vue'
 import utils from '../../components/utils'
 import popup from '../../components/popup'
+import math from '../../components/math'
 import { Row, Col, Button, Radio, Checkbox } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 
@@ -277,20 +301,42 @@ export default {
         }
       }
       return null
+    },
+    priceText(price = 0) {
+      return math.div(price, 100)
     }
   },
   computed: {
+    usePubService() {
+      return this.couponPrice > 0 || this.deductionPrice > 0
+    },
     /**
-     * 优惠金额
+     * 优惠金额，这个是提示优惠内容
      */
     couponPrice() {
+      if (this.couponInfo) {
+        if (this.couponInfo.payServicePrice) {
+          return this.couponInfo.payServicePrice.differencePrice || 0
+        }
+      }
+      return 0
+    },
+    /**
+     * 服务扣除，这个才是最终支付金额应该扣除的
+     */
+    deductionPrice() {
+      if (this.couponInfo) {
+        if (this.couponInfo.payServicePrice) {
+          return this.couponInfo.payServicePrice.serviceAmountSubPrice || 0
+        }
+      }
       return 0
     },
     /**
      * 支付金额
      */
     totalPrice() {
-      return Math.max((this.serverData.dealInfo.commonPay.payFeeTotal || 0) - this.couponPrice, 0)
+      return Math.max((this.serverData.dealInfo.commonPay.payFeeTotal || 0) - this.deductionPrice, 0)
     },
     waitTimeText() {
       return this.calTimeText(this.serverData.payWaitTime)
@@ -298,6 +344,35 @@ export default {
     payTimeText() {
       const time = +this.now.format('x')
       return this.calTimeText(this.serverData.payExpireTime, time)
+    }
+  },
+  watch: {
+    now() {
+      if (this.serverData.payExpireTime) {
+        const time = +this.now.format('x')
+        if (this.timerSwitch && this.serverData.payExpireTime <= time) {
+          this.timerSwitch = false
+          popup.alert('订单已过支付有效期并自动取消，请重新下单', {
+            callback: () => {
+              this.$router.push('/order/list')
+            }
+          })
+        }
+      }
+    },
+    async 'form.pubServiceId'() {
+      if (this.couponCacheMap.has(this.form.pubServiceId)) {
+        this.couponInfo = this.couponCacheMap.get(this.form.pubServiceId)
+      } else {
+        await this.$http.get('/pay/calcPubServicePrice.do', {
+          dealId: this.dealId,
+          pubServiceAccountId: this.form.pubServiceId
+        }).then(data => {
+          data = data || {}
+          this.couponCacheMap.set(this.form.pubServiceId, data)
+          this.couponInfo = data
+        })
+      }
     }
   },
   data() {
@@ -324,9 +399,10 @@ export default {
         }
       },
       now: moment(),
+      couponInfo: null, // 当前会员服务
       timerSwitch: true,
-      // couponCacheMap: new Map(),
-      canPay: false,
+      couponCacheMap: new Map(), // 会员服务折扣信息
+      canPay: true, // 可支付
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-pay`,
       dealId: this.$route.params['id']
     }
@@ -344,6 +420,11 @@ body.bd-pt-pay {
 </style>
 
 <style lang="scss" scoped>
+@mixin priceStyle() {
+  color: #FF5E20;
+  font-size: 22px;
+}
+
 .container {
   .main-box {
     >.el-row {
@@ -372,6 +453,9 @@ body.bd-pt-pay {
               color: #666;
             }
           }
+        }
+        .price {
+          color: #ff5e20
         }
         .el-row {
           .el-col {
@@ -431,15 +515,34 @@ body.bd-pt-pay {
     padding: 0;
     .el-row {
       .el-col {
-        color: #FF5E20;
         font-size: 14px;
         .money,
         .btn {
-          padding: 15px 0;
+          padding: 10px 0;
+        }
+        .money {
+          position: relative;
+          .price {
+            @include priceStyle
+          }
+        }
+        .mg-money {
+          padding: 0 0 20px 0;
+          .sub-money {
+            position: absolute;
+            bottom: 0;
+            font-size: 12px;
+            width: 100%;
+            color: #999;
+            .price {
+              font-size: 18px;
+            }
+          }
         }
         .btn {
           background-color: #FF5E20;
           color: white;
+          line-height: 25px;
         }
       }
     }

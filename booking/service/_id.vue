@@ -60,7 +60,8 @@
       <el-row>
         <el-col :span="16">
           <div class="money">
-            合计{{totalPrice}}元
+            共计￥
+            <span>{{totalPrice || 0}}</span> 元
           </div>
         </el-col>
         <el-col :span="8">
@@ -260,7 +261,7 @@ export default {
           type: 'number',
           required: true,
           message: '请选择约战团队',
-          trigger: 'blur'
+          trigger: 'change'
         }],
         sportTeamColor: [{
           required: true,
@@ -344,15 +345,21 @@ export default {
     padding: 0;
     .el-row {
       .el-col {
-        color: #FF5E20;
         font-size: 14px;
         .money,
         .btn {
-          padding: 15px 0;
+          padding: 10px 0;
+        }
+        .money {
+          span {
+            color: #FF5E20;
+            font-size: 22px;
+          }
         }
         .btn {
           background-color: #FF5E20;
           color: white;
+          line-height: 25px;
         }
       }
     }
