@@ -254,13 +254,25 @@ export default {
       })
     },
     toPay() {
-      if (this.form.payMode === 7 && !utils.isWeiXin()) { // 选择微信支付但不在微信中
-        popup.alert('正在呼起微信App, 请在微信中继续操作...')
-        //
+      if (this.totalPrice > 0) {
+        if (this.form.payMode === 7) { // 微信支付
+          if (utils.isWeiXin()) { // 在微信中
+            this.$wxConfig(true).then(data => {
+              alert(JSON.stringify(data))
+            })
+          } else {
+            popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
+          }
+        } else if (this.form.payMode === 2) { // 支付宝
+          if (utils.isWeiXin()) { // 在微信中
+            popup.alert('选择支付宝支付，请点击右上角[...]选择浏览器打开')
+          } else {
+
+          }
+        } else {
+
+        }
       }
-      // this.$wxConfig(true).then(data => {
-      //   alert(JSON.stringify(data))
-      // })
     },
     mq() { // 刷新当前时间
       this.now = moment()
