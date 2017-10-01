@@ -1,5 +1,5 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/order/list">
+  <PageContainer :nav-header="true" nav-header-back-path="/order">
     <!-- 场地订单 -->
     <div v-if="serverData.dealPlatformList && serverData.dealPlatformList.length" class="ctx-bg list-box">
       <template v-for="(platform, idx) in serverData.dealPlatformList">
@@ -500,7 +500,7 @@ export default {
       this.$http.post('/deal/cancel.do', {
         dealId: this.orderId
       }).then(data => {
-        this.$router.push('/order/list')
+        this.$router.push('/order')
       })
     },
     toPay() {

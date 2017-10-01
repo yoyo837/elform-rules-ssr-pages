@@ -250,7 +250,7 @@ export default {
       this.$http.post('/deal/cancel.do', {
         dealId: this.serverData.dealInfo.deal.id
       }).then(data => {
-        this.$router.push('/order/list')
+        this.$router.push('/order')
       })
     },
     toPay() {
@@ -366,7 +366,7 @@ export default {
           this.timerSwitch = false
           popup.alert('订单已过支付有效期并自动取消，请重新下单', {
             callback: () => {
-              this.$router.push('/order/list')
+              this.$router.push('/order')
             }
           })
         }
