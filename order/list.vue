@@ -19,8 +19,8 @@
             {{orderTypes[key]}}
           </el-col>
           <template v-for="field in list">
-            <template v-for="(value, key) in field">
-              <el-col :span="24" class="order-content">
+            <template v-for="(value, key, i) in field">
+              <el-col :span="24" class="order-content" :key="i">
                 <el-row>
                   <el-col :span="8">
                     {{key}}
