@@ -231,7 +231,14 @@ export default {
           teamName,
           professionalId: dealPlatform.professionalId
         }).then(data => {
-
+          data = data || {}
+          popup.alert('创建成功')
+          this.serverData.sportTeamList = this.serverData.sportTeamList || []
+          this.serverData.sportTeamList.push({
+            professionalId: data.professionalId,
+            sportName: data.name,
+            sportTeamId: data.id
+          })
         })
       }).catch(x => { })
     }
