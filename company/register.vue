@@ -8,77 +8,18 @@
         <el-step v-for="(step, i) in steps.list" :title="step" :key="i"></el-step>
       </el-steps>
     </section>
-    <el-card>
-      <div class="sub-title text-center" slot="header">
-        创建企业账户
-      </div>
-      <el-form ref="form" v-model="form" :rules="rules">
-        <el-form-item prop="realName">
-          <el-input v-model="form.realName" placeholder="负责人姓名" icon="fa fa-user-o"></el-input>
-        </el-form-item>
-        <el-form-item prop="mobile">
-          <el-input v-model="form.mobile" placeholder="负责人手机" icon="fa fa-phone"></el-input>
-        </el-form-item>
-        <el-form-item prop="smsCode">
-          <VerifyComp :type="1" :mobile="form.mobile" v-model="form.smsCode"></VerifyComp>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input type="password" v-model="form.pwd" placeholder="密码" icon="fa fa-lock"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" class="full-width">下一步</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-
-    <section class="redirect-login text-center">
-      <a href="//cloud.ydmap.com.cn">已有账号，去登陆</a>
-    </section>
-
-    <footer class="ctx-bg">
-      <section>
-        <el-row class="text-center">
-          <el-col :span="24">
-            <a href="javascript:;">创建账户须知</a>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="8">
-            负责人手机号：
-          </el-col>
-          <el-col :span="16" class="desc-gray">
-            登录账号，需要接收审核短信
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="8">
-            负责人：
-          </el-col>
-          <el-col :span="16">
-            <a href="javascript:;">可是法人代表或是代理人员</a>
-          </el-col>
-        </el-row>
-      </section>
-    </footer>
+    <nuxt-child @updateData="onUpdateData" @updataStep="onUpdataStep"></nuxt-child>
   </section>
 </template>
 
 <script>
+import _ from 'lodash'
 import Vue from 'vue'
-import utils from '../../components/utils'
-import VerifyComp from '../vue-features/components/PictureVerify'
 import bdStyleMixin from '../vue-features/mixins/body-style'
-import { Row, Col, Button, Steps, Step, Form, FormItem, Input, Card } from 'element-ui'
+import { Steps, Step } from 'element-ui'
 
-Vue.component(Row.name, Row)
-Vue.component(Col.name, Col)
-Vue.component(Button.name, Button)
 Vue.component(Steps.name, Steps)
 Vue.component(Step.name, Step)
-Vue.component(Form.name, Form)
-Vue.component(FormItem.name, FormItem)
-Vue.component(Input.name, Input)
-Vue.component(Card.name, Card)
 
 export default {
   head() {
@@ -87,50 +28,29 @@ export default {
     }
   },
   mixins: [bdStyleMixin],
-  components: {
-    VerifyComp
-  },
   methods: {
-    checkMobile(rule, value, fn, source, options) {
-      if (utils.validator.isMobile(value)) {
-        fn([])
-      } else {
-        fn([new Error()])
+    nextStep() {
+      this.$router.push(`/company/register/${++this.steps.currentStep + 1}`)
+    },
+    onUpdataStep(step) {
+      this.steps.currentStep = step - 1
+    },
+    onUpdateData(form) {
+      _.assign(this.registerData, form || {})
+      if (this.steps.currentStep < this.steps.list.length - 1) {
+        this.nextStep()
       }
     }
   },
   data() {
     return {
-      rules: {
-        realName: [{
-          required: true,
-          message: '请输入负责人姓名',
-          trigger: 'blur'
-        }],
-        mobile: [{
-          required: true, message: '请输入您的手机号', trigger: 'blur'
-        }, {
-          min: 11, max: 11, message: '请输入合法的手机号码', validator: this.checkMobile, trigger: 'blur'
-        }],
-        smsCode: [{
-          required: true, message: '请输入验证码', trigger: 'blur'
-        }, {
-          min: 4, max: 4, message: '请输入完整4位验证码', trigger: 'blur'
-        }],
-        password: [{
-          required: true, message: '请输入密码', trigger: 'blur'
-        }]
-      },
-      form: {
-        realName: null,
-        mobile: null,
-        smsCode: null,
-        pwd: null
-      },
       steps: {
         list: ['创建账户', '填写信息', '实名认证', '完成'],
         finishStatus: 'finish', // wait/process/finish/error/success
-        currentStep: 1
+        currentStep: 0
+      },
+      registerData: {
+        abc: 1
       }
     }
   }
@@ -138,15 +58,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-a {
-  color: #3c8dbc;
-}
-
-@mixin mg() {
-  max-width: 380px;
-  margin: 20px auto 0 auto;
-}
-
 .container {
   .main-title {
     font-size: 20px;
@@ -160,9 +71,17 @@ a {
     max-width: 1000px;
     margin: 0 auto;
   }
+}
+</style>
+
+<style lang="scss">
+section.company-register-body {
+  a {
+    color: #3c8dbc;
+  }
   .el-card {
-    @include mg;
-    margin-top: 5%;
+    max-width: 380px;
+    margin: 5% auto 0 auto;
     .el-form {
       padding: 0 10px 10px 10px;
     }
@@ -173,7 +92,8 @@ a {
   }
 
   footer {
-    @include mg;
+    max-width: 380px;
+    margin: 20px auto 0 auto;
     padding: 10px;
     font-size: 14px;
     .el-row {
@@ -188,4 +108,5 @@ a {
   }
 }
 </style>
+
 
