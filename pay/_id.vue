@@ -414,7 +414,7 @@ export default {
       couponInfo: null, // 当前会员服务
       timerSwitch: true,
       couponCacheMap: new Map(), // 会员服务折扣信息
-      canPay: true, // 可支付
+      canPay: false, // 可支付
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-pay`,
       dealId: this.$route.params['id']
     }
