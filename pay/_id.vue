@@ -163,13 +163,13 @@
               </el-col>
             </el-row>
           </div>
-          <div class="pay-mode" v-for="(commonPayMean, i) in serverData.commonPayMeans" :key="commonPayMean.payMode" v-if="payModeIcons[commonPayMean.payMode]">
+          <div class="pay-mode" v-for="(commonPayMean, i) in serverData.commonPayMeans" :key="commonPayMean.payMeansId" v-if="payModeIcons[commonPayMean.payMode]">
             <el-row>
               <el-col :span="18">
                 <img :src="`${CDN_STATIC_HOST}${payModeIcons[commonPayMean.payMode]}`"> {{commonPayMean.payMeansName}}
               </el-col>
               <el-col :span="6" class="text-right">
-                <el-radio class="radio" v-model="form.payMode" :label="commonPayMean.payMode" :disabled="!canPay">&nbsp;</el-radio>
+                <el-radio class="radio" v-model="form.payMeansId" :label="commonPayMean.payMeansId" :disabled="!canPay">&nbsp;</el-radio>
               </el-col>
             </el-row>
           </div>
@@ -239,7 +239,9 @@ export default {
       _.assign(this.serverData, data)
 
       this.form.useBalance = (this.serverData.publicAccount || {}).amountAvail > 0
-      this.form.payMode = ((this.serverData.commonPayMeans || [])[0] || {}).payMode
+      this.form.payMeansId = ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
+
+      this.canPay = true
     })
     if (process.browser) {
       this.mq()
@@ -255,7 +257,7 @@ export default {
     },
     toPay() {
       if (this.totalPrice > 0) {
-        if (this.form.payMode === 7) { // 微信支付
+        if (this.payMode === 7) { // 微信支付
           if (utils.isWeiXin()) { // 在微信中
             this.$wxConfig(true).then(data => {
               alert(JSON.stringify(data))
@@ -263,16 +265,27 @@ export default {
           } else {
             popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
           }
-        } else if (this.form.payMode === 2) { // 支付宝
+        } else if (this.payMode === 2) { // 支付宝
           if (utils.isWeiXin()) { // 在微信中
             popup.alert('选择支付宝支付，请点击右上角[...]选择浏览器打开')
           } else {
-
+            this.toCheckOut()
           }
         } else {
 
         }
       }
+    },
+    toCheckOut() {
+      this.$http.post('/pay/checkout.do', {
+        dealId: this.dealId,
+        isPubAccountPay: this.form.useBalance,
+        pubServiceAccountId: this.form.pubServiceId,
+        payMeansId: this.form.payMeansId,
+        backUri: null
+      }).then(data => {
+
+      })
     },
     mq() { // 刷新当前时间
       this.now = moment()
@@ -319,6 +332,11 @@ export default {
     }
   },
   computed: {
+    payMode() {
+      return ((this.serverData.commonPayMeans || []).find(item => {
+        return item.payMeansId === this.form.payMeansId
+      }) || {}).payMode
+    },
     usePubService() {
       return this.couponPrice > 0 || this.deductionPrice > 0
     },
@@ -397,7 +415,7 @@ export default {
       },
       form: {
         useBalance: false,
-        payMode: null,
+        payMeansId: null,
         pubServiceId: null
       },
       serverData: {
