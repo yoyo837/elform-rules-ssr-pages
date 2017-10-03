@@ -20,6 +20,7 @@
 import Vue from 'vue'
 import utils from '../../../components/utils'
 import color from '../../../components/color'
+import upload from '../../../components/upload'
 import { Row, Col } from 'element-ui'
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
@@ -33,6 +34,8 @@ export default {
       type: String,
       default: utils.DEFAULT_USER_AVATAR_PIC_PATH
     },
+    pubAccountId: Number,
+    picType: Number,
     size: {
       type: String,
       default: 'normal'
@@ -44,6 +47,11 @@ export default {
   },
   methods: {
     onImgClick() {
+      if (this._events.afterUpload) {
+        if (this.pubAccountId && this.picType) {
+          upload.avatarUpload(this.pubAccountId, this.picType)
+        }
+      }
     }
   },
   data() {

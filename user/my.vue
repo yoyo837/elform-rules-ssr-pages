@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <ProfilePanel :pic-path="serverData.picPath">
+    <ProfilePanel :pic-path="serverData.picPath" @afterUpload="afterUpload" :pub-account-id="serverData.id" :pic-type="serverData.picType">
       <template slot="left" v-if="serverData.isFee">
         <span>积分:{{serverData.accountFee}}</span>
       </template>
@@ -106,12 +106,16 @@ export default {
         this.$webStore.session.clear()
         this.$router.push('/')
       })
+    },
+    afterUpload() {
+
     }
   },
   data() {
     return {
       serverData: {
-        id: '',
+        id: null,
+        picType: null,
         wechatId: '',
         isFee: false,
         accountFee: 0,
