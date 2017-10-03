@@ -279,6 +279,9 @@ export default {
           if (utils.isWeiXin()) { // 在微信中
             this.$wxConfig(true).then(data => {
               alert(JSON.stringify(data))
+              // WeixinJSBridge.invoke('getBrandWCPayRequest', {
+              //   appId:
+              // })
             })
           } else {
             popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
