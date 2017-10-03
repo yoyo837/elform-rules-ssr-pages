@@ -11,17 +11,19 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import pageConfig from '../vue-features/page-config'
 export default {
   mounted() {
     pageConfig.getPageData([{
-      mapId: 102103
+      mapId: 102103, // 介绍
+      single: true
     }, {
       mapId: 101985
     }, {
       mapId: 101986
     }]).then(data => {
-      console.log(data)
+      _.assign(this.serverData, data || {})
     })
   },
   data() {
