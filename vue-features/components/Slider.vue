@@ -1,7 +1,7 @@
 <template>
   <div class="slider-box text-center" :class="`slider-box-${type}`" ref="sliderBox">
     <ul class="slider" :style="{width: boxWidth + 'px'}">
-      <li v-for="(item, i) in dataList" :key="item[idkey]" class="slider-item text-center text-overflow" :class="{selected: item[idkey] == innerValue}" @click="toSelect(item[idkey])">
+      <li ref="li" v-for="(item, i) in dataList" :key="item[idkey]" class="slider-item text-center text-overflow" :class="{selected: item[idkey] == innerValue}" @click="toSelect(item[idkey])">
         <template v-if="type == 'item'">
           <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item[idkey]}.png`"> {{item[label]}}
         </template>
@@ -54,12 +54,6 @@ export default {
     value: null
   },
   computed: {
-    boxWidth() {
-      if (this.dataList == null) {
-        return 0
-      }
-      return this.dataList.length * 80
-    }
   },
   methods: {
     toSelect(id) {
@@ -76,6 +70,13 @@ export default {
       }
       this.innerValue = val[0][this.idkey]
       this.toPosition()
+      this.$nextTick().then(() => {
+        this.boxWidth = this.$refs['li'].reduce((prev, li) => {
+          return prev + Math.max(li.offsetWidth, li.clientWidth) + 0.5
+        }, 0)
+
+        console.log(this.boxWidth)
+      })
     },
     innerValue(val, oldVal) {
       this.$emit('input', this.innerValue)
@@ -83,7 +84,8 @@ export default {
   },
   data() {
     return {
-      innerValue: this.value
+      innerValue: this.value,
+      boxWidth: 0
     }
   }
 }

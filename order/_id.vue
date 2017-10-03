@@ -457,8 +457,14 @@
       </el-row>
     </div>
     <div class="fixed-bt">
-      <el-button type="danger" v-if="serverData.data && serverData.data.isCancel" @click="toCancel">取消</el-button>
-      <el-button type="warning" v-if="serverData.operationState == 1 || serverData.operationState == 2" @click.stop="toPay">去支付</el-button>
+      <template v-if="hasRefererPaid">
+        <el-button type="info" @click="continueBooking" v-if="serverData.dealPlatformList && serverData.dealPlatformList.length">继续订场</el-button>
+        <el-button type="primary" @click="toHome">回到首页</el-button>
+      </template>
+      <template v-else>
+        <el-button type="danger" v-if="serverData.data && serverData.data.isCancel" @click="toCancel">取消</el-button>
+        <el-button type="warning" v-if="serverData.operationState == 1 || serverData.operationState == 2" @click.stop="toPay">去支付</el-button>
+      </template>
     </div>
   </PageContainer>
 </template>
@@ -496,6 +502,12 @@ export default {
     })
   },
   methods: {
+    continueBooking() {
+      this.$router.push(`/booking/schedule/${this.serverData.deal.salesId}`)
+    },
+    toHome() {
+      this.$router.push('/')
+    },
     toCancel() {
       this.$http.post('/deal/cancel.do', {
         dealId: this.orderId
@@ -508,8 +520,9 @@ export default {
     }
   },
   data() {
+    const orderId = this.$route.params['id']
     return {
-      orderId: this.$route.params['id'],
+      orderId,
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-order`,
       serverData: {
         data: {},
@@ -520,7 +533,8 @@ export default {
         dealServiceUserList: null,
         dealServicePubList: null,
         dealSignupList: null
-      }
+      },
+      hasRefererPaid: this.$route.query['out_trade_no'] === orderId // 来自支付成功跳转
     }
   }
 }
