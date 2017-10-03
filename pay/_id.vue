@@ -199,6 +199,10 @@
         </el-col>
       </el-row>
     </div>
+
+    <form ref="alipay-form" class="alipay-form" method="POST" :action="alipayForm.action || 'https://mapi.alipay.com/gateway.do'">
+      <input type="hidden" v-for="field in alipayForm.fields" :key="field.name" :name="field.name" :value="field.value">
+    </form>
   </section>
 </template>
 
@@ -267,25 +271,41 @@ export default {
           }
         } else if (this.payMode === 2) { // 支付宝
           if (utils.isWeiXin()) { // 在微信中
-            popup.alert('选择支付宝支付，请点击右上角[...]选择浏览器打开')
+            popup.alert('选择支付宝支付，请点击右上角[...]，选择浏览器打开')
           } else {
-            this.toCheckOut()
+            this.toCheckOut().then(data => {
+              data = data || {}
+              _.assign(this.alipayForm, {
+                action: data['action'],
+                fields: Object.keys(data).filter(key => {
+                  return key !== 'action'
+                }).map(key => {
+                  return {
+                    name: key,
+                    value: data[key]
+                  }
+                })
+              })
+
+              this.$nextTick().then(() => {
+                this.$refs['alipay-form'].submit() // 跳转到支付宝
+              })
+            })
           }
         } else {
 
         }
       }
     },
-    toCheckOut() {
-      this.$http.post('/pay/checkout.do', {
+    async toCheckOut() {
+      const result = await this.$http.post('/pay/checkout.do', {
         dealId: this.dealId,
         isPubAccountPay: this.form.useBalance,
         pubServiceAccountId: this.form.pubServiceId,
         payMeansId: this.form.payMeansId,
-        backUri: null
-      }).then(data => {
-
+        returnUri: `/pay/result/${this.dealId}`
       })
+      return result
     },
     mq() { // 刷新当前时间
       this.now = moment()
@@ -362,6 +382,13 @@ export default {
       }
       return 0
     },
+    // 账户支付
+    useBalancePrice() {
+      if (this.form.useBalance) {
+        return Math.min((this.serverData.publicAccount || {}).amountAvail || 0, this.totalPrice)
+      }
+      return 0
+    },
     /**
      * 支付金额
      */
@@ -418,6 +445,10 @@ export default {
         payMeansId: null,
         pubServiceId: null
       },
+      alipayForm: { // 支付宝支付表单
+        action: null,
+        fields: []
+      },
       serverData: {
         pubServiceAccount: [],
         payWaitTime: 0,
@@ -456,6 +487,9 @@ body.bd-pt-pay {
 }
 
 .container {
+  .alipay-form {
+    display: none;
+  }
   .main-box {
     >.el-row {
       font-size: 13px;
