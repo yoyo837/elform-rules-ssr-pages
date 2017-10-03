@@ -1,7 +1,7 @@
 <template>
   <el-row class="header-panel text-center" :class="classObject" :style="{backgroundColor: color, color: contrast}">
     <el-col :span="24">
-      <img :src.sync="imgUrl" class="header-logo">
+      <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
     </el-col>
     <el-col :span="6" class="text-left" v-if="showSlot">
       <slot name="left">&nbsp;</slot>
@@ -40,6 +40,10 @@ export default {
     type: {
       type: String,
       default: 'user'
+    }
+  },
+  methods: {
+    onImgClick() {
     }
   },
   data() {

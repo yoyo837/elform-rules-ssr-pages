@@ -100,6 +100,14 @@ export default {
       _.assign(this.serverData, data || {})
     })
   },
+  methods: {
+    toLogout() {
+      this.$http.post('/pubUser/logout.do').then(() => {
+        this.$webStore.session.clear()
+        this.$router.push('/')
+      })
+    }
+  },
   data() {
     return {
       serverData: {
@@ -112,14 +120,6 @@ export default {
         mobile: '--'
       },
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-my`
-    }
-  },
-  methods: {
-    toLogout() {
-      this.$http.post('/pubUser/logout.do').then(() => {
-        this.$webStore.session.clear()
-        this.$router.push('/')
-      })
     }
   }
 }
