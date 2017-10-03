@@ -200,6 +200,11 @@
       </el-row>
     </div>
 
+    <section class="open-browser-tips" v-show="showBrowserTips" @click="hideBrowserTip">
+      <img v-if="isiOS" :src="`${CDN_STATIC_HOST}/themes/mobile/pay/ios.png`">
+      <img v-else :src="`${CDN_STATIC_HOST}/themes/mobile/pay/android.png`">
+    </section>
+
     <form ref="alipay-form" class="alipay-form" method="POST" :action="alipayForm.action || 'https://mapi.alipay.com/gateway.do'">
       <input type="hidden" v-for="field in alipayForm.fields" :key="field.name" :name="field.name" :value="field.value">
     </form>
@@ -252,6 +257,15 @@ export default {
     }
   },
   methods: {
+    showBrowserTip() {
+      // popup.alert('选择支付宝支付，请点击右上角[...]，选择浏览器打开')
+      this.showBrowserTips = true
+      utils.disableBodyScroll()
+    },
+    hideBrowserTip() {
+      this.showBrowserTips = false
+      utils.enableBodyScroll()
+    },
     toCancel() {
       this.$http.post('/deal/cancel.do', {
         dealId: this.serverData.dealInfo.deal.id
@@ -260,7 +274,7 @@ export default {
       })
     },
     toPay() {
-      if (this.totalPrice > 0) {
+      if (this.useOnlinePaymentPrice > 0) {
         if (this.payMode === 7) { // 微信支付
           if (utils.isWeiXin()) { // 在微信中
             this.$wxConfig(true).then(data => {
@@ -271,7 +285,7 @@ export default {
           }
         } else if (this.payMode === 2) { // 支付宝
           if (utils.isWeiXin()) { // 在微信中
-            popup.alert('选择支付宝支付，请点击右上角[...]，选择浏览器打开')
+            this.showBrowserTip()
           } else {
             this.toCheckOut().then(data => {
               data = data || {}
@@ -389,6 +403,9 @@ export default {
       }
       return 0
     },
+    useOnlinePaymentPrice() {
+      return this.totalPrice - this.useBalancePrice
+    },
     /**
      * 支付金额
      */
@@ -434,6 +451,8 @@ export default {
   },
   data() {
     return {
+      showBrowserTips: false,
+      isiOS: utils.isiOS(),
       payModeIcons: {
         '2': '/themes/mobile/common/images/zf.png',
         '5': '/themes/mobile/common/images/vip.png',
@@ -487,6 +506,17 @@ body.bd-pt-pay {
 }
 
 .container {
+  .open-browser-tips {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    img {
+      width: 100%;
+    }
+  }
   .alipay-form {
     display: none;
   }
