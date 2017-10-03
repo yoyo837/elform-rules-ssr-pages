@@ -459,7 +459,7 @@
     <div class="fixed-bt">
       <template v-if="hasRefererPaid">
         <el-button type="info" @click="continueBooking" v-if="serverData.dealPlatformList && serverData.dealPlatformList.length">继续订场</el-button>
-        <el-button type="info" @click="viewEvents" v-if="serverData.dealSignupList && serverData.dealSignupList.length">查看活动</el-button>
+        <!-- <el-button type="info" @click="viewEvents" v-if="serverData.dealSignupList && serverData.dealSignupList.length">查看活动</el-button> -->
         <el-button type="primary" @click="toHome">回到首页</el-button>
       </template>
       <template v-else>
