@@ -282,6 +282,15 @@ export default {
               // WeixinJSBridge.invoke('getBrandWCPayRequest', {
               //   appId:
               // })
+              // this.$http.post('/pay/wechatPay.do', {
+              //   dealId: this.dealId,
+              //   isPubAccountPay: this.form.useBalance,
+              //   pubServiceAccountId: this.form.pubServiceId,
+              //   payMeansId: this.form.payMeansId,
+              //   openId
+              // }).then(data => {
+
+              // })
             })
           } else {
             popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
@@ -290,7 +299,13 @@ export default {
           if (utils.isWeiXin()) { // 在微信中
             this.showBrowserTip()
           } else {
-            this.toCheckOut().then(data => {
+            this.$http.post('/pay/zfbPay.do', {
+              dealId: this.dealId,
+              isPubAccountPay: this.form.useBalance,
+              pubServiceAccountId: this.form.pubServiceId,
+              payMeansId: this.form.payMeansId,
+              returnUrl: `/pay/result/${this.dealId}`
+            }).then(data => {
               data = data || {}
               _.assign(this.alipayForm, {
                 action: data['action'],
@@ -310,19 +325,16 @@ export default {
             })
           }
         } else {
-
+          popup.alert('不支持的第三方支付方式')
         }
+      } else { // 不需要第三方支付
+        this.$http.post('/pay/pubAccountPay.do', {
+          dealId: this.dealId,
+          pubServiceAccountId: this.form.pubServiceId
+        }).then(data => {
+          this.$router.push(`/pay/result/${this.dealId}`)
+        })
       }
-    },
-    async toCheckOut() {
-      const result = await this.$http.post('/pay/checkout.do', {
-        dealId: this.dealId,
-        isPubAccountPay: this.form.useBalance,
-        pubServiceAccountId: this.form.pubServiceId,
-        payMeansId: this.form.payMeansId,
-        returnUri: `/pay/result/${this.dealId}`
-      })
-      return result
     },
     mq() { // 刷新当前时间
       this.now = moment()

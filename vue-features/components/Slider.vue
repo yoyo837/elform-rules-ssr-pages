@@ -74,8 +74,6 @@ export default {
         this.boxWidth = this.$refs['li'].reduce((prev, li) => {
           return prev + Math.max(li.offsetWidth, li.clientWidth) + 0.5
         }, 0)
-
-        console.log(this.boxWidth)
       })
     },
     innerValue(val, oldVal) {
