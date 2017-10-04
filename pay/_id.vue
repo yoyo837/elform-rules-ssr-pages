@@ -277,20 +277,21 @@ export default {
       if (this.useOnlinePaymentPrice > 0) {
         if (this.payMode === 7) { // 微信支付
           if (utils.isWeiXin()) { // 在微信中
-            this.$wxConfig(true).then(data => {
-              alert(JSON.stringify(data))
-              // WeixinJSBridge.invoke('getBrandWCPayRequest', {
-              //   appId:
-              // })
-              // this.$http.post('/pay/wechatPay.do', {
-              //   dealId: this.dealId,
-              //   isPubAccountPay: this.form.useBalance,
-              //   pubServiceAccountId: this.form.pubServiceId,
-              //   payMeansId: this.form.payMeansId,
-              //   openId
-              // }).then(data => {
-
-              // })
+            // this.$wxConfig(true).then(data => {
+            //   alert(JSON.stringify(data))
+            //   // WeixinJSBridge.invoke('getBrandWCPayRequest', {
+            //   //   appId:
+            //   // })
+            // })
+            this.$http.post('/pay/wechatPay.do', {
+              dealId: this.dealId,
+              isPubAccountPay: this.form.useBalance,
+              pubServiceAccountId: this.form.pubServiceId,
+              payMeansId: this.form.payMeansId,
+              redirectUrl: location.href.split('#')[0],
+              code: this.$route.query['code']
+            }).then(data => {
+              popup.alert('成功，待完善逻辑')
             })
           } else {
             popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
