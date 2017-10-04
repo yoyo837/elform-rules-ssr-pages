@@ -205,9 +205,10 @@
       <img v-else :src="`${CDN_STATIC_HOST}/themes/mobile/pay/android.png`">
     </section>
 
-    <form ref="alipay-form" class="alipay-form" method="POST" :action="alipayForm.action || 'https://mapi.alipay.com/gateway.do'">
+    <form ref="alipay-form" class="alipay-form" method="POST" :action="alipayForm.action">
       <input type="hidden" v-for="field in alipayForm.fields" :key="field.name" :name="field.name" :value="field.value">
     </form>
+
   </section>
 </template>
 
