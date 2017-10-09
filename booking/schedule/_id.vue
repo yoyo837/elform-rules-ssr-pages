@@ -115,7 +115,7 @@ export default {
   watch: {
     itemId(val, oldVal) {
       if (this.itemId) {
-        const itemObj = this.serverData.itemDataList.find(item => {
+        const itemObj = (this.serverData.itemDataList || []).find(item => {
           return item.itemId === this.itemId
         })
         this.itemType = itemObj.itemType
