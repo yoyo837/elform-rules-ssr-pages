@@ -172,7 +172,8 @@ export default {
       },
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-ticket-list`,
       num: 1,
-      dataid: this.$route.query['id']
+      // dataid: this.$route.query['id']
+      dataid: this.$route.params['id']
     }
   }
 }
