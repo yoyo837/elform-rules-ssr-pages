@@ -90,6 +90,10 @@ export default {
   },
   mixins: [bdStyleMixin],
   mounted() {
+    this.heartbeatAndCheck().then(data => {
+      // if (data)
+      console.log(data)
+    })
     this.$http.get('/ticket/queryScheduleInfo.do', {
       dataId: this.dataid
     }).then(data => {
@@ -124,6 +128,12 @@ export default {
     }
   },
   methods: {
+    async heartbeatAndCheck() {
+      const result = await this.$http.get('/ticket/queue.do', {
+        dataId: this.dataid
+      })
+      return result
+    },
     toSave() {
       if (this.inSaveProcessing) {
         popup.alert('请等待上一次操作完成...')
