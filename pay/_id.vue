@@ -304,7 +304,7 @@ export default {
               })
 
               wx.error(function(res) {
-                popup.error(res.errMsg)
+                popup.alert(res.errMsg)
               })
 
               wx.ready(() => {
