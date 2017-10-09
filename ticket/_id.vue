@@ -83,6 +83,9 @@ Vue.component(Button.name, Button)
 Vue.component(InputNumber.name, InputNumber)
 
 export default {
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   head() {
     return {
       title: '购票'
