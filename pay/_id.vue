@@ -293,6 +293,7 @@ export default {
         if (this.payMode === 7) { // 微信支付
           if (utils.isWeiXin()) { // 在微信中
             this.$wxConfig(true).then(jsConfig => {
+              let configError = false
               jsConfig = jsConfig || {}
               wx.config({
                 debug: false,
@@ -304,10 +305,14 @@ export default {
               })
 
               wx.error(function(res) {
+                configError = true
                 popup.alert(res.errMsg)
               })
 
               wx.ready(() => {
+                if (configError) {
+                  return
+                }
                 this.initWXCode().then(result => {
                   if (result) {
                     wx.ready(() => {
