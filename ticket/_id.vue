@@ -1,74 +1,79 @@
 <template>
   <section class="container">
-    <div class="gap"></div>
-    <div class="sec">
-      <div class="sec-title">选择场馆</div>
-      <ul class="sec-content">
-        <li>
-          <el-button v-for="(platform, i) in serverData.platformList" :key="platform.salesId" :type="current.salesIndex == i ? 'primary' : 'default'" @click="current.salesIndex = i">{{platform.salesName}}</el-button>
-        </li>
-      </ul>
-    </div>
-    <div class="sec">
-      <div class="sec-title">选择场次时间</div>
-      <ul class="sec-content">
-        <li>
-          <el-button v-for="(dateTime, i) in ((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList" :key="dateTime.scheduleId" :type="current.dateTimeIndex == i ? 'primary' : 'default'" @click="current.dateTimeIndex = i">
-            {{dateTime.scheduleTime}}
-            <div class="datatime-descr" v-if="dateTime.descr">{{dateTime.descr}}</div>
-          </el-button>
-        </li>
-      </ul>
-    </div>
-    <div class="sec">
-      <div class="sec-title">选择价格</div>
-      <ul class="sec-content">
-        <li>
-          <template v-for="(price, i) in ((((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList || [])[current.dateTimeIndex] || {}).priceList">
-            <div v-if="price.fee > 0 || (price.marketPrice == 0 && price.subPrice == 0)" :key="price.scheduleDetailId" class="el-button" :class="{'el-button--primary': current.priceIndex == i, 'coupon-box-vertical': true}" @click="current.priceIndex = i">
-              <div class="coupon coupon-top" :class="{'coupon-vertical-merge': !(price.fee || price.descr)}">
-                {{price.fee || price.price || '免费'}}
-              </div>
-              <div class="coupon coupon-bottom">
-                {{price.fee ? '积分兑换' : price.descr}}
-              </div>
-            </div class="coupon">
-            <div v-else :key="price.scheduleDetailId" class="el-button" :class="{'el-button--primary': current.priceIndex == i, 'coupon-box-horizontal': true}" @click="current.priceIndex = i">
-              <div class="coupon coupon-left">
-                <div class="market-price">市场票价{{price.marketPrice}}</div>
-                <div class="sub-price">优惠{{price.subPrice}}</div>
-              </div>
-              <div class="coupon coupon-right">
-                <div :class="{'coupon-vertical-merge': !price.descr}">{{price.price > 0 ? price.price : '免费'}}</div>
-                <div>{{price.descr}}</div>
-              </div>
-            </div>
-          </template>
-        </li>
-      </ul>
-    </div>
-    <div class="sec">
-      <div class="sec-content num-content">
-        数量
-        <el-input-number size="small" v-model="num" :min="1" :max="max" :disabled="mountedHasError || priceInfo == null"></el-input-number>
-        限购{{priceInfo == null ? 0 : priceInfo.maxBuyNum}}张 (剩余
-        <span>{{priceInfo == null ? 0 : priceInfo.surplusNum}}</span>
-        张)
+    <template v-if="accessible">
+      <div class="gap"></div>
+      <div class="sec">
+        <div class="sec-title">选择场馆</div>
+        <ul class="sec-content">
+          <li>
+            <el-button v-for="(platform, i) in serverData.platformList" :key="platform.salesId" :type="current.salesIndex == i ? 'primary' : 'default'" @click="current.salesIndex = i">{{platform.salesName}}</el-button>
+          </li>
+        </ul>
       </div>
-    </div>
+      <div class="sec">
+        <div class="sec-title">选择场次时间</div>
+        <ul class="sec-content">
+          <li>
+            <el-button v-for="(dateTime, i) in ((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList" :key="dateTime.scheduleId" :type="current.dateTimeIndex == i ? 'primary' : 'default'" @click="current.dateTimeIndex = i">
+              {{dateTime.scheduleTime}}
+              <div class="datatime-descr" v-if="dateTime.descr">{{dateTime.descr}}</div>
+            </el-button>
+          </li>
+        </ul>
+      </div>
+      <div class="sec">
+        <div class="sec-title">选择价格</div>
+        <ul class="sec-content">
+          <li>
+            <template v-for="(price, i) in ((((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList || [])[current.dateTimeIndex] || {}).priceList">
+              <div v-if="price.fee > 0 || (price.marketPrice == 0 && price.subPrice == 0)" :key="price.scheduleDetailId" class="el-button" :class="{'el-button--primary': current.priceIndex == i, 'coupon-box-vertical': true}" @click="current.priceIndex = i">
+                <div class="coupon coupon-top" :class="{'coupon-vertical-merge': !(price.fee || price.descr)}">
+                  {{price.fee || price.price || '免费'}}
+                </div>
+                <div class="coupon coupon-bottom">
+                  {{price.fee ? '积分兑换' : price.descr}}
+                </div>
+              </div class="coupon">
+              <div v-else :key="price.scheduleDetailId" class="el-button" :class="{'el-button--primary': current.priceIndex == i, 'coupon-box-horizontal': true}" @click="current.priceIndex = i">
+                <div class="coupon coupon-left">
+                  <div class="market-price">市场票价{{price.marketPrice}}</div>
+                  <div class="sub-price">优惠{{price.subPrice}}</div>
+                </div>
+                <div class="coupon coupon-right">
+                  <div :class="{'coupon-vertical-merge': !price.descr}">{{price.price > 0 ? price.price : '免费'}}</div>
+                  <div>{{price.descr}}</div>
+                </div>
+              </div>
+            </template>
+          </li>
+        </ul>
+      </div>
+      <div class="sec">
+        <div class="sec-content num-content">
+          数量
+          <el-input-number size="small" v-model="num" :min="1" :max="max" :disabled="mountedHasError || priceInfo == null"></el-input-number>
+          限购{{priceInfo == null ? 0 : priceInfo.maxBuyNum}}张 (剩余
+          <span>{{priceInfo == null ? 0 : priceInfo.surplusNum}}</span>
+          张)
+        </div>
+      </div>
 
-    <div class="fixed-bt" v-if="!mountedHasError">
-      <el-row>
-        <el-col :span="12">
-          <div class="money">
-            共计{{totalPrice}}元
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <div class="btn" @click="toSave">去支付</div>
-        </el-col>
-      </el-row>
-    </div>
+      <div class="fixed-bt" v-if="!mountedHasError">
+        <el-row>
+          <el-col :span="12">
+            <div class="money">
+              共计{{totalPrice}}元
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="btn" @click="toSave">去支付</div>
+          </el-col>
+        </el-row>
+      </div>
+    </template>
+    <template v-else>
+      队列中...
+    </template>
   </section>
 </template>
 
@@ -96,21 +101,7 @@ export default {
   },
   mixins: [bdStyleMixin],
   mounted() {
-    this.heartbeatAndCheck().then(data => {
-      // if (data)
-      console.log(data)
-    })
-    this.$http.get('/ticket/queryScheduleInfo.do', {
-      dataId: this.dataid
-    }).then(data => {
-      _.assign(this.serverData, {
-        platformList: data
-      })
-      this.mountedHasError = false
-    }).catch(() => {
-      // this.$router.go(-1)
-      this.mountedHasError = true
-    })
+    this.hbc(true)
   },
   computed: {
     priceInfo() {
@@ -134,10 +125,39 @@ export default {
     }
   },
   methods: {
+    hbc(isFirst) {
+      this.heartbeatAndCheck().then(data => {
+        switch (data) {
+          case -1: // 没有队列
+          case 0: // 允许进入队列
+            if (isFirst) {
+              this.$http.get('/ticket/queryScheduleInfo.do', {
+                dataId: this.dataid
+              }).then(data => {
+                _.assign(this.serverData, {
+                  platformList: data
+                })
+                this.mountedHasError = false
+              }).catch(() => {
+                // this.$router.go(-1)
+                this.mountedHasError = true
+              })
+            }
+            this.accessible = true
+            break
+          default: // 需要排队
+            this.accessible = false
+            break
+        }
+        if (data >= 0) {
+          setTimeout(this.hbc, 1000 * 3)
+        }
+      })
+    },
     async heartbeatAndCheck() {
       const result = await this.$http.get('/ticket/queue.do', {
         dataId: this.dataid
-      })
+      }, { silent: true })
       return result
     },
     toSave() {
@@ -176,7 +196,8 @@ export default {
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-ticket-list`,
       num: 1,
       // dataid: this.$route.query['id']
-      dataid: this.$route.params['id']
+      dataid: this.$route.params['id'],
+      accessible: false
     }
   }
 }
