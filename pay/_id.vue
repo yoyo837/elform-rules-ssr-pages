@@ -258,6 +258,19 @@ export default {
     }
   },
   methods: {
+    async initWXCode() {
+      if (this.wxCode) {
+        return true
+      }
+      const result = await this.$http.get('/pay/getWechatCode.do', {
+        redirectUrl: location.href
+      })
+      if (result) {
+        location.href = result
+        return false
+      }
+      return true
+    },
     showBrowserTip() {
       // popup.alert('选择支付宝支付，请点击右上角[...]，选择浏览器打开')
       this.showBrowserTips = true
@@ -278,29 +291,25 @@ export default {
       if (this.useOnlinePaymentPrice > 0) {
         if (this.payMode === 7) { // 微信支付
           if (utils.isWeiXin()) { // 在微信中
-            this.$http.get('/pay/getWechatCode.do', {
-              redirectUrl: location.href
-            }).then(data => {
-              if (data) {
-                location.href = data
-                return
-              }
+            this.initWXCode().then(result => {
               // this.$wxConfig(true).then(data => {
               //   alert(JSON.stringify(data))
               //   // WeixinJSBridge.invoke('getBrandWCPayRequest', {
               //   //   appId:
               //   // })
               // })
-              this.$http.post('/pay/wechatPay.do', {
-                dealId: this.dealId,
-                isPubAccountPay: this.form.useBalance,
-                pubServiceAccountId: this.form.pubServiceId,
-                payMeansId: this.form.payMeansId,
-                redirectUrl: location.href.split('#')[0],
-                code: this.$route.query['code']
-              }).then(data => {
-                popup.alert('成功，待完善逻辑')
-              })
+              if (result) {
+                this.$http.post('/pay/wechatPay.do', {
+                  dealId: this.dealId,
+                  isPubAccountPay: this.form.useBalance,
+                  pubServiceAccountId: this.form.pubServiceId,
+                  payMeansId: this.form.payMeansId,
+                  redirectUrl: location.href.split('#')[0],
+                  code: this.wxCode
+                }).then(data => {
+                  popup.alert('成功，待完善逻辑')
+                })
+              }
             })
           } else {
             popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
@@ -509,7 +518,8 @@ export default {
       couponCacheMap: new Map(), // 会员服务折扣信息
       canPay: false, // 可支付
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-pay`,
-      dealId: this.$route.params['id']
+      dealId: this.$route.params['id'],
+      wxCode: this.$route.query['code']
     }
   },
   destroyed() {
