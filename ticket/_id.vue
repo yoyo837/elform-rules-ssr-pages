@@ -13,7 +13,10 @@
       <div class="sec-title">选择场次时间</div>
       <ul class="sec-content">
         <li>
-          <el-button v-for="(dateTime, i) in ((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList" :key="dateTime.scheduleId" :type="current.dateTimeIndex == i ? 'primary' : 'default'" @click="current.dateTimeIndex = i">{{dateTime.scheduleTime}}</el-button>
+          <el-button v-for="(dateTime, i) in ((serverData.platformList || [])[current.salesIndex] || {}).dateTimeList" :key="dateTime.scheduleId" :type="current.dateTimeIndex == i ? 'primary' : 'default'" @click="current.dateTimeIndex = i">
+            {{dateTime.scheduleTime}}
+            <div class="datatime-descr" v-if="dateTime.descr">{{dateTime.descr}}</div>
+          </el-button>
         </li>
       </ul>
     </div>
@@ -211,6 +214,9 @@ $padding: 10px;
       }
       .el-button {
         margin: 5px 10px 5px 0;
+        .datatime-descr {
+          font-size: 12px;
+        }
       }
       $finallySize: 18px;
       .coupon-box-horizontal {
