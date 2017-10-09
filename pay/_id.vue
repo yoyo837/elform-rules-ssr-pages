@@ -294,6 +294,7 @@ export default {
           if (utils.isWeiXin()) { // 在微信中
             this.$wxConfig(true).then(jsConfig => {
               jsConfig = jsConfig || {}
+              console.log(jsConfig)
               wx.config({
                 debug: false,
                 appId: jsConfig.appId,
