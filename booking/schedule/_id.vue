@@ -101,7 +101,9 @@ export default {
       flushData = flushData || {}
       this.flushData = flushData
 
-      this.recalculateMaxHeight()
+      this.$nextTick().then(() => {
+        this.recalculateMaxHeight()
+      })
     },
     onPriceReload(price) {
       this.totalPrice = price
