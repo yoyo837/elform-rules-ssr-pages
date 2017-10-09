@@ -221,7 +221,9 @@ import popup from '../../components/popup'
 import math from '../../components/math'
 import { Row, Col, Button, Radio, Checkbox } from 'element-ui'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
-import wx from 'jweixin'
+// nuxt.config.js的externals配置似乎不可用
+// import wx from 'jweixin'
+const wx = process.browser ? window.wx || {} : {}
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
