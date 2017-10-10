@@ -153,15 +153,14 @@
           <span>支付方式</span>
         </el-col>
         <el-col :span="24" class="ctx-bg">
-          <div class="pay-mode" v-if="serverData.publicAccount && serverData.publicAccount.amountAvail > 0">
+          <div class="pay-mode" v-if="amountAvail">
             <el-row>
               <el-col :span="18">
-                <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`">
-                会员账户支付
+                <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
                 <span class="balance-desc">(余额{{(this.serverData.publicAccount || {}).amountAvailValue || 0}}元)</span>
               </el-col>
               <el-col :span="6" class="text-right">
-                <el-checkbox v-model="form.useBalance" :disabled="!canPay">&nbsp;</el-checkbox>
+                <el-radio class="radio" v-model="form.payMeansId" :label="5" :disabled="!(canPay && canUseBalance)">&nbsp;</el-radio>
               </el-col>
             </el-row>
           </div>
@@ -263,12 +262,17 @@ export default {
       data.dealInfo = data.dealInfo || {}
       data.dealInfo.commonPay = data.dealInfo.commonPay || {}
 
+      // TEST
+      data.publicAccount = data.publicAccount || {}
+      data.publicAccount.amountAvail = 0.5
+
       _.assign(this.serverData, data)
 
-      this.form.useBalance = (this.serverData.publicAccount || {}).amountAvail > 0
-      this.form.payMeansId = ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
-
       this.canPay = true
+
+      this.$nextTick().then(() => {
+        this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
+      })
 
       const _data = JSON.parse(this.$route.query['_data'] || null)
       if (_data) {
@@ -319,95 +323,91 @@ export default {
       })
     },
     toPay() {
-      if (this.useOnlinePaymentPrice > 0) {
-        if (this.payMode === 7) { // 微信支付
-          if (utils.isWeiXin()) { // 在微信中
-            this.$wxConfig(true).then(jsConfig => {
-              jsConfig = jsConfig || {}
-              wx.config({
-                debug: false,
-                appId: jsConfig.appId,
-                timestamp: jsConfig.timestamp,
-                nonceStr: jsConfig.nonStr,
-                signature: jsConfig.signature,
-                jsApiList: ['chooseWXPay']
-              })
+      if (this.payMode === 7) { // 微信支付
+        if (utils.isWeiXin()) { // 在微信中
+          this.$wxConfig(true).then(jsConfig => {
+            jsConfig = jsConfig || {}
+            wx.config({
+              debug: false,
+              appId: jsConfig.appId,
+              timestamp: jsConfig.timestamp,
+              nonceStr: jsConfig.nonStr,
+              signature: jsConfig.signature,
+              jsApiList: ['chooseWXPay']
+            })
 
-              wx.error(res => {
-                popup.alert(res.errMsg)
-              })
+            wx.error(res => {
+              popup.alert(res.errMsg)
+            })
 
-              wx.ready(() => {
-                this.initWXCode().then(result => {
-                  if (result) {
-                    this.$http.post('/pay/wechatPay.do', {
-                      dealId: this.dealId,
-                      isPubAccountPay: this.form.useBalance,
-                      pubServiceAccountId: this.form.pubServiceId,
-                      payMeansId: this.form.payMeansId,
-                      redirectUrl: location.href.split('#')[0],
-                      code: this.wxCode
-                    }).then(data => {
-                      data = data || {}
-                      wx.chooseWXPay({
-                        appId: data.appId,
-                        timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                        nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
-                        package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-                        signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                        paySign: data.paySign, // 支付签名
-                        success: res => {
-                          console.log(res)
-                          this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
-                        }
-                      })
+            wx.ready(() => {
+              this.initWXCode().then(result => {
+                if (result) {
+                  this.$http.post('/pay/wechatPay.do', {
+                    dealId: this.dealId,
+                    pubServiceAccountId: this.form.pubServiceId,
+                    payMeansId: this.form.payMeansId,
+                    redirectUrl: location.href.split('#')[0],
+                    code: this.wxCode
+                  }).then(data => {
+                    data = data || {}
+                    wx.chooseWXPay({
+                      appId: data.appId,
+                      timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                      nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+                      package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                      signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                      paySign: data.paySign, // 支付签名
+                      success: res => {
+                        console.log(res)
+                        this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
+                      }
                     })
-                  }
-                })
+                  })
+                }
               })
             })
-          } else {
-            popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
-          }
-        } else if (this.payMode === 2) { // 支付宝
-          if (utils.isWeiXin()) { // 在微信中
-            this.showBrowserTip()
-          } else {
-            this.$http.post('/pay/zfbPay.do', {
-              dealId: this.dealId,
-              isPubAccountPay: this.form.useBalance,
-              pubServiceAccountId: this.form.pubServiceId,
-              payMeansId: this.form.payMeansId,
-              returnUrl: `/pay/result/${this.dealId}`
-            }).then(data => {
-              data = data || {}
-              _.assign(this.alipayForm, {
-                action: data['action'],
-                fields: Object.keys(data).filter(key => {
-                  return key !== 'action'
-                }).map(key => {
-                  return {
-                    name: key,
-                    value: data[key]
-                  }
-                })
-              })
-
-              this.$nextTick().then(() => {
-                this.$refs['alipay-form'].submit() // 跳转到支付宝
-              })
-            })
-          }
+          })
         } else {
-          popup.alert('不支持的第三方支付方式')
+          popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
         }
-      } else { // 不需要第三方支付
+      } else if (this.payMode === 2) { // 支付宝
+        if (utils.isWeiXin()) { // 在微信中
+          this.showBrowserTip()
+        } else {
+          this.$http.post('/pay/zfbPay.do', {
+            dealId: this.dealId,
+            pubServiceAccountId: this.form.pubServiceId,
+            payMeansId: this.form.payMeansId,
+            returnUrl: `/pay/result/${this.dealId}`
+          }).then(data => {
+            data = data || {}
+            _.assign(this.alipayForm, {
+              action: data['action'],
+              fields: Object.keys(data).filter(key => {
+                return key !== 'action'
+              }).map(key => {
+                return {
+                  name: key,
+                  value: data[key]
+                }
+              })
+            })
+
+            this.$nextTick().then(() => {
+              this.$refs['alipay-form'].submit() // 跳转到支付宝
+            })
+          })
+        }
+      } else if (this.payMode === 5) { // 账户支付
         this.$http.post('/pay/pubAccountPay.do', {
           dealId: this.dealId,
           pubServiceAccountId: this.form.pubServiceId
         }).then(data => {
           this.$router.push(`/pay/result/${this.dealId}`)
         })
+      } else {
+        popup.alert('不支持的第三方支付方式')
       }
     },
     mq() { // 刷新当前时间
@@ -455,10 +455,16 @@ export default {
     }
   },
   computed: {
+    amountAvail() {
+      return (this.serverData.publicAccount || {}).amountAvail
+    },
+    canUseBalance() {
+      return this.amountAvail >= this.totalPrice
+    },
     payMode() {
       return ((this.serverData.commonPayMeans || []).find(item => {
         return item.payMeansId === this.form.payMeansId
-      }) || {}).payMode
+      }) || {}).payMode || this.form.payMeansId
     },
     usePubService() {
       return this.couponPrice > 0 || this.deductionPrice > 0
@@ -485,16 +491,6 @@ export default {
       }
       return 0
     },
-    // 账户支付
-    useBalancePrice() {
-      if (this.form.useBalance) {
-        return Math.min((this.serverData.publicAccount || {}).amountAvail || 0, this.totalPrice)
-      }
-      return 0
-    },
-    useOnlinePaymentPrice() {
-      return this.totalPrice - this.useBalancePrice
-    },
     /**
      * 支付金额
      */
@@ -510,6 +506,11 @@ export default {
     }
   },
   watch: {
+    canUseBalance() {
+      if (!this.canUseBalance) {
+        this.form.payMeansId = null
+      }
+    },
     now() {
       if (this.serverData.payExpireTime) {
         const time = +this.now.format('x')
@@ -549,7 +550,6 @@ export default {
         '8': '/themes/mobile/common/images/fee.png'
       },
       form: {
-        useBalance: false,
         payMeansId: null,
         pubServiceId: null
       },
