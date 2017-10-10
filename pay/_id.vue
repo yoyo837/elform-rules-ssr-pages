@@ -272,15 +272,20 @@ export default {
 
       this.$nextTick().then(() => {
         this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
-      })
 
-      const _data = JSON.parse(this.$route.query['_data'] || null)
-      if (_data) {
-        _.assign(this.form, _data.form)
-        this.$nextTick().then(() => {
+        if (this.totalPrice <= 0 && this.form.pubServiceId == null) { // 没有服务之前价格为0
           this.toPay()
-        })
-      }
+          return
+        }
+
+        const _data = JSON.parse(this.$route.query['_data'] || null)
+        if (_data) {
+          _.assign(this.form, _data.form)
+          this.$nextTick().then(() => {
+            this.toPay()
+          })
+        }
+      })
     }).catch(e => {
       popup.alert(e.message, {
         callback: () => this.$router.push('/order')
