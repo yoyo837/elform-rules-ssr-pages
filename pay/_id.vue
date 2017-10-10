@@ -255,6 +255,14 @@ export default {
       this.form.payMeansId = ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
 
       this.canPay = true
+
+      const _data = this.$route.query['_data']
+      if (_data) {
+        _.assign(this.form, _data.form)
+        this.$nextTick().then(() => {
+          this.toPay()
+        })
+      }
     })
     if (process.browser) {
       this.mq()
@@ -263,10 +271,6 @@ export default {
   methods: {
     async initWXCode() {
       if (this.wxCode) {
-        const _data = this.$route.query['_data']
-        if (_data) {
-          _.assign(this.form, _data.form)
-        }
         return true
       }
       const query = _.cloneDeep(this.$route.query)
@@ -338,7 +342,6 @@ export default {
                         signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                         paySign: data.paySign, // 支付签名
                         success: function(res) {
-                          alert(1)
                           // 支付成功后的回调函数
                           this.$router.push(`/pay/result/${this.dealId}`)
                         }
