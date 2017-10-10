@@ -301,7 +301,7 @@ export default {
         redirectUrl: `${arr[0]}${Object.keys(query).length ? `?${utils.serialize(query)}` : ''}`
       })
       if (result) {
-        location.href = result
+        location.replace(result)
         return false
       }
       return true
