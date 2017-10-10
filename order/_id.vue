@@ -282,6 +282,11 @@
             {{ticket.ticketValidCode}}
           </el-col>
         </el-row>
+        <el-row class="nav-panel nav-panel-auto" v-if="ticket.matrixUrl">
+          <el-col :span="24">
+            <img :src="ticket.matrixUrl">
+          </el-col>
+        </el-row>
       </div>
     </div>
     <!-- 支付信息 -->
