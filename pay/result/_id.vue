@@ -18,7 +18,6 @@ export default {
     this.$http.get('/pay/isPay.do', {
       dealId: this.dealId
     }).then(paid => {
-      alert(paid)
       if (paid) {
         popup.alert('支付成功，正在跳转', {
           callback: () => {
