@@ -342,8 +342,8 @@ export default {
                         signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                         paySign: data.paySign, // 支付签名
                         success: function(res) {
-                          // 支付成功后的回调函数
-                          this.$router.push(`/pay/result/${this.dealId}`)
+                          alert(1)
+                          this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
                         }
                       })
                     })
