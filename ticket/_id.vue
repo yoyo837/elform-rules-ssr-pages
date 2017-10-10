@@ -243,7 +243,7 @@ $padding: 10px;
       width: 100%;
     }
     .queue-tips {
-      padding: 25px;
+      padding: 25px 0;
       font-size: 14px;
       span {
         color: #f52;
