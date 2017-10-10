@@ -354,8 +354,8 @@ export default {
                         package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
                         signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                         paySign: data.paySign, // 支付签名
-                        success: function(res) {
-                          alert(1)
+                        success: res => {
+                          console.log(res)
                           this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
                         }
                       })

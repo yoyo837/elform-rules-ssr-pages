@@ -72,7 +72,16 @@
       </div>
     </template>
     <template v-else>
-      队列中...({{queueResult}})
+      <div class="queue-box ctx-bg">
+        <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/queues.gif`">
+        <div class="queue-tips text-center">
+          前面人太多，正在排队中...(
+          <span>{{queueResult || 0}}人</span>)
+          <div class="queue-desc">
+            排队结束将自动进入，无需刷新页面
+          </div>
+        </div>
+      </div>
     </template>
   </section>
 </template>
@@ -150,7 +159,7 @@ export default {
             this.accessible = false
             break
         }
-        if (data >= 0) {
+        if (this.queueSwitch && data >= 0) {
           setTimeout(this.hbc, 1000 * 3)
         }
       })
@@ -196,11 +205,14 @@ export default {
       },
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-ticket-list`,
       num: 1,
-      // dataid: this.$route.query['id']
       dataid: this.$route.params['id'],
+      queueSwitch: true,
       accessible: false,
       queueResult: null
     }
+  },
+  destroyed() {
+    this.queueSwitch = false
   }
 }
 </script>
@@ -215,6 +227,32 @@ body.bd-pt-ticket-list {
 <style lang="scss" scoped>
 $padding: 10px;
 .container {
+  .queue-box {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    img {
+      width: 100%;
+    }
+    .queue-tips {
+      padding: 25px;
+      font-size: 14px;
+      span {
+        color: #f52;
+        font-size: 12px;
+      }
+      .queue-desc {
+        color: #999;
+        font-size: 12px;
+        padding: 10px 0;
+      }
+    }
+  }
   .gap {
     height: 15px;
     background-color: white;
