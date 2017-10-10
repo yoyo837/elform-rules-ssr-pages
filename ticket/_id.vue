@@ -75,7 +75,7 @@
       <div class="queue-box ctx-bg">
         <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/queues.gif`">
         <div class="queue-tips text-center">
-          前面人太多，正在排队中...(
+          前面人太多，正在排队中...(您前面还有
           <span>{{queueResult || 0}}人</span>)
           <div class="queue-desc">
             排队结束将自动进入，无需刷新页面
