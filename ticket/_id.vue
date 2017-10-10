@@ -105,7 +105,7 @@ export default {
   },
   head() {
     return {
-      title: '购票'
+      title: this.serverData.ticketName || '购票'
     }
   },
   mixins: [bdStyleMixin],
@@ -144,8 +144,10 @@ export default {
               this.$http.get('/ticket/queryScheduleInfo.do', {
                 dataId: this.dataid
               }).then(data => {
+                data = data || {}
                 _.assign(this.serverData, {
-                  platformList: data
+                  platformList: data.commonScheduleInfoList || [],
+                  ticketName: data.ticketName
                 })
                 this.mountedHasError = false
               }).catch(() => {
@@ -196,7 +198,8 @@ export default {
         priceIndex: 0
       },
       serverData: {
-        platformList: []
+        platformList: [],
+        ticketName: null
         // platformList: [{
         //   dateTimeList: [{
         //     priceList: [{}]
