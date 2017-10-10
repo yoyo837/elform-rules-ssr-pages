@@ -140,21 +140,7 @@ export default {
         switch (data) {
           case -1: // 没有队列
           case 0: // 允许进入队列
-            if (isFirst) {
-              this.$http.get('/ticket/queryScheduleInfo.do', {
-                dataId: this.dataid
-              }).then(data => {
-                data = data || {}
-                _.assign(this.serverData, {
-                  platformList: data.commonScheduleInfoList || [],
-                  ticketName: data.ticketName
-                })
-                this.mountedHasError = false
-              }).catch(() => {
-                // this.$router.go(-1)
-                this.mountedHasError = true
-              })
-            }
+            this.toLoadSchedule()
             this.accessible = true
             break
           default: // 需要排队
@@ -164,6 +150,25 @@ export default {
         if (this.queueSwitch && data >= 0) {
           setTimeout(this.hbc, 1000 * 3)
         }
+      })
+    },
+    async toLoadSchedule() {
+      if (this.hasLoaded) {
+        return
+      }
+      this.hasLoaded = true
+      await this.$http.get('/ticket/queryScheduleInfo.do', {
+        dataId: this.dataid
+      }).then(data => {
+        data = data || {}
+        _.assign(this.serverData, {
+          platformList: data.commonScheduleInfoList || [],
+          ticketName: data.ticketName
+        })
+        this.mountedHasError = false
+      }).catch(() => {
+        // this.$router.go(-1)
+        this.mountedHasError = true
       })
     },
     async heartbeatAndCheck(isFirst) {
@@ -209,6 +214,7 @@ export default {
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-ticket-list`,
       num: 1,
       dataid: this.$route.params['id'],
+      hasLoaded: false,
       queueSwitch: true,
       accessible: true,
       queueResult: null
