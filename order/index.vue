@@ -4,7 +4,7 @@
       <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/no_icon_1.png`">
       <div>暂无订单!</div>
     </div>
-    <mt-loadmore :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+    <mt-loadmore ref="loadmore" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded">
       <nuxt-link tag="div" :to="`/order/${item.id}`" v-for="item in list" :key="item.id" class="order-item">
         <el-row class="nav-panel nav-panel-mini order-header">
           <el-col :span="8">
@@ -101,7 +101,8 @@ export default {
           this.allLoaded = true
         }
 
-        this.$refs.loadmore.onBottomLoaded()
+        const loadmore = this.$refs['loadmore']
+        loadmore && loadmore.onBottomLoaded()
       })
     },
     toPay(id) {
