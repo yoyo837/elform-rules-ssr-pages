@@ -72,7 +72,7 @@
       </div>
     </template>
     <template v-else>
-      队列中...
+      队列中...({{queueResult}})
     </template>
   </section>
 </template>
@@ -127,6 +127,7 @@ export default {
   methods: {
     hbc(isFirst) {
       this.heartbeatAndCheck().then(data => {
+        this.queueResult = data
         switch (data) {
           case -1: // 没有队列
           case 0: // 允许进入队列
@@ -197,7 +198,8 @@ export default {
       num: 1,
       // dataid: this.$route.query['id']
       dataid: this.$route.params['id'],
-      accessible: false
+      accessible: false,
+      queueResult: null
     }
   }
 }
