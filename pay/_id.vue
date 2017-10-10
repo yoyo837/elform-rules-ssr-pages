@@ -268,8 +268,6 @@ export default {
 
       _.assign(this.serverData, data)
 
-      this.canPay = true
-
       this.$nextTick().then(() => {
         this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
 
@@ -277,6 +275,8 @@ export default {
           this.toPay()
           return
         }
+
+        this.canPay = true
 
         const _data = JSON.parse(this.$route.query['_data'] || null)
         if (_data) {
