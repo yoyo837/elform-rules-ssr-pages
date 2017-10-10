@@ -8,7 +8,7 @@
             <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/pay_lock.png`">您的订单已提交，请在
             <span class="how-long">{{waitTimeText}}</span>内完成支付，
             <span class="when-time">{{payTimeText}}</span>后将自动取消订单
-            <el-button type="danger" size="mini" @click="toCancel">现在取消</el-button>
+            <el-button type="danger" size="mini" @click="toCancel">立即取消</el-button>
           </el-col>
         </template>
         <el-col :span="24">
@@ -20,9 +20,9 @@
           <div class="pay-item" v-for="dealPlatform in serverData.dealInfo.dealPlatformList" :key="dealPlatform.id">
             <el-row>
               <el-col :span="6">场地：</el-col>
-              <el-col :span="18">{{dealPlatform.orderDateValue}} {{dealPlatform.startTimeValue}}-{{dealPlatform.endTimeValue}} {{dealPlatform.platformParentName}}{{dealPlatform.platformName}}</el-col>
-              <el-col :span="24" class="text-right" v-if="dealPlatform.isFightDeal">约战</el-col>
-              <el-col :span="24" class="text-right">￥
+              <el-col :span="12">{{dealPlatform.orderDateValue}} {{dealPlatform.startTimeValue}}-{{dealPlatform.endTimeValue}} {{dealPlatform.platformParentName}}{{dealPlatform.platformName}}</el-col>
+              <!-- <el-col :span="24" class="text-right" v-if="dealPlatform.isFightDeal">约战</el-col> -->
+              <el-col :span="6" class="text-right">
                 <span class="price">{{dealPlatform.transactionPriceValue}}</span>
               </el-col>
             </el-row>
@@ -31,9 +31,9 @@
           <div class="pay-item" v-for="dealServiceUser in serverData.dealInfo.dealServiceUserList" :key="dealServiceUser.id">
             <el-row>
               <el-col :span="6">教练：</el-col>
-              <el-col :span="18">{{dealServiceUser.orderDateValue}} {{dealServiceUser.startTimeValue}}-{{dealServiceUser.endTimeValue}} {{dealServiceUser.realName}}</el-col>
-              <el-col :span="24" class="text-right" v-if="dealServiceUser.isFight">约战付一半</el-col>
-              <el-col :span="24" class="text-right">￥
+              <el-col :span="12">{{dealServiceUser.orderDateValue}} {{dealServiceUser.startTimeValue}}-{{dealServiceUser.endTimeValue}} {{dealServiceUser.realName}}</el-col>
+              <!-- <el-col :span="24" class="text-right" v-if="dealServiceUser.isFight">约战付一半</el-col> -->
+              <el-col :span="6" class="text-right">
                 <span class="price">{{dealServiceUser.transactionPriceValue}}</span>
               </el-col>
             </el-row>
@@ -43,8 +43,8 @@
             <template v-for="dealItemSnap in dealItemList">
               <el-row :key="dealItemSnap.id">
                 <el-col :span="6">商品：</el-col>
-                <el-col :span="18">{{dealItemSnap.itemName}} {{dealItemSnap.attrOptionValue1}} {{dealItemSnap.attrOptionValue2}}/{{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}</el-col>
-                <el-col :span="24" class="text-right">￥
+                <el-col :span="12">{{dealItemSnap.itemName}} {{dealItemSnap.attrOptionValue1}} {{dealItemSnap.attrOptionValue2}}/{{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}</el-col>
+                <el-col :span="6" class="text-right">
                   <span class="price">{{dealItemSnap.transactionTotalPriceValue}}</span>
                 </el-col>
               </el-row>
@@ -54,8 +54,8 @@
           <div class="pay-item" v-for="dealSignup in serverData.dealInfo.dealSignupList" :key="dealSignup.id">
             <el-row>
               <el-col :span="6">报名：</el-col>
-              <el-col :span="18">{{dealSignup.exerciseList.exerciseName}}</el-col>
-              <el-col :span="24" class="text-right">￥
+              <el-col :span="12">{{dealSignup.exerciseList.exerciseName}}</el-col>
+              <el-col :span="6" class="text-right">
                 <span class="price">{{dealSignup.transactionPriceValue}}</span>
               </el-col>
             </el-row>
@@ -87,8 +87,8 @@
           <div class="pay-item" v-for="dealServicePub in serverData.dealInfo.dealServicePubList" :key="dealServicePub.id">
             <el-row>
               <el-col :span="6">服务名称：</el-col>
-              <el-col :span="18">{{dealServicePub.serviceName}}</el-col>
-              <el-col :span="24" class="text-right">￥{{dealServicePub.transactionTotalPriceValue}}</el-col>
+              <el-col :span="12">{{dealServicePub.serviceName}}</el-col>
+              <el-col :span="6" class="text-right">{{dealServicePub.transactionTotalPriceValue}}</el-col>
             </el-row>
             <el-row>
               <el-col :span="6">数量：</el-col>
@@ -156,7 +156,9 @@
           <div class="pay-mode" v-if="serverData.publicAccount && serverData.publicAccount.amountAvail > 0">
             <el-row>
               <el-col :span="18">
-                <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
+                <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`">
+                会员账户支付
+                <span class="balance-desc">(余额{{(this.serverData.publicAccount || {}).amountAvailValue || 0}}元)</span>
               </el-col>
               <el-col :span="6" class="text-right">
                 <el-checkbox v-model="form.useBalance" :disabled="!canPay">&nbsp;</el-checkbox>
@@ -180,15 +182,15 @@
       <el-row>
         <el-col :span="16">
           <div class="money" :class="{'mg-money': usePubService}">
-            实付￥
+            实付
             <span class="price">{{priceText(totalPrice)}}</span> 元
             <div class="sub-money" v-show="usePubService">
               <span v-show="couponPrice > 0">
-                优惠￥
+                优惠
                 <span class="price">{{priceText(couponPrice)}}</span> 元
               </span>
               <span v-show="deductionPrice > 0">
-                服务抵扣￥
+                服务抵扣
                 <span class="price">{{priceText(deductionPrice)}}</span> 元
               </span>
             </div>
@@ -656,6 +658,10 @@ body.bd-pt-pay {
           border-bottom: 1px solid #eee;
           .el-row {
             .el-col {
+              .balance-desc {
+                font-size: 12px;
+                color: #ff5e20;
+              }
               img {
                 height: auto;
                 width: 30px;

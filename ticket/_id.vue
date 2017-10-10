@@ -277,6 +277,7 @@ $padding: 10px;
         margin: 5px 10px 5px 0;
         .datatime-descr {
           font-size: 12px;
+          line-height: 14px;
         }
       }
       $finallySize: 18px;
