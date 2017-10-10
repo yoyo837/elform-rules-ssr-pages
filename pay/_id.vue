@@ -232,6 +232,11 @@ Vue.component(Radio.name, Radio)
 Vue.component(Checkbox.name, Checkbox)
 
 export default {
+  asyncData({ isClient }) {
+    return {
+      isClient
+    }
+  },
   validate({ params, query }) {
     return /^\d+$/.test(params.id)
   },
@@ -242,9 +247,16 @@ export default {
   },
   mixins: [bdStyleMixin],
   mounted() {
+    if (this.isClient) { // 微信SPA认证问题
+      location.replace(location.href)
+      return
+    }
     this.$http.get('/pay/main.do', {
       dealId: this.dealId
     }).then(data => {
+      if (process.browser) {
+        this.mq()
+      }
       data = data || {}
       data.dealInfo = data.dealInfo || {}
       data.dealInfo.commonPay = data.dealInfo.commonPay || {}
@@ -256,17 +268,18 @@ export default {
 
       this.canPay = true
 
-      const _data = JSON.parse(this.$route.query['_data'])
+      const _data = JSON.parse(this.$route.query['_data'] || null)
       if (_data) {
         _.assign(this.form, _data.form)
         this.$nextTick().then(() => {
           this.toPay()
         })
       }
+    }).catch(e => {
+      popup.alert(e.message, {
+        callback: () => this.$router.push('/order')
+      })
     })
-    if (process.browser) {
-      this.mq()
-    }
   },
   methods: {
     async initWXCode() {
