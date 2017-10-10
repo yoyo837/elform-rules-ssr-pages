@@ -29,7 +29,18 @@
                 <template v-if="col.startTimeText || col.endTimeText">
                   {{col.startTimeText}}-{{col.endTimeText}}
                 </template>
-                <template v-if="col.expired">
+                <template v-if="col.orderInfo">
+                  <template v-if="col.orderInfo.dealState === 1">
+                    预定中
+                  </template>
+                  <template v-else-if="col.orderInfo.dealState === 2">
+                    已预定
+                  </template>
+                  <template v-else-if="col.orderInfo.dealState === 88">
+                    已完成
+                  </template>
+                </template>
+                <template v-else-if="col.expired">
                   <div>已过期</div>
                 </template>
                 <template v-else-if="col.notYetOpenTimeText">
@@ -287,11 +298,11 @@ export default {
               const colspan = skipSubIds.length - oldLength
 
               // build
-              this.push$fill(row, this.buildRow(rows, order, tsList, slot, rowIndex, row.length, colspan))
+              this.push$fill(row, this.buildCol(rows, order, tsList, slot, rowIndex, row.length, colspan))
             })
           } else {
             // build
-            this.push$fill(row, this.buildRow(rows, currentTimeSlotColFstOrders[0], tsList, slot, rowIndex, row.length))
+            this.push$fill(row, this.buildCol(rows, currentTimeSlotColFstOrders[0], tsList, slot, rowIndex, row.length))
           }
         })
         rows.push(row)
@@ -302,7 +313,7 @@ export default {
     /**
      * 构建单元格信息
      */
-    buildRow(rows, orderInfo, allSlots, slotTime, rowIndex, colIndex, colspan) {
+    buildCol(rows, orderInfo, allSlots, slotTime, rowIndex, colIndex, colspan) {
       let rowspan = 1
       colspan = colspan || 1
 

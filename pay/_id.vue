@@ -323,6 +323,15 @@ export default {
       })
     },
     toPay() {
+      if (this.payMode === 5 || this.totalPrice <= 0) { // 账户支付
+        this.$http.post('/pay/pubAccountPay.do', {
+          dealId: this.dealId,
+          pubServiceAccountId: this.form.pubServiceId
+        }).then(data => {
+          this.$router.push(`/pay/result/${this.dealId}`)
+        })
+        return
+      }
       if (this.payMode === 7) { // 微信支付
         if (utils.isWeiXin()) { // 在微信中
           this.$wxConfig(true).then(jsConfig => {
@@ -399,13 +408,6 @@ export default {
             })
           })
         }
-      } else if (this.payMode === 5) { // 账户支付
-        this.$http.post('/pay/pubAccountPay.do', {
-          dealId: this.dealId,
-          pubServiceAccountId: this.form.pubServiceId
-        }).then(data => {
-          this.$router.push(`/pay/result/${this.dealId}`)
-        })
       } else {
         popup.alert('不支持的第三方支付方式')
       }

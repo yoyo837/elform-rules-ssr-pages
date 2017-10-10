@@ -135,7 +135,7 @@ export default {
   },
   methods: {
     hbc(isFirst) {
-      this.heartbeatAndCheck().then(data => {
+      this.heartbeatAndCheck(isFirst).then(data => {
         this.queueResult = data
         switch (data) {
           case -1: // 没有队列
@@ -164,10 +164,10 @@ export default {
         }
       })
     },
-    async heartbeatAndCheck() {
+    async heartbeatAndCheck(isFirst) {
       const result = await this.$http.get('/ticket/queue.do', {
         dataId: this.dataid
-      }, { silent: true })
+      }, { silent: !isFirst })
       return result
     },
     toSave() {
@@ -207,7 +207,7 @@ export default {
       num: 1,
       dataid: this.$route.params['id'],
       queueSwitch: true,
-      accessible: false,
+      accessible: true,
       queueResult: null
     }
   },
