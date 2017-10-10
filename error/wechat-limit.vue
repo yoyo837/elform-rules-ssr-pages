@@ -1,6 +1,6 @@
 <template>
   <div>
-    12
+    限制在微信中使用
   </div>
 </template>
 
