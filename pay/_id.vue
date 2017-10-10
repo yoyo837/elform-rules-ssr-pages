@@ -263,10 +263,19 @@ export default {
   methods: {
     async initWXCode() {
       if (this.wxCode) {
+        const _data = this.$route.query['_data']
+        if (_data) {
+          _.assign(this.form, _data.form)
+        }
         return true
       }
+      const query = _.cloneDeep(this.$route.query)
+      query['_data'] = {
+        form: this.form
+      }
+      const arr = location.href.split('?')
       const result = await this.$http.get('/pay/getWechatCode.do', {
-        redirectUrl: location.href
+        redirectUrl: `${arr[0]}${Object.keys(query).length ? `?${utils.serialize(query)}` : ''}`
       })
       if (result) {
         location.href = result
@@ -296,7 +305,6 @@ export default {
           if (utils.isWeiXin()) { // 在微信中
             this.$wxConfig(true).then(jsConfig => {
               jsConfig = jsConfig || {}
-              console.log(jsConfig)
               wx.config({
                 debug: false,
                 appId: jsConfig.appId,
@@ -330,6 +338,7 @@ export default {
                         signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                         paySign: data.paySign, // 支付签名
                         success: function(res) {
+                          alert(1)
                           // 支付成功后的回调函数
                           this.$router.push(`/pay/result/${this.dealId}`)
                         }
