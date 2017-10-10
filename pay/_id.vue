@@ -256,7 +256,7 @@ export default {
 
       this.canPay = true
 
-      const _data = this.$route.query['_data']
+      const _data = JSON.parse(this.$route.query['_data'])
       if (_data) {
         _.assign(this.form, _data.form)
         this.$nextTick().then(() => {
