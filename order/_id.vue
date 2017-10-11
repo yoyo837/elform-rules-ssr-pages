@@ -551,7 +551,7 @@ export default {
 
 <style lang="scss">
 body.bd-pt-order {
-  padding-bottom: 60px;
+  padding-bottom: 120px;
 }
 </style>
 

@@ -6,9 +6,11 @@
 
 <script>
 import popup from '../../../components/popup'
-import utils from '../../../components/utils'
 
 export default {
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   head() {
     return {
       title: this.title
@@ -21,8 +23,7 @@ export default {
       if (paid) {
         popup.alert('支付成功，正在跳转', {
           callback: () => {
-            const str = utils.serialize(this.$route.query)
-            this.$router.replace(`/order/${this.dealId}${str ? `?${str}` : ''}`)
+            this.$router.replace(`/order/${this.dealId}?out_trade_no=${this.dealId}`)
           }
         })
       } else {
