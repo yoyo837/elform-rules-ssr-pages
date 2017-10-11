@@ -137,9 +137,7 @@
                   </div>
                 </el-col>
                 <el-col :span="4" class="text-right">
-                  <span @click.prevent="onPubServiceClick($event)">
-                    <el-radio class="radio" v-model="form.pubServiceId" :label="item.id" :disabled="!canPay" ref="pbs">&nbsp;</el-radio>
-                  </span>
+                  <el-radio class="radio" v-model="form.pubServiceId" :label="item.id" :disabled="!canPay" ref="pbs" @click.prevent.native="onPubServiceClick($event)">&nbsp;</el-radio>
                 </el-col>
               </el-row>
             </div>
@@ -301,7 +299,7 @@ export default {
     onPubServiceClick(event) {
       const dom = event.currentTarget
       const radio = this.$refs['pbs'].find(pbs => {
-        return pbs.$el.parentNode === dom
+        return pbs.$el === dom
       })
       // console.log(radio.label, radio.value, this.form.pubServiceId)
       if (this.form.pubServiceId && radio.label === this.form.pubServiceId) { // 当前选中
