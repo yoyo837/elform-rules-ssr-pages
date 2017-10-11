@@ -49,7 +49,12 @@ export default {
     onImgClick() {
       if (this._events.afterUpload) {
         if (this.pubAccountId && this.picType) {
-          upload.avatarUpload(this.pubAccountId, this.picType)
+          upload.avatarUpload(this.pubAccountId, this.picType).then(data => {
+            this._events.afterUpload.forEach(fn => {
+              fn.call(this, data)
+            })
+            this.timestamp = Date.now()
+          })
         }
       }
     }
@@ -62,7 +67,8 @@ export default {
         team: 'rgba(32, 160, 255, 0.75)'
         // team: '#1cc2b4'
       })[this.type],
-      showSlot: true
+      showSlot: true,
+      timestamp: null
     }
   },
   computed: {
@@ -76,8 +82,11 @@ export default {
     }
   },
   watch: {
+    timestamp() {
+      console.log(this.timestamp)
+    },
     picPath(val, oldVal) {
-      this.imgUrl = `${(val || utils.DEFAULT_USER_AVATAR_PIC_PATH)}100X100.jpg`
+      this.imgUrl = `${val || utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg?_t=${this.timestamp || ''}`
     }
   }
 }

@@ -47,16 +47,16 @@
       </el-row>
     </nuxt-link>
     <!-- <nuxt-link to="/event">
-      <el-row class="nav-panel">
-        <el-col :span="20">
-          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_active.png`">
-          <span>我的活动</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
-      </el-row>
-    </nuxt-link> -->
+        <el-row class="nav-panel">
+          <el-col :span="20">
+            <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/m_active.png`">
+            <span>我的活动</span>
+          </el-col>
+          <el-col :span="4" class="text-right">
+            <i class="el-icon-arrow-right"></i>
+          </el-col>
+        </el-row>
+      </nuxt-link> -->
     <nuxt-link to="/user/settings">
       <el-row class="nav-panel">
         <el-col :span="20">
@@ -107,8 +107,9 @@ export default {
         this.$router.push('/')
       })
     },
-    afterUpload() {
-
+    afterUpload(data) {
+      data = data || {}
+      this.serverData.picPath = data.url
     }
   },
   data() {
