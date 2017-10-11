@@ -73,7 +73,9 @@
     </template>
     <template v-else>
       <div class="queue-box ctx-bg">
-        <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/queues.gif`">
+        <div class="queue-img">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/queues.gif`">
+        </div>
         <div class="queue-tips text-center">
           前面人太多，正在排队中...(您前面还有
           <span>{{queueResult || 0}}人</span>)
@@ -245,8 +247,11 @@ $padding: 10px;
     left: 0;
     bottom: 0;
     right: 0;
-    img {
-      width: 100%;
+    .queue-img {
+      padding: 10%;
+      img {
+        width: 100%;
+      }
     }
     .queue-tips {
       padding: 25px 0;
