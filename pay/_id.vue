@@ -137,7 +137,9 @@
                   </div>
                 </el-col>
                 <el-col :span="4" class="text-right">
-                  <el-radio class="radio" v-model="form.pubServiceId" :label="item.id" :disabled="!canPay">&nbsp;</el-radio>
+                  <span @click.prevent="onPubServiceClick($event)">
+                    <el-radio class="radio" v-model="form.pubServiceId" :label="item.id" :disabled="!canPay" ref="pbs">&nbsp;</el-radio>
+                  </span>
                 </el-col>
               </el-row>
             </div>
@@ -295,6 +297,19 @@ export default {
     })
   },
   methods: {
+    // @click.prevent
+    onPubServiceClick(event) {
+      const dom = event.currentTarget
+      const radio = this.$refs['pbs'].find(pbs => {
+        return pbs.$el.parentNode === dom
+      })
+      // console.log(radio.label, radio.value, this.form.pubServiceId)
+      if (this.form.pubServiceId && radio.label === this.form.pubServiceId) { // 当前选中
+        this.form.pubServiceId = null
+      } else {
+        this.form.pubServiceId = radio.label
+      }
+    },
     async initWXCode() {
       if (this.wxCode) {
         return true
@@ -375,7 +390,7 @@ export default {
                       signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                       paySign: data.paySign, // 支付签名
                       success: res => {
-                        console.log(res)
+                        // console.log(res)
                         this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
                       }
                     })
@@ -534,9 +549,14 @@ export default {
       }
     },
     async 'form.pubServiceId'() {
+      // console.log('当前', this.form.pubServiceId)
       if (this.couponCacheMap.has(this.form.pubServiceId)) {
         this.couponInfo = this.couponCacheMap.get(this.form.pubServiceId)
       } else {
+        if (this.form.pubServiceId == null) {
+          this.couponInfo = null
+          return
+        }
         await this.$http.get('/pay/calcPubServicePrice.do', {
           dealId: this.dealId,
           pubServiceAccountId: this.form.pubServiceId
