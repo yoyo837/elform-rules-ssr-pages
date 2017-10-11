@@ -263,8 +263,8 @@ export default {
       data.dealInfo.commonPay = data.dealInfo.commonPay || {}
 
       // TEST
-      data.publicAccount = data.publicAccount || {}
-      data.publicAccount.amountAvail = 0.5
+      // data.publicAccount = data.publicAccount || {}
+      // data.publicAccount.amountAvail = 0.5
 
       _.assign(this.serverData, data)
 
