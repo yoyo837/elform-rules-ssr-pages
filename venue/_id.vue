@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <CustMap></CustMap>
+    <CustMap :lng="116.397428" :lat="39.90923" name="某某场馆" address="XX省，XX市，XX区，XX街道123号"></CustMap>
   </section>
 </template>
 
