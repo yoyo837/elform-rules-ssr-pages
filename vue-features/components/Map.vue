@@ -54,6 +54,19 @@ export default {
     }
   },
   methods: {
+    getDom(className) {
+      if (className == null) {
+        return null
+      }
+      className = className.trim()
+      if (className.length === 0) {
+        return null
+      }
+      const dom = this.mapInstance.getContainer()
+      return [...dom.children].find(child => { // 第一个匹配的单个结果
+        return child.className.split(' ').includes(className)
+      })
+    },
     custAmapInitCallback() {
       if (this.mapInstance) {
         return
@@ -74,12 +87,8 @@ export default {
         this.mapReady = true
       })
 
-      const dom = this.mapInstance.getContainer()
-
       // 定位
-      AMap.event.addDomListener([...dom.children].find(child => {
-        return child.className.split(' ').includes(this.positioningCls)
-      }), 'click', e => {
+      AMap.event.addDomListener(this.getDom(this.positioningCls), 'click', e => {
         this.mapInstance.setFitView()
         this.mapInstance.setZoom(zoom)
       })
@@ -89,9 +98,7 @@ export default {
       })
 
       // 规划导航
-      AMap.event.addDomListener([...dom.children].find(child => {
-        return child.className.split(' ').includes(this.drivingCls)
-      }), 'click', e => {
+      AMap.event.addDomListener(this.getDom(this.drivingCls), 'click', e => {
         if (locationInfo == null) {
           popup.alert('定位失败，无法规划线路')
           return
@@ -131,9 +138,7 @@ export default {
       })
 
       // 调起高德app
-      AMap.event.addDomListener([...dom.children].find(child => {
-        return child.className.split(' ').includes(this.callAppCls)
-      }), 'click', e => {
+      AMap.event.addDomListener(this.getDom(this.callAppCls), 'click', e => {
         driving.searchOnAMAP({
           origin: new AMap.LngLat(locationInfo.lng, locationInfo.lat),
           originName: '我的位置',
