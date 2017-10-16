@@ -81,7 +81,11 @@ export default {
             if (redirectURL.startsWith(prefix)) {
               redirectURL = redirectURL.substr(prefix.length)
             }
-            this.$router.replace(redirectURL || '/user/my')
+            if (redirectURL.startsWith('http')) { // 前面没能正确截取
+              location.replace(redirectURL)
+            } else {
+              this.$router.replace(redirectURL || '/user/my')
+            }
           })
         }
         return false
