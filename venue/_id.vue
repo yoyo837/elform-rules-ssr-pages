@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import CustMap from '../vue-features/components/Map'
 export default {
   validate({ params, query }) {
@@ -12,6 +13,26 @@ export default {
   },
   components: {
     CustMap
+  },
+  mounted() {
+    this.$http.get('/commonSales/queryDetail.do', {
+      salesId: this.salesId
+    }).then(data => {
+      data = data || {}
+      _.assign(this.serverData, data)
+      // 稿子出来了，先去刷UI了
+    })
+  },
+  data() {
+    return {
+      serverData: {
+        amapLocation: null,
+        commonSales: {},
+        detail: null,
+        picList: []
+      },
+      salesId: this.$route.params['id']
+    }
   }
 }
 </script>
