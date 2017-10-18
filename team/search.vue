@@ -2,7 +2,7 @@
   <section class="container">
     <ProfilePanel :pic-path="null" size="small" type="team">
     </ProfilePanel>
-    <el-form ref="form" :model="serverData" :rules="rules" label-width="40px" class="ctx-bg mintui-style">
+    <el-form ref="form" :model="serverData" :rules="rules" label-width="40px" class="ctx-bg">
       <el-form-item label="搜索" prop="key">
         <el-input placeholder="团号/团队名称" v-model="serverData.key"></el-input>
       </el-form-item>

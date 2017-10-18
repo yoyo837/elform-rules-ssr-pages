@@ -1,16 +1,16 @@
 <template>
-  <section class="container">
+  <section class="container container-shrink container-portable">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="box">
       <el-form-item label="新密码" prop="newPwd1">
         <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="newPwd2">
+      <el-form-item label="再次确认" prop="newPwd2">
         <el-input v-model="form.newPwd2" placeholder="请确认新密码" type="password"></el-input>
       </el-form-item>
-      <el-form-item label-width="0px">
-        <el-button type="primary" @click="submitForm('form')" class="full-width">确认修改</el-button>
-      </el-form-item>
     </el-form>
+    <div class="operation">
+      <el-button type="primary" @click="submitForm('form')" class="full-width">确认并登陆</el-button>
+    </div>
   </section>
 </template>
 
@@ -72,3 +72,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  .operation {
+    margin-top: 50px;
+  }
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <section class="container box">
+  <section class="container">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>

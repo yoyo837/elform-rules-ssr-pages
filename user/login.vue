@@ -1,5 +1,5 @@
 <template>
-  <section class="container box">
+  <section class="container container-shrink container-portable">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
         <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
@@ -7,15 +7,20 @@
       <el-form-item label="密码" prop="pwd">
         <el-input v-model="form.pwd" placeholder="请输入密码" type="password"></el-input>
       </el-form-item>
-      <el-form-item label-width="0px">
-        <el-button type="primary" @click="submitForm('form')" class="full-width">马上登陆</el-button>
-      </el-form-item>
-      <el-form-item label-width="0px">
-        <el-button @click="toRegister" class="full-width">注册一个新账号</el-button>
-      </el-form-item>
     </el-form>
-    <div class="text-right">
-      <nuxt-link to="/user/forgot">找回密码</nuxt-link>
+    <div class="operation">
+      <el-button type="primary" @click="submitForm('form')" class="full-width">马上登陆</el-button>
+    </div>
+    <el-row>
+      <el-col :span="12">
+        <nuxt-link to="/user/register">注册新账号</nuxt-link>
+      </el-col>
+      <el-col :span="12" class="text-right">
+        <nuxt-link to="/user/forgot">忘记了密码</nuxt-link>
+      </el-col>
+    </el-row>
+    <div class="text-center welcome">
+      --Welcome--
     </div>
   </section>
 </template>
@@ -23,6 +28,7 @@
 <script>
 import Vue from 'vue'
 import util from '../../components/utils'
+import bdStyleMixin from '../vue-features/mixins/body-style'
 import { Form, FormItem, Button, Row, Col, Input } from 'element-ui'
 const nuxtConfig = require('../../nuxt.config')
 
@@ -34,12 +40,12 @@ Vue.component(Col.name, Col)
 Vue.component(Input.name, Input)
 
 export default {
-  name: 'login',
   head() {
     return {
-      title: '登陆'
+      title: '会员登陆'
     }
   },
+  mixins: [bdStyleMixin],
   data() {
     return {
       rules: {
@@ -59,9 +65,6 @@ export default {
     }
   },
   methods: {
-    toRegister() {
-      this.$router.push('/user/register')
-    },
     checkMobile(rule, value, fn, source, options) {
       if (util.validator.isMobile(value)) {
         fn([])
@@ -94,3 +97,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  .operation {
+    margin-top: 50px;
+  }
+  .welcome {
+    bottom: 25px;
+    color: #D8D8D8;
+    margin-top: 75%;
+    font-size: 14px;
+  }
+}
+</style>
+

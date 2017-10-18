@@ -4,7 +4,7 @@
       {{serverData.realName}}/{{serverData.mobile}}
     </ProfilePanel>
 
-    <el-form ref="form" :model="serverData" :rules="rules" label-width="80px" class="ctx-bg mintui-style">
+    <el-form ref="form" :model="serverData" :rules="rules" label-width="80px" class="ctx-bg">
       <el-form-item label="姓名" prop="realName">
         <el-input v-if="serverData.canEdit" v-model="serverData.realName" placeholder="请输入姓名"></el-input>
         <template v-else>
