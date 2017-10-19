@@ -1,38 +1,48 @@
 <template>
-  <PageContainer :nav-header="false">
-    <el-row class="nav-panel nav-panel-mini">
-      <el-col :span="24">
-        <span>技术支持：深圳运动帝图科技有限公司</span>
-      </el-col>
-    </el-row>
-    <el-row class="nav-panel nav-panel-mini">
-      <el-col :span="24">
-        <span>服务网址：
-          <a href="http://www.ydmap.com.cn">www.ydmap.com.cn</a>
-        </span>
-      </el-col>
-    </el-row>
-    <el-row class="nav-panel nav-panel-mini">
-      <el-col :span="24">
-        <span>服务电话：
-          <a href="tel:0755-83130059">0755-83130059</a>
-        </span>
-      </el-col>
-    </el-row>
-    <el-row class="nav-panel nav-panel-mini">
-      <el-col :span="24">
-        <span>商务合作：
-          <a href="mailto:union@ydmap.com.cn">union@ydmap.com.cn</a>
-        </span>
-      </el-col>
-    </el-row>
-  </PageContainer>
+  <section class="container container-pd">
+    <Card title-text="关于我们" title-icon="fa fa-id-card">
+      <section class="about-info">
+        <div class="about-info-item">
+          <div class="about-title">
+            技术支持:
+          </div>
+          <div class="about-content">
+            深圳运动帝图科技有限公司
+          </div>
+        </div>
+        <div class="about-info-item">
+          <div class="about-title">
+            服务网址:
+          </div>
+          <div class="about-content">
+            <a href="http://www.ydmap.com.cn">www.ydmap.com.cn</a>
+          </div>
+        </div>
+        <div class="about-info-item">
+          <div class="about-title">
+            服务电话:
+          </div>
+          <div class="about-content">
+            <a href="tel:0755-83130059">0755-83130059</a>
+          </div>
+        </div>
+        <div class="about-info-item">
+          <div class="about-title">
+            商务合作:
+          </div>
+          <div class="about-content">
+            <a href="mailto:union@ydmap.com.cn">union@ydmap.com.cn</a>
+          </div>
+        </div>
+      </section>
+    </Card>
+  </section>
 </template>
 
 <script>
 import Vue from 'vue'
 import { Row, Col } from 'element-ui'
-import PageContainer from './vue-features/components/PageContainer'
+import Card from './vue-features/components/Card'
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 
@@ -44,19 +54,30 @@ export default {
     }
   },
   components: {
-    PageContainer
+    Card
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.nav-panel {
-  color: #666;
-  padding: 5px 15px;
-}
-
-a {
-  text-decoration: underline;
-  color: #26a2ff;
+.about-info {
+  padding: 15px 30px;
+  .about-info-item {
+    .about-title,.about-content {
+      padding: 2px 0;
+    }
+    .about-title {
+      font-size: 12px;
+      color: #999;
+    }
+    .about-content {
+      a {
+        color: #666;
+      }
+    }
+  }
+  .about-info-item+.about-info-item{
+    margin-top: 15px;
+  }
 }
 </style>
