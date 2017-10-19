@@ -15,10 +15,10 @@
         <VerifyComp :type="1" :mobile="form.mobile" v-model="form.smsCode"></VerifyComp>
       </el-form-item>
     </el-form>
-    <div class="operation">
+    <section class="operation">
       <el-button type="primary" @click="submitForm('form')" class="full-width">确认并登陆</el-button>
       <el-button @click="toLogin" class="full-width">已有账号，直接登陆</el-button>
-    </div>
+    </section>
   </section>
 </template>
 
@@ -104,11 +104,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.container {
-  .operation {
-    margin-top: 50px;
-  }
-}
-</style>

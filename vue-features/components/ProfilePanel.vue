@@ -1,31 +1,36 @@
 <template>
-  <el-row class="header-panel text-center" :class="classObject" :style="{backgroundColor: color, color: contrast}">
-    <el-col :span="24">
-      <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
-    </el-col>
-    <el-col :span="6" class="text-left" v-if="showSlot">
-      <slot name="left">&nbsp;</slot>
-    </el-col>
-    <el-col :span="12" v-if="showSlot">
-      <slot>&nbsp;</slot>
-    </el-col>
-    <el-col :span="6" class="text-right" v-if="showSlot">
-      <slot name="right">&nbsp;</slot>
-    </el-col>
-  </el-row>
+  <Card class="profile-panel-card">
+    <div class="profile-panel text-center">
+      <div class="profile-header">
+        <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
+      </div>
+      <div class="title-color first-size">
+        <slot>&nbsp;</slot>
+      </div>
+      <el-row v-if="showSlot" class="profile-sub">
+        <el-col :span="12">
+          <slot name="left">&nbsp;</slot>
+        </el-col>
+        <el-col :span="12">
+          <slot name="right">&nbsp;</slot>
+        </el-col>
+      </el-row>
+    </div>
+  </Card>
 </template>
 
 <script>
-// import _ from 'lodash'
 import Vue from 'vue'
 import utils from '../../../components/utils'
-import color from '../../../components/color'
 import upload from '../../../components/upload'
+import Card from '../components/Card'
 import { Row, Col } from 'element-ui'
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 export default {
-  name: 'profilePanel',
+  components: {
+    Card
+  },
   mounted() {
     this.showSlot = Object.keys(this.$slots).length > 0
   },
@@ -36,10 +41,6 @@ export default {
     },
     pubAccountId: Number,
     picType: Number,
-    size: {
-      type: String,
-      default: 'normal'
-    },
     type: {
       type: String,
       default: 'user'
@@ -62,29 +63,11 @@ export default {
   data() {
     return {
       imgUrl: this.type === 'team' ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
-      color: ({
-        user: 'rgba(32, 160, 255, 0.75)',
-        team: 'rgba(32, 160, 255, 0.75)'
-        // team: '#1cc2b4'
-      })[this.type],
       showSlot: true,
       timestamp: null
     }
   },
-  computed: {
-    classObject() {
-      return {
-        [`panel-size-${this.size}`]: true
-      }
-    },
-    contrast() {
-      return color.blackOrWhite(this.color)
-    }
-  },
   watch: {
-    timestamp() {
-      console.log(this.timestamp)
-    },
     picPath(val, oldVal) {
       this.imgUrl = `${val || utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg?_t=${this.timestamp || ''}`
     }
@@ -93,26 +76,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.header-panel {
-  padding: 8px;
-  color: white;
-  .el-col {
-    .header-logo {
-      max-width: 40%;
-      min-width: 100px;
-      min-height: 100px;
-      border-radius: 50%;
-      border: 5px solid rgba(0, 0, 0, 0.1);
+.profile-panel-card {
+  margin-top: 100px;
+  overflow: visible;
+  .profile-panel {
+    position: relative;
+    margin-top: 50px;
+    .profile-header {
+      position: absolute;
+      width: 100%;
+      top: -120px;
+      .header-logo {
+        max-width: 40%;
+        min-width: 100px;
+        min-height: 100px;
+        border-radius: 50%;
+        border: 5px solid white;
+      }
     }
-  }
-}
-
-.header-panel.panel-size-small {
-  .el-col {
-    .header-logo {
-      max-width: 20%;
-      min-width: 50px;
-      min-height: 50px;
+    .profile-sub {
+      .el-col {
+        padding: 5px 0;
+        line-height: 30px;
+      }
     }
   }
 }

@@ -8,9 +8,9 @@
         <el-input v-model="form.pwd" placeholder="请输入密码" type="password"></el-input>
       </el-form-item>
     </el-form>
-    <div class="operation">
+    <section class="operation">
       <el-button type="primary" @click="submitForm('form')" class="full-width">马上登陆</el-button>
-    </div>
+    </section>
     <el-row>
       <el-col :span="12">
         <nuxt-link to="/user/register">注册新账号</nuxt-link>
@@ -100,9 +100,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  .operation {
-    margin-top: 50px;
-  }
   .welcome {
     bottom: 25px;
     color: #D8D8D8;

@@ -9,9 +9,9 @@
         <VerifyComp :type="2" :mobile="form.mobile" v-model="form.smsCode"></VerifyComp>
       </el-form-item>
     </el-form>
-    <div class="operation">
+    <section class="operation">
       <el-button type="primary" @click="submitForm('form')" class="full-width">下一步</el-button>
-    </div>
+    </section>
   </section>
 </template>
 
@@ -82,12 +82,4 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.container {
-  .operation {
-    margin-top: 50px;
-  }
-}
-</style>
 
