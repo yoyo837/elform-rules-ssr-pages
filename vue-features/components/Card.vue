@@ -5,6 +5,9 @@
       {{titleText}}
     </template>
     <slot></slot>
+    <div class="el-card__operation" v-if="$slots.operation">
+      <slot name="operation"></slot>
+    </div>
   </el-card>
 </template>
 
