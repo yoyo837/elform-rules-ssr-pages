@@ -4,7 +4,7 @@
       <div class="profile-header">
         <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
       </div>
-      <div class="title-color first-size">
+      <div class="profile-name">
         <slot>&nbsp;</slot>
       </div>
       <el-row v-if="showSlot" class="profile-sub">
@@ -82,6 +82,10 @@ export default {
   .profile-panel {
     position: relative;
     margin-top: 50px;
+    .profile-name {
+      color: #222;
+      font-size: 18px;
+    }
     .profile-header {
       position: absolute;
       width: 100%;

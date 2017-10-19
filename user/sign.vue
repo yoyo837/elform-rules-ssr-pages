@@ -1,63 +1,58 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
-    <el-row class="text-center sign-title">
-      <el-col :span="24">
-        <span>每日签到</span>
-      </el-col>
-    </el-row>
-    <el-row class="text-center sign-tody">
-      <el-col :span="24">
-        <img :src="`${CDN_STATIC_HOST}/themes/mobile/red/red1/images/ji-${this.serverData.sameDay == 0 ? '1' : '0'}.png`">
-        <div class="day-points">{{serverData.fee}}</div>
-        <div class="day-th">第{{serverData.totalDay}}天</div>
-      </el-col>
-    </el-row>
-    <el-row class="text-center bonus-points">
-      <el-col :span="24">
-        <span>当前总积分:
-          <span class="points">{{serverData.accountFee}}</span>
-        </span>
-      </el-col>
-    </el-row>
-    <el-row class="text-center sign-operation">
-      <el-col :span="24">
-        <mt-button type="primary" v-if="serverData.sameDay == 0" @click="toSign">签到</mt-button>
-        <mt-button type="primary" v-else :disabled="true">已签到</mt-button>
-      </el-col>
-    </el-row>
+  <section class="container container-pd">
+    <Card title-text="签到" title-icon="fa fa-id-card">
+      <el-row class="text-center sign-tody">
+        <el-col :span="24">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/red/red1/images/ji-${this.serverData.sameDay == 0 ? '1' : '0'}.png`">
+          <div class="day-points">{{serverData.fee}}</div>
+          <div class="day-th">第{{serverData.totalDay}}天</div>
+        </el-col>
+      </el-row>
+      <el-row class="text-center bonus-points">
+        <el-col :span="24">
+          <div class="points-title">当前积分：</div>
+        </el-col>
+        <el-col :span="24">
+          <span class="points-value">{{serverData.accountFee}}</span>分
+        </el-col>
+      </el-row>
+    </Card>
+
+    <section class="operation">
+      <el-button type="primary" v-if="serverData.sameDay == 0" @click="toSign" class="full-width shadow-button">签到</el-button>
+      <el-button type="primary" v-else :disabled="true" class="full-width">已签到</el-button>
+    </section>
     <el-dialog title="短信验证码发送" :visible="visible" class="portal-dialog" :class="{'portal-dialog-mobile': isMbl, 'no-bg':true}">
-      <mt-button class="cust-btn">
+      <el-button class="cust-btn">
         <!-- <img src="../assets/100x100.png" height="20" width="20" slot="icon">  -->
         <img :src="`${CDN_STATIC_HOST}/themes/mobile/red/red1/images/jif.gif`">
         <span>第{{serverData.totalDay}}天+{{serverData.fee}}分</span>
-      </mt-button>
+      </el-button>
     </el-dialog>
-  </PageContainer>
+  </section>
 </template>
 
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
 import utils from '../../components/utils'
-import { Row, Col, Dialog } from 'element-ui'
-import { Header, Button } from 'mint-ui'
-import PageContainer from '../vue-features/components/PageContainer'
+import popup from '../../components/popup'
+import { Row, Col, Dialog, Button } from 'element-ui'
+import Card from '../vue-features/components/Card'
 
 Vue.component(Dialog.name, Dialog)
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 
-Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
 export default {
-  name: 'sign',
   head() {
     return {
       title: '签到'
     }
   },
   components: {
-    PageContainer
+    Card
   },
   mounted() {
     this.$http.get('/pubUser/userSignin.do').then(data => {
@@ -70,18 +65,20 @@ export default {
     toSign() {
       this.$http.post('/pubUser/addFee.do').then(() => {
         this.visible = true
-        setTimeout(() => {
-          this.serverData.sameDay = 1
-          this.visible = false
-          this.$router.push('/user/my')
-        }, 1000)
+        popup.alert('签到成功', {
+          callback: () => {
+            this.serverData.sameDay = 1
+            this.visible = false
+            this.$router.push('/user/my')
+          }
+        })
       })
     }
   },
   data() {
     return {
       serverData: {
-        accountFee: null,
+        accountFee: 0,
         fee: null,
         sameDay: 1, // 0 是没有签
         totalDay: 0
@@ -94,16 +91,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.sign-title {
-  color: #888;
-  border-bottom: 1px solid #f5f5f5;
-  padding: 20px 0;
-}
-
 .sign-tody {
   padding: 30px 0;
   .el-col {
     position: relative;
+    .day-th {
+      color: #222;
+      font-size: 18px;
+      margin-top: 15px;
+    }
     .day-points {
       position: absolute;
       top: calc(50% - 13px);
@@ -119,24 +115,14 @@ export default {
 }
 
 .bonus-points {
-  font-size: 15px;
-  span {
-    color: #888;
+  .points-title {
+    padding: 10px 0;
+    font-size: 12px;
+    color: #999;
   }
-  .points {
-    color: #1cc2b4;
-    font-size: 16px;
-  }
-}
-
-.sign-operation {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 8px;
-  button {
-    width: 100%;
+  .points-value {
+    color: #f26a3e;
+    font-size: 36px;
   }
 }
 
