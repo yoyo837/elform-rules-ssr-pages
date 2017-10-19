@@ -18,8 +18,8 @@
       </ProfilePanel>
 
       <Card>
-        <nuxt-link to="/user/account">
-          <el-row class="nav-menu" title="我的账户">
+        <el-row class="nav-menu" title="我的账户">
+          <nuxt-link to="/user/account">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <i class="fa fa-id-card"></i>
               我的账户
@@ -27,10 +27,10 @@
             <el-col :span="4" class="nav-menu-col text-right">
               <i class="el-icon-arrow-right"></i>
             </el-col>
-          </el-row>
-        </nuxt-link>
-        <nuxt-link to="/order">
-          <el-row class="nav-menu" title="我的订单">
+          </nuxt-link>
+        </el-row>
+        <el-row class="nav-menu" title="我的订单">
+          <nuxt-link to="/order">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <i class="fa fa-id-card"></i>
               我的订单
@@ -38,10 +38,10 @@
             <el-col :span="4" class="nav-menu-col text-right">
               <i class="el-icon-arrow-right"></i>
             </el-col>
-          </el-row>
-        </nuxt-link>
-        <nuxt-link to="#">
-          <el-row class="nav-menu" title="我的课程">
+          </nuxt-link>
+        </el-row>
+        <el-row class="nav-menu" title="我的课程">
+          <nuxt-link to="#">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <i class="fa fa-id-card"></i>
               我的课程
@@ -49,10 +49,10 @@
             <el-col :span="4" class="nav-menu-col text-right">
               <i class="el-icon-arrow-right"></i>
             </el-col>
-          </el-row>
-        </nuxt-link>
-        <nuxt-link to="/team/my">
-          <el-row class="nav-menu" title="我的团队">
+          </nuxt-link>
+        </el-row>
+        <el-row class="nav-menu" title="我的团队">
+          <nuxt-link to="/team/my">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <i class="fa fa-id-card"></i>
               我的团队
@@ -60,10 +60,10 @@
             <el-col :span="4" class="nav-menu-col text-right">
               <i class="el-icon-arrow-right"></i>
             </el-col>
-          </el-row>
-        </nuxt-link>
-        <nuxt-link to="/event">
-          <el-row class="nav-menu" title="我的活动">
+          </nuxt-link>
+        </el-row>
+        <el-row class="nav-menu" title="我的活动">
+          <nuxt-link to="/event">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <i class="fa fa-id-card"></i>
               我的活动
@@ -71,10 +71,10 @@
             <el-col :span="4" class="nav-menu-col text-right">
               <i class="el-icon-arrow-right"></i>
             </el-col>
-          </el-row>
-        </nuxt-link>
-        <nuxt-link to="/user/settings">
-          <el-row class="nav-menu" title="设置">
+          </nuxt-link>
+        </el-row>
+        <el-row class="nav-menu" title="设置">
+          <nuxt-link to="/user/settings">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <i class="fa fa-id-card"></i>
               设置
@@ -82,8 +82,8 @@
             <el-col :span="4" class="nav-menu-col text-right">
               <i class="el-icon-arrow-right"></i>
             </el-col>
-          </el-row>
-        </nuxt-link>
+          </nuxt-link>
+        </el-row>
       </Card>
 
       <section class="operation">

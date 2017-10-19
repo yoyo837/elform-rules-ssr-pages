@@ -1,44 +1,52 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
-    <nuxt-link to="/user/changepwd">
-      <el-row class="nav-panel">
-        <el-col :span="20">
-          <span>修改密码</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
+  <section class="container container-pd">
+    <Card>
+      <el-row class="nav-menu" title="修改密码">
+        <nuxt-link to="/user/changepwd">
+          <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
+            <i class="fa fa-id-card"></i>
+            修改密码
+          </el-col>
+          <el-col :span="4" class="nav-menu-col text-right">
+            <i class="el-icon-arrow-right"></i>
+          </el-col>
+        </nuxt-link>
       </el-row>
-    </nuxt-link>
-    <nuxt-link to="/user/profile">
-      <el-row class="nav-panel">
-        <el-col :span="20">
-          <span>个人资料</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
+      <el-row class="nav-menu" title="个人资料">
+        <nuxt-link to="/user/profile">
+          <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
+            <i class="fa fa-id-card"></i>
+            个人资料
+          </el-col>
+          <el-col :span="4" class="nav-menu-col text-right">
+            <i class="el-icon-arrow-right"></i>
+          </el-col>
+        </nuxt-link>
       </el-row>
-    </nuxt-link>
-    <nuxt-link to="/about">
-      <el-row class="nav-panel nav-panel-mg">
-        <el-col :span="20">
-          <span>关于我们</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
+    </Card>
+
+    <Card>
+      <el-row class="nav-menu" title="关于我们">
+        <nuxt-link to="/about">
+          <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
+            <i class="fa fa-id-card"></i>
+            关于我们
+          </el-col>
+          <el-col :span="4" class="nav-menu-col text-right">
+            <i class="el-icon-arrow-right"></i>
+          </el-col>
+        </nuxt-link>
       </el-row>
-    </nuxt-link>
-  </PageContainer>
+    </Card>
+  </section>
 </template>
 
 <script>
 import Vue from 'vue'
 import { Row, Col } from 'element-ui'
 import { Header, Button } from 'mint-ui'
-import PageContainer from '../vue-features/components/PageContainer'
 import bdStyleMixin from '../vue-features/mixins/body-style'
+import Card from '../vue-features/components/Card'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
@@ -46,7 +54,6 @@ Vue.component(Col.name, Col)
 Vue.component(Header.name, Header)
 Vue.component(Button.name, Button)
 export default {
-  name: 'settings',
   head() {
     return {
       title: '设置'
@@ -54,15 +61,7 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    PageContainer
+    Card
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.el-row {
-  .el-col {
-    line-height: 40px;
-  }
-}
-</style>
