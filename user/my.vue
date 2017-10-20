@@ -173,7 +173,7 @@ export default {
     width: 100%;
     position: absolute;
     top: 0;
-    height: 200px;
+    height: 175px;
     background-image: linear-gradient(135deg, #b3e7d0 0%, #5fcdb6 100%);
   }
 }

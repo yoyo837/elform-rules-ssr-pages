@@ -1,13 +1,13 @@
 <template>
-  <Card class="profile-panel-card">
+  <Card class="profile-panel-card" :class="{'profile-panel-protruding':protruding}">
     <div class="profile-panel text-center">
       <div class="profile-header">
         <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
       </div>
-      <div class="profile-name">
+      <div class="profile-name" v-if="$slots.default">
         <slot>&nbsp;</slot>
       </div>
-      <el-row v-if="showSlot" class="profile-sub">
+      <el-row v-if="showSlotForSub" class="profile-sub">
         <el-col :span="12">
           <slot name="left">&nbsp;</slot>
         </el-col>
@@ -15,6 +15,7 @@
           <slot name="right">&nbsp;</slot>
         </el-col>
       </el-row>
+      <slot name="built-in"></slot>
     </div>
   </Card>
 </template>
@@ -32,7 +33,10 @@ export default {
     Card
   },
   mounted() {
-    this.showSlot = Object.keys(this.$slots).length > 0
+    this.showSlotForSub =
+      Object.keys(this.$slots).filter(item => {
+        return !['default', 'built-in'].includes(item)
+      }).length > 0
   },
   props: {
     picPath: {
@@ -44,6 +48,10 @@ export default {
     type: {
       type: String,
       default: 'user'
+    },
+    protruding: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
@@ -62,8 +70,11 @@ export default {
   },
   data() {
     return {
-      imgUrl: this.type === 'team' ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
-      showSlot: true,
+      imgUrl:
+        this.type === 'team'
+          ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
+          : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
+      showSlotForSub: false, // 附属内容slot显示
       timestamp: null
     }
   },
@@ -77,19 +88,13 @@ export default {
 
 <style lang="scss" scoped>
 .profile-panel-card {
-  margin-top: 100px;
-  overflow: visible;
   .profile-panel {
     position: relative;
-    margin-top: 50px;
     .profile-name {
       color: #222;
       font-size: 18px;
     }
     .profile-header {
-      position: absolute;
-      width: 100%;
-      top: -120px;
       .header-logo {
         max-width: 40%;
         min-width: 100px;
@@ -102,6 +107,19 @@ export default {
       .el-col {
         padding: 5px 0;
         line-height: 30px;
+      }
+    }
+  }
+
+  &.profile-panel-protruding {
+    margin-top: 100px;
+    overflow: visible;
+    .profile-panel {
+      margin-top: 50px;
+      .profile-header {
+        position: absolute;
+        width: 100%;
+        top: -120px;
       }
     }
   }

@@ -2,10 +2,10 @@
   <section class="container container-shrink container-portable">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="box">
       <el-form-item label="新密码" prop="newPwd1">
-        <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password"></el-input>
+        <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="再次确认" prop="newPwd2">
-        <el-input v-model="form.newPwd2" placeholder="请确认新密码" type="password"></el-input>
+        <el-input v-model="form.newPwd2" placeholder="请确认新密码" type="password" class="text-right"></el-input>
       </el-form-item>
     </el-form>
     <section class="operation">

@@ -1,8 +1,8 @@
 <template>
   <div class="picker-wrapper">
     <template v-if="canEdit">
+      <el-button type="text" class="btn-right" @click="showSelect">选择</el-button>
       <el-input ref="input" placeholder="请选择" :readonly="true" v-model="displayValue"></el-input>
-      <el-button type="primary" class="btn-right" @click="showSelect">选择</el-button>
       <mt-popup v-model="visible" popup-transition="popup-fade" position="bottom">
         <el-row class="picker-wrapper-toolbar">
           <el-col :span="12">
