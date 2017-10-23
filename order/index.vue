@@ -1,28 +1,44 @@
 <template>
   <section class="container container-pd">
     <Card title-text="我的订单" title-icon="fa fa-id-card">
-      123
-      <el-row class="el-card__edge el-card__edge-bottom">
-        <el-col :span="4" :push="1">
-          <el-button type="text" class="full-width">去签到</el-button>
-        </el-col>
-        <el-col :span="4" :push="1">
-          <el-button type="text" class="full-width">去签到</el-button>
-        </el-col>
-        <el-col :span="4" :push="1">
-          <el-button type="text" class="full-width">去签到</el-button>
-        </el-col>
-        <el-col :span="4" :push="1">
-          <el-button type="text" class="full-width">去签到</el-button>
-        </el-col>
-        <el-col :span="4">
-          <el-button type="text" class="full-width">去签到</el-button>
-        </el-col>
-      </el-row>
+      <div class="col-percent el-card__edge el-card__edge-bottom el-card__edge-nobody">
+        <div class="col-percent-20 text-overflow item-seleted">
+          <el-button type="text" class="full-width">全部</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow">
+          <el-button type="text" class="full-width">待支付</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow">
+          <el-button type="text" class="full-width">待使用</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow">
+          <el-button type="text" class="full-width">已完成</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow">
+          <el-button type="text" class="full-width">已取消</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+      </div>
     </Card>
 
-    <Card>
-
+    <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+      <Card v-for="item in list" :key="item.id" :title-text="`订单号：${item.id}`">
+        <template slot="header-desc">
+          <span>订单状态</span>
+          <span>
+            <i class="el-icon-delete"></i>
+          </span>
+        </template>
+      </Card>
+    </mt-loadmore>
+    <Card v-else>
+      <div class="empry-order-list text-center">
+        暂无订单
+      </div>
     </Card>
   </section>
 </template>
@@ -55,6 +71,9 @@ export default {
   },
   methods: {
     loadBottom() {
+      if (this.allLoaded) {
+        return
+      }
       this.$http
         .get('/deal/list.do', {
           page: this.serverData.page + 1,
@@ -114,4 +133,35 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  [class^='col-percent-'] {
+    position: relative;
+    .btn-selected-tag {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      width: 100%;
+      background-color: transparent;
+    }
+    &.item-seleted {
+      .btn-selected-tag {
+        background-color: #f26a3e;
+      }
+    }
+  }
+
+  .mint-loadmore {
+    margin-top: 8px;
+  }
+
+  .empry-order-list {
+    padding: 15px 0;
+    color: #999;
+    font-size: 12px;
+  }
+}
+</style>
+
 
