@@ -152,10 +152,6 @@ export default {
     }
   }
 
-  .mint-loadmore {
-    margin-top: 8px;
-  }
-
   .empry-order-list {
     padding: 15px 0;
     color: #999;
