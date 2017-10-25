@@ -54,7 +54,8 @@ export default {
               '/commonFile/uploadFile.do',
               {
                 privated: this.form.privated,
-                file: input
+                file: input,
+                fileType: this.form.fileType
               },
               { multiForm: true }
             )
