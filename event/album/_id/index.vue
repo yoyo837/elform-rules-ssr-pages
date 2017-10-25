@@ -70,12 +70,15 @@ export default {
     Card
   },
   methods: {
-    toUpload() {}
+    toUpload() {
+      this.$router.push(`/event/album/${this.id}/upload`)
+    }
   },
   data() {
     return {
       list: [{}],
-      serverData: {}
+      serverData: {},
+      id: this.$route.params['id']
     }
   }
 }
