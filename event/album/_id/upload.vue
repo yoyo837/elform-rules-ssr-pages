@@ -5,8 +5,19 @@
       <el-form>
         <el-form-item>
           <div class="pic-list">
-            <div class="pic-item">
-              <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
+            <div v-for="item in inProcessFiles" :key="item.key" class="pic-item">
+              <img :src="item.value">
+              <div class="pic-item-uploading-cover" v-if="item.isUploading">
+                <div class="cover-div" :style="{width: `${item.percentUnComplete}%`}"></div>
+                <div class="cover-desc">{{100 - item.percentUnComplete}}%</div>
+              </div>
+              <div class="pic-item-del" @click="delPicItem(item)">
+                <i class="el-icon-close" aria-hidden="true"></i>
+              </div>
+              <!-- <div class="pic-item-cover" v-if="item.isCover"> -->
+              <!-- <div class="pic-item-cover">
+                          封面
+                        </div> -->
             </div>
             <div class="pic-upload text-center">
               <div class="pic-upload-emit" @click="toUpload">
@@ -31,13 +42,15 @@
     </Card>
 
     <section class="operation">
-      <el-button type="primary" class="full-width shadow-button">保存</el-button>
+      <el-button type="primary" class="full-width shadow-button" @click="toSave">保存</el-button>
     </section>
   </section>
 </template>
 
 <script>
+import MD5 from 'md5.js'
 import Vue from 'vue'
+import popup from '../../../../components/popup'
 import Card from '../../../vue-features/components/Card'
 import { Form, FormItem, Input, Button } from 'element-ui'
 
@@ -66,7 +79,96 @@ export default {
       this.showSelectFile()
     },
     onSelectFiles() {
-
+      const files = this.$refs['input'].files
+      if (files.length === 0) {
+        popup.alert('未选择文件')
+        return
+      }
+      // const ireg = /image\/.*/i
+      const list = [...files].filter(file => {
+        // return file.type.match(ireg)
+        return true
+      })
+      if (list.length === 0) {
+        popup.alert('未选择图片文件')
+        return
+      }
+      list.forEach(file => {
+        const reader = new FileReader()
+        reader.onload = (f => {
+          return e => {
+            const rd = e.target || e.srcElement
+            const key = new MD5().update(rd.result).digest('hex')
+            const value = rd.result
+            if (
+              this.inProcessFiles.find(item => {
+                return item.key === key
+              })
+            ) {
+              // 在处理
+            } else {
+              const inProcessFile = {
+                key,
+                value,
+                file: f,
+                isUploading: true,
+                percentUnComplete: 100
+              }
+              this.inProcessFiles.push(inProcessFile)
+              this.$http
+                .post(
+                  '/commonFile/uploadFile.do',
+                  {
+                    // privated: this.form.privated,
+                    file: f,
+                    fileType: 1
+                  },
+                  {
+                    multiForm: true,
+                    onUploadProgress(evt) {
+                      // progressEvent
+                      if (evt.lengthComputable) {
+                        const percentComplete = Math.round(evt.loaded * 100 / evt.total)
+                        inProcessFile.percentUnComplete = 100 - percentComplete
+                      }
+                    }
+                  }
+                )
+                .then(data => {
+                  inProcessFile.percentUnComplete = 0 // 完成上传
+                  inProcessFile.isUploading = false
+                })
+                .catch(e => {
+                  this.delPicItem(inProcessFile)
+                })
+            }
+          }
+        })(file)
+        reader.readAsDataURL(file)
+      })
+    },
+    delPicItem(inProcessFile) {
+      this.inProcessFiles.splice(
+        this.inProcessFiles.findIndex(item => {
+          return item === inProcessFile
+        }),
+        1
+      )
+    },
+    toSave() {
+      if (
+        this.inProcessFiles.some(item => {
+          return item.isUploading
+        })
+      ) {
+        popup.alert('请耐心等待上传完成！')
+        // return
+      }
+    }
+  },
+  data() {
+    return {
+      inProcessFiles: []
     }
   }
 }
@@ -129,9 +231,54 @@ export default {
       }
     }
     .pic-item {
+      position: relative;
+      line-height: normal;
+      color: white;
       img {
         width: 100%;
         height: 100%;
+        border-radius: 4px;
+      }
+      .pic-item-del {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        display: inline-block;
+        background: rgba(0, 0, 0, 0.3);
+        color: white;
+        padding: 3px;
+        border-radius: 4px;
+      }
+      .pic-item-cover {
+        position: absolute;
+        width: calc(100% -2px - 2px); // padding: 2px;
+        bottom: 0;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.3);
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+      }
+      .pic-item-uploading-cover {
+        position: absolute;
+        height: calc(100% -2px - 2px); // padding: 2px;;
+        width: calc(100% -2px - 2px); // padding: 2px;
+        top: 2px;
+        text-align: right;
+        .cover-desc {
+          position: absolute;
+          display: flex;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          align-items: center;
+          justify-content: center;
+        }
+        .cover-div {
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: inline-block;
+        }
       }
     }
   }

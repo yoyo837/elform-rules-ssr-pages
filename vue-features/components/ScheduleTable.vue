@@ -73,6 +73,7 @@
 
 <script>
 import _ from 'lodash'
+import { Base64 } from 'js-base64'
 import moment from 'moment'
 import math from '../../../components/math'
 import popup from '../../../components/popup'
@@ -524,10 +525,7 @@ export default {
     },
     scheduleLoadFlag() {
       const str = `${this.params.salesId || 0}-${this.params.itemId || 0}-${this.params.dateTime || 0}`
-      if (typeof btoa === 'function') {
-        return btoa(str)
-      }
-      return str
+      return Base64.btoa(str)
     },
     colLength() { // 总列数量
       return this.platformInColumns.length

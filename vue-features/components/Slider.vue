@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { Base64 } from 'js-base64'
 export default {
   props: {
     dataList: {
@@ -45,10 +46,7 @@ export default {
       type: String,
       default: function() {
         const str = `${this.type}-${this.idkey}-${this.label}-${this.label2}`
-        if (typeof btoa === 'function') {
-          return btoa(str)
-        }
-        return str
+        return Base64.btoa(str)
       }
     },
     value: null
