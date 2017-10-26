@@ -32,7 +32,7 @@
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 import Vue from 'vue'
 import bdStyleMixin from '../vue-features/mixins/body-style'
 import Card from '../vue-features/components/Card'
@@ -54,49 +54,40 @@ export default {
   components: {
     Card
   },
+  mounted() {
+    this.loadBottom()
+  },
   methods: {
     loadBottom() {
-      // if (this.allLoaded) {
-      //   return
-      // }
-      // this.$http
-      //   .get('/deal/list.do', {
-      //     page: this.serverData.page + 1,
-      //     pageSize: this.pageSize
-      //   })
-      //   .then(data => {
-      //     _.assign(this.serverData, {
-      //       page: data.page,
-      //       total: data.total
-      //     })
-      //     const oldLength = this.list.length
-      //     this.list.push.apply(
-      //       this.list,
-      //       (data.rows || []).map(item => {
-      //         // 处理一下字段再给到vm
-      //         try {
-      //           item.fields = JSON.parse(item.descr)
-      //         } catch (e) {
-      //           console.log(e)
-      //         }
-      //         delete item.descr
-      //         return item
-      //       })
-      //     ) // 追加
-      //     if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
-      //       // 没用响应满页或者超过总数
-      //       this.allLoaded = true
-      //     }
-      //     const loadmore = this.$refs['loadmore']
-      //     loadmore && loadmore.onBottomLoaded()
-      //   })
+      if (this.allLoaded) {
+        return
+      }
+      this.$http
+        .get('/pubActivity/list.do', {
+          page: this.serverData.page + 1,
+          pageSize: this.pageSize
+        })
+        .then(data => {
+          _.assign(this.serverData, {
+            page: data.page,
+            total: data.total
+          })
+          const oldLength = this.list.length
+          this.list.push.apply(this.list, data.rows || []) // 追加
+          if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
+            // 没用响应满页或者超过总数
+            this.allLoaded = true
+          }
+          const loadmore = this.$refs['loadmore']
+          loadmore && loadmore.onBottomLoaded()
+        })
     }
   },
   data() {
     return {
       allLoaded: false,
-      list: [{}],
-      pageSize: 10,
+      list: [],
+      pageSize: 4,
       serverData: {
         page: 0,
         total: 0

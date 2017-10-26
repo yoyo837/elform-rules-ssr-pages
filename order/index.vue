@@ -26,13 +26,131 @@
     </Card>
 
     <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
-      <Card v-for="item in list" :key="item.id" :title-text="`订单号：${item.id}`">
+      <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`">
         <template slot="header-desc">
-          <span>订单状态</span>
+          <span>{{item.commonPay.payStatus}}</span>
           <span>
             <i class="el-icon-delete"></i>
           </span>
         </template>
+        <div class="order-content">
+          <!-- 场地 -->
+          <div class="order-content-item" v-for="dealPlatform in item.dealPlatformList" :key="dealPlatform.id">
+            <img class="item-img" :src="`${(item.commonSales.picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
+            <div class="item-ctt text-overflow">
+              <div class="item-ctt-title">
+                {{dealPlatform.salesName}}
+              </div>
+              <div class="item-ctt-desc">
+                <el-row>
+                  <el-col :span="20">
+                    {{dealPlatform.platformName}} {{dealPlatform.startTime}}-{{dealPlatform.endTime}}
+                  </el-col>
+                  <el-col :span="4" class="text-center">
+                    ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </div>
+          <!-- 服务人员 -->
+          <div class="order-content-item" v-for="serviceUser in item.dealServiceUserList" :key="serviceUser.sysUserId">
+            <img class="item-img" :src="`${(serviceUser.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}60X60.jpg`">
+            <div class="item-ctt text-overflow">
+              <div class="item-ctt-title">
+                {{serviceUser.career}}
+              </div>
+              <div class="item-ctt-desc">
+                <el-row>
+                  <el-col :span="20">
+                    {{serviceUser.professional}}-{{serviceUser.realName}}
+                  </el-col>
+                  <el-col :span="4" class="text-center">
+                    ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </div>
+          <!-- 商品 -->
+          <template v-for="dealItem in item.dealItemList">
+            <div class="order-content-item" v-for="dealItemSnap in dealItem.dealItemSnapList" :key="dealItemSnap.itemId">
+              <img class="item-img" :src="`${(dealItemSnap.picUrl || [])[1] || `${CDN_IMG_HOST}/gift/0/`}60X60.jpg`">
+              <div class="item-ctt text-overflow">
+                <div class="item-ctt-title">
+                  {{dealItemSnap.itemName}}
+                </div>
+                <div class="item-ctt-desc">
+                  <el-row>
+                    <el-col :span="20">
+                      {{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}
+                    </el-col>
+                    <el-col :span="4" class="text-center">
+                      ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+          </template>
+          <!-- 票务 -->
+          <div class="order-content-item" v-for="dealTicket in item.dealTicketList" :key="dealTicket.id">
+            <img class="item-img" src="">
+            <div class="item-ctt text-overflow">
+              <div class="item-ctt-title">
+                {{dealTicket.ticketName}}
+              </div>
+              <div class="item-ctt-desc">
+                <el-row>
+                  <el-col :span="20">
+                    {{dealTicket.orderDate}} {{dealTicket.startTime}} {{dealTicket.salesNum}}张
+                  </el-col>
+                  <el-col :span="4" class="text-center">
+                    ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </div>
+          <!-- 报名 -->
+          <div class="order-content-item" v-for="dealSignup in item.dealSignupList" :key="dealSignup.signupId">
+            <img class="item-img" src="">
+            <div class="item-ctt text-overflow">
+              <div class="item-ctt-title">
+                {{dealSignup.objectName}}
+              </div>
+              <div class="item-ctt-desc">
+                <el-row>
+                  <el-col :span="20">
+                    {{dealSignup.objectStartDate}}至{{dealSignup.objectEndDate}}
+                  </el-col>
+                  <el-col :span="4" class="text-center">
+                    ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </div>
+          <!-- 会员服务 -->
+          <div class="order-content-item" v-for="servicePub in item.dealServicePubList" :key="servicePub.serviceId">
+            <img class="item-img" src="">
+            <div class="item-ctt text-overflow">
+              <div class="item-ctt-title">
+                {{servicePub.serviceName}}
+              </div>
+              <div class="item-ctt-desc">
+                <el-row>
+                  <el-col :span="20">
+                    &nbsp;
+                  </el-col>
+                  <el-col :span="4" class="text-center">
+                    ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+          </div>
+        </div>
       </Card>
     </mt-loadmore>
     <Card v-else>
@@ -89,12 +207,9 @@ export default {
             this.list,
             (data.rows || []).map(item => {
               // 处理一下字段再给到vm
-              try {
-                item.fields = JSON.parse(item.descr)
-              } catch (e) {
-                console.log(e)
-              }
-              delete item.descr
+              item.deal = item.deal || {}
+              item.commonPay = item.commonPay || {}
+              item.commonSales = item.commonSales || {}
               return item
             })
           ) // 追加
@@ -116,7 +231,7 @@ export default {
     return {
       allLoaded: false,
       list: [],
-      pageSize: 10,
+      pageSize: 4,
       serverData: {
         page: 0,
         total: 0
@@ -156,6 +271,32 @@ export default {
     padding: 15px 0;
     color: #999;
     font-size: 12px;
+  }
+
+  .order-content {
+    .order-content-item {
+      padding: 2px 0;
+      .item-img {
+        width: 40px;
+        height: 40px;
+        vertical-align: top;
+      }
+      .item-ctt {
+        display: inline-block;
+        width: calc(100% - 40px);
+        height: 40px;
+        padding-left: 8px;
+        .item-ctt-title {
+          color: #222;
+          line-height: 25px;
+        }
+        .item-ctt-desc {
+          font-size: 12px;
+          color: #999;
+          line-height: 15px;
+        }
+      }
+    }
   }
 }
 </style>
