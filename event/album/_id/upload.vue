@@ -16,8 +16,8 @@
               </div>
               <!-- <div class="pic-item-cover" v-if="item.isCover"> -->
               <!-- <div class="pic-item-cover">
-                          封面
-                        </div> -->
+                            封面
+                          </div> -->
             </div>
             <div class="pic-upload text-center">
               <div class="pic-upload-emit" @click="toUpload">
@@ -124,6 +124,7 @@ export default {
                     fileType: 1
                   },
                   {
+                    silent: true,
                     multiForm: true,
                     onUploadProgress(evt) {
                       // progressEvent
