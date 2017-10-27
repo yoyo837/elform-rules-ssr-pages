@@ -28,14 +28,14 @@
     <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
       <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`">
         <template slot="header-desc">
-          <span>{{item.commonPay.payStatus}}</span>
-          <span>
+          <span :class="`deal-status-${item.deal.dealStatus}`">{{item.deal.dealStatusValue}}</span>
+          <span :class="`deal-status-${item.deal.dealStatus}`">
             <i class="el-icon-delete"></i>
           </span>
         </template>
         <div class="order-content">
           <!-- 场地 -->
-          <div class="order-content-item" v-for="dealPlatform in item.dealPlatformList" :key="dealPlatform.id">
+          <div class="order-content-item" v-for="dealPlatform in item.dealPlatformList" :key="dealPlatform.dealPlatformId">
             <img class="item-img" :src="`${(item.commonSales.picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
             <div class="item-ctt text-overflow">
               <div class="item-ctt-title">
@@ -94,8 +94,8 @@
             </div>
           </template>
           <!-- 票务 -->
-          <div class="order-content-item" v-for="dealTicket in item.dealTicketList" :key="dealTicket.id">
-            <img class="item-img" src="">
+          <div class="order-content-item" v-for="dealTicket in item.dealTicketList" :key="dealTicket.dealTicketId">
+            <img class="item-img" :src="`${(dealTicket.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
             <div class="item-ctt text-overflow">
               <div class="item-ctt-title">
                 {{dealTicket.ticketName}}
@@ -113,8 +113,8 @@
             </div>
           </div>
           <!-- 报名 -->
-          <div class="order-content-item" v-for="dealSignup in item.dealSignupList" :key="dealSignup.signupId">
-            <img class="item-img" src="">
+          <div class="order-content-item" v-for="dealSignup in item.dealSignupList" :key="dealSignup.dealSignupId">
+            <img class="item-img" :src="`${(dealSignup.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
             <div class="item-ctt text-overflow">
               <div class="item-ctt-title">
                 {{dealSignup.objectName}}
@@ -133,7 +133,7 @@
           </div>
           <!-- 会员服务 -->
           <div class="order-content-item" v-for="servicePub in item.dealServicePubList" :key="servicePub.serviceId">
-            <img class="item-img" src="">
+            <img class="item-img" :src="`${(servicePub.picUrl || [])[1] || `${CDN_IMG_HOST}/pubservice/0/`}140X90.jpg`">
             <div class="item-ctt text-overflow">
               <div class="item-ctt-title">
                 {{servicePub.serviceName}}
@@ -141,7 +141,7 @@
               <div class="item-ctt-desc">
                 <el-row>
                   <el-col :span="20">
-                    &nbsp;
+                    {{servicePub.salesName}}
                   </el-col>
                   <el-col :span="4" class="text-center">
                     ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
