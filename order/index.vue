@@ -26,7 +26,7 @@
     </Card>
     <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
       <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" :auto-fill="false" ref="loadmore">
-        <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`">
+        <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`" @click.native="toDetail(item.deal.dealId)">
           <template slot="header-desc">
             <span :class="`deal-status-${item.deal.dealStatus}`">{{item.deal.dealStatusValue}}</span>
             <span :class="`deal-status-${item.deal.dealStatus}`">
@@ -255,6 +255,9 @@ export default {
         total: 0
       }
       this.loadBottom()
+    },
+    toDetail(dealId) {
+      this.$router.push(`/order/${dealId}`)
     }
   },
   data() {
