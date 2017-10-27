@@ -160,6 +160,14 @@
               <el-button type="text" class="full-width" @click.stop="toPay(item.deal.dealId)">去支付</el-button>
             </el-col>
           </el-row>
+          <div v-else-if="item.deal.dealStatus == DealStatusMap.COMPLETE" class="el-card__edge el-card__edge-bottom sign-cancel">
+            <div class="sign-cancel-desc">
+              <i aria-hidden="true" class="el-icon-warning"></i>{{item.deal.latestCancelDescr}}
+            </div>
+            <div class="sign-cancel-exec">
+              <el-button type="text" class="full-width">取消</el-button>
+            </div>
+          </div>
         </Card>
       </mt-loadmore>
     </div>
@@ -174,6 +182,7 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
+import utils from '../../components/utils'
 import popup from '../../components/popup'
 import Card from '../vue-features/components/Card'
 import { Row, Col, Button } from 'element-ui'
@@ -312,18 +321,7 @@ export default {
       //   '99': '票务',
       //   '100': '报名'
       // },
-      DealStatusMap: {
-        // NEWS(0, "订单开始"),
-        // NOT_PAY(1, "待支付"),
-        // NOT_USE(2, "待使用"),
-        // COMPLETE(3, "已完成"),
-        // CANCEL(4, "已取消"),
-        // REFUNDED(5, "已退款");
-        NOT_PAY: 1,
-        REFUNDED: 5,
-        COMPLETE: 3,
-        CANCEL: 4
-      }
+      DealStatusMap: utils.DealStatusMap
     }
   }
 }
@@ -375,6 +373,32 @@ export default {
           color: #999;
           line-height: 15px;
         }
+      }
+    }
+  }
+
+  .sign-cancel {
+    .sign-cancel-desc,
+    .sign-cancel-exec {
+      display: inline-block;
+    }
+    .sign-cancel-desc {
+      padding-left: 15px;
+      width: calc(100% - 60px);
+      i {
+        font-size: 16px;
+        vertical-align: middle;
+        color: #f26a3e;
+      }
+    }
+    .sign-cancel-exec {
+      width: 60px;
+      border-left: none !important;
+      .el-button {
+        padding: 0;
+        margin: 10px 0;
+        height: 24px;
+        border-left: 1px solid #f0f0f0;
       }
     }
   }

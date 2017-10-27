@@ -110,12 +110,15 @@
         </el-col>
       </el-row>
     </Card>
-    <Card class="order-status" :title-html="`订单状态：<span style='${serverData.deal.dealStatus != 3 ? 'color: #F26A3E' : ''}'>${serverData.deal.dealStatusValue || ''}</span>`">
+    <Card class="order-status" :title-html="`订单状态：<span style='${serverData.deal.dealStatus != DealStatusMap.COMPLETE ? 'color: #F26A3E' : ''}'>${serverData.deal.dealStatusValue || ''}</span>`">
       <div class="order-status-field">
-        创建时间：
+        创建时间：{{formatDateTime(serverData.deal.createTime)}}
       </div>
       <div class="order-status-field">
         支付时间：
+        <template v-if="serverData.deal.dealStatus >= DealStatusMap.COMPLETE">
+          {{formatDateTime(serverData.deal.updateTime)}}
+        </template>
       </div>
       <!-- <div class="order-status-field">
               完成时间：
@@ -164,7 +167,7 @@
       </div>
     </Card>
 
-    <section v-if="serverData.deal.dealStatus == 1" class="fixed-bt">
+    <section v-if="serverData.deal.dealStatus == DealStatusMap.NOT_PAY" class="fixed-bt">
       <el-row>
         <el-col :span="12">
           <el-button type="text" class="full-width" @click="toCancel">取消</el-button>
@@ -174,12 +177,20 @@
         </el-col>
       </el-row>
     </section>
+    <section v-else-if="serverData.deal.dealStatus == DealStatusMap.COMPLETE" class="fixed-bt">
+      <el-row>
+        <el-col :span="24">
+          <el-button type="text" class="full-width" @click="toCancel">取消</el-button>
+        </el-col>
+      </el-row>
+    </section>
   </section>
 </template>
 
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
+import utils from '../../components/utils'
 import popup from '../../components/popup'
 import math from '../../components/math'
 import { Row, Col, Button } from 'element-ui'
@@ -222,6 +233,7 @@ export default {
     }
   },
   methods: {
+    formatDateTime: utils.formatDateTime,
     toCancel() {
       popup
         .confirm('确认取消订单吗？')
@@ -254,7 +266,8 @@ export default {
         dealServiceUserList: null,
         dealServicePubList: null,
         dealSignupList: null
-      }
+      },
+      DealStatusMap: utils.DealStatusMap
     }
   }
 }
@@ -262,7 +275,7 @@ export default {
 
 <style lang="scss">
 body.bd-pt-order-detail {
-  margin-bottom: 50px;
+  padding-bottom: 50px;
 }
 </style>
 
