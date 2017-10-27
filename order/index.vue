@@ -2,23 +2,23 @@
   <section class="container container-pd">
     <Card title-text="我的订单" title-icon="fa fa-id-card">
       <div class="col-percent el-card__edge el-card__edge-bottom el-card__edge-nobody">
-        <div class="col-percent-20 text-overflow item-seleted">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == null}" @click="switchTab($event)">
           <el-button type="text" class="full-width">全部</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_PAY}" @click="switchTab($event, DealStatusMap.NOT_PAY)">
           <el-button type="text" class="full-width">待支付</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_USE}" @click="switchTab($event, DealStatusMap.NOT_USE)">
           <el-button type="text" class="full-width">待使用</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.COMPLETE}" @click="switchTab($event, DealStatusMap.COMPLETE)">
           <el-button type="text" class="full-width">已完成</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.CANCEL}" @click="switchTab($event, DealStatusMap.CANCEL)">
           <el-button type="text" class="full-width">已取消</el-button>
           <div class="btn-selected-tag"></div>
         </div>
@@ -196,7 +196,10 @@ export default {
         return 'auto'
       }
       const wrapper = this.$refs['wrapper']
-      return `${document.documentElement.clientHeight - wrapper.getBoundingClientRect().top - window.parseFloat(window.getComputedStyle(wrapper).marginTop) - 2}px`
+      return `${document.documentElement.clientHeight -
+        wrapper.getBoundingClientRect().top -
+        window.parseFloat(window.getComputedStyle(wrapper).marginTop) -
+        2}px`
     }
   },
   methods: {
@@ -205,10 +208,16 @@ export default {
         return
       }
       this.$http
-        .get('/deal/list.do', {
-          page: this.serverData.page + 1,
-          pageSize: this.pageSize
-        })
+        .get(
+          '/deal/list.do',
+          _.assign(
+            {
+              page: this.serverData.page + 1,
+              pageSize: this.pageSize
+            },
+            this.params
+          )
+        )
         .then(data => {
           _.assign(this.serverData, {
             page: data.page,
@@ -237,6 +246,15 @@ export default {
     },
     toPay(id) {
       this.$router.push(`/pay/${id}`)
+    },
+    switchTab(event, status) {
+      this.params.dealStatus = status
+      this.list = []
+      this.serverData = {
+        page: 0,
+        total: 0
+      }
+      this.loadBottom()
     }
   },
   data() {
@@ -244,17 +262,26 @@ export default {
       allLoaded: false,
       list: [],
       pageSize: 4,
+      params: {
+        dealStatus: null
+      },
       serverData: {
         page: 0,
         total: 0
       },
-      orderTypes: {
-        '49': '场地',
-        '50': '服务人员',
-        '55': '商品',
-        '57': '会员服务',
-        '99': '票务',
-        '100': '报名'
+      // orderTypes: {
+      //   '49': '场地',
+      //   '50': '服务人员',
+      //   '55': '商品',
+      //   '57': '会员服务',
+      //   '99': '票务',
+      //   '100': '报名'
+      // },
+      DealStatusMap: {
+        NOT_PAY: 1,
+        NOT_USE: 2,
+        COMPLETE: 3,
+        CANCEL: 4
       }
     }
   }
