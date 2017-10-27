@@ -118,8 +118,8 @@
         支付时间：
       </div>
       <!-- <div class="order-status-field">
-                        完成时间：
-                      </div> -->
+        完成时间：
+      </div> -->
       <div class="ticket-matrix-item text-center" v-for="dealTicket in serverData.dealTicketList" :key="dealTicket.dealTicketId">
         <div class="ticket-desc">
           验证码：
@@ -154,15 +154,26 @@
     <Card v-if="serverData.deal.remark" :invisible="true" class="terms-conditions">
       <div>使用须知</div>
       <!-- <ul>
-              <li>serverData.deal.remark</li>
-              <li>sdfdsf</li>
-              <li>sdfdsf</li>
-              <li>sdfdsf</li>
-            </ul> -->
+        <li>serverData.deal.remark</li>
+        <li>sdfdsf</li>
+        <li>sdfdsf</li>
+        <li>sdfdsf</li>
+      </ul> -->
       <div>
         {{serverData.deal.remark}}
       </div>
     </Card>
+
+    <section v-if="serverData.deal.dealStatus == 1" class="fixed-bt">
+      <el-row>
+        <el-col :span="12">
+          <el-button type="text" class="full-width" @click="toCancel">取消</el-button>
+        </el-col>
+        <el-col :span="12">
+          <el-button type="text" class="full-width primary-button" @click="toPay">去支付</el-button>
+        </el-col>
+      </el-row>
+    </section>
   </section>
 </template>
 
@@ -172,7 +183,7 @@ import _ from 'lodash'
 import math from '../../components/math'
 import { Row, Col, Button } from 'element-ui'
 import Card from '../vue-features/components/Card'
-import bdStyleMixin from '../vue-features/mixins/body-style'
+import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
@@ -184,7 +195,7 @@ export default {
   },
   head() {
     return {
-      title: `订单详情-${this.orderId}`
+      title: `订单详情-${this.dealId}`
     }
   },
   mixins: [bdStyleMixin],
@@ -194,7 +205,7 @@ export default {
   mounted() {
     this.$http
       .get('/deal/detail.do', {
-        dealId: this.orderId
+        dealId: this.dealId
       })
       .then(data => {
         data = data || {}
@@ -210,32 +221,23 @@ export default {
     }
   },
   methods: {
-    viewEvents() {
-      this.$router.push(`/event`)
-    },
-    continueBooking() {
-      this.$router.push(`/booking/schedule/${this.serverData.deal.salesId}`)
-    },
-    toHome() {
-      this.$router.push('/')
-    },
     toCancel() {
       this.$http
         .post('/deal/cancel.do', {
-          dealId: this.orderId
+          dealId: this.dealId
         })
         .then(data => {
           this.$router.push('/order')
         })
     },
     toPay() {
-      this.$router.push(`/pay/${this.orderId}`)
+      this.$router.push(`/pay/${this.dealId}`)
     }
   },
   data() {
-    const orderId = this.$route.params['id']
     return {
-      orderId,
+      bodyClass: `${DefaultConfig.bodyClass} bd-pt-order-detail`,
+      dealId: this.$route.params['id'],
       serverData: {
         commonSales: null,
         commonPay: {},
@@ -246,12 +248,17 @@ export default {
         dealServiceUserList: null,
         dealServicePubList: null,
         dealSignupList: null
-      },
-      hasRefererPaid: this.$route.query['out_trade_no'] === orderId // 来自支付成功跳转
+      }
     }
   }
 }
 </script>
+
+<style lang="scss">
+body.bd-pt-order-detail {
+  margin-bottom: 50px;
+}
+</style>
 
 <style lang="scss" scoped>
 .container {
