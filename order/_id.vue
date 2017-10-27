@@ -1,493 +1,184 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/order">
-    <!-- 场地订单 -->
-    <div v-if="serverData.dealPlatformList && serverData.dealPlatformList.length" class="ctx-bg list-box">
-      <template v-for="(platform, idx) in serverData.dealPlatformList">
-        <el-row v-if="idx == 0" class="nav-panel nav-panel-auto" :key="platform.salesName">
-          <el-col :span="16">
-            <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/dicon_1.png`" class="platform-icon"> {{platform.salesName}}
-            <i class="el-icon-arrow-right"></i>
-          </el-col>
-          <el-col :span="8" class="text-right" :class="`state-${platform.dealState}`">
-            {{platform.dealStateValue}}
-          </el-col>
-        </el-row>
-      </template>
-      <div v-for="platform in serverData.dealPlatformList" :key="platform.id">
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            场地
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{platform.platformParentName}}{{platform.platformName}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            日期
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{platform.orderDateValue}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            时间
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{platform.startTimeValue}}-{{platform.endTimeValue}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            价格
-          </el-col>
-          <el-col :span="16" class="text-right">
-            ￥{{platform.platformPriceValue}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto" v-for="serviceUser in serverData.dealServiceUserList" :key="serviceUser.id" v-if="serviceUser.platformId == platform.platformId">
-          <el-col :span="8">
-            {{serviceUser.careerIdValue}}
-          </el-col>
-          <el-col :span="16" class="text-right">
-            <div>{{serviceUser.professionalIdValue}}</div>
-            {{serviceUser.startTimeValue}}-{{serviceUser.endTimeValue}} ￥{{serviceUser.servicePriceValue}}
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-    <!-- 商品订单 -->
-    <div v-if="serverData.dealItemList && serverData.dealItemList.length" class="ctx-bg list-box">
-      <div v-for="item in serverData.dealItemList" :key="item.id">
-        <div v-for="snapItem in item.dealItemSnapList" :key="snapItem.id">
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="24">
-              {{snapItem.salesName}}
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              商品
-            </el-col>
-            <el-col :span="16" class="text-right">
-              {{snapItem.itemName}}
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              数量
-            </el-col>
-            <el-col :span="16" class="text-right">
-              {{snapItem.itemNum}}{{snapItem.itemUnit}}
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto" v-if="item.dealAddressList && item.dealAddressList.length">
-            <el-col :span="8">
-              收货地址
-            </el-col>
-            <el-col :span="16" class="text-right">
-              <div v-for="address in item.dealAddressList" :key="address">
-                {{address.provinceValue}}{{address.cityValue}}{{dealAddress.districtValue}}{{dealAddress.detailAddress}}
+  <section class="container container-pd">
+    <Card>
+      <div class="order-content">
+        <!-- 场地 -->
+        <div class="order-content-item" v-for="dealPlatform in serverData.dealPlatformList" :key="dealPlatform.dealPlatformId">
+          <img class="item-img" :src="`${((serverData.commonSales || {}).picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
+          <div class="item-ctt">
+            <div class="item-ctt-title text-overflow">
+              {{dealPlatform.salesName}}
+            </div>
+            <div class="item-ctt-desc text-overflow">
+              {{dealPlatform.platformName}} {{dealPlatform.startTime}}-{{dealPlatform.endTime}}
+            </div>
+          </div>
+        </div>
+        <!-- 服务人员 -->
+        <div class="order-content-item" v-for="serviceUser in serverData.dealServiceUserList" :key="serviceUser.sysUserId">
+          <img class="item-img" :src="`${(serviceUser.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}60X60.jpg`">
+          <div class="item-ctt">
+            <div class="item-ctt-title text-overflow">
+              {{serviceUser.career}}
+            </div>
+            <div class="item-ctt-desc text-overflow">
+              {{serviceUser.professional}}-{{serviceUser.realName}}
+            </div>
+          </div>
+        </div>
+        <!-- 商品 -->
+        <template v-for="dealItem in serverData.dealItemList">
+          <div class="order-content-item" v-for="dealItemSnap in dealItem.dealItemSnapList" :key="dealItemSnap.itemId">
+            <img class="item-img" :src="`${(dealItemSnap.picUrl || [])[1] || `${CDN_IMG_HOST}/gift/0/`}60X60.jpg`">
+            <div class="item-ctt">
+              <div class="item-ctt-title text-overflow">
+                {{dealItemSnap.itemName}}
               </div>
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              单价
-            </el-col>
-            <el-col :span="16" class="text-right">
-              ￥{{snapItem.itemPriceValue}}
-            </el-col>
-          </el-row>
+              <div class="item-ctt-desc text-overflow">
+                {{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- 票务 -->
+        <div class="order-content-item" v-for="dealTicket in serverData.dealTicketList" :key="dealTicket.dealTicketId">
+          <img class="item-img" :src="`${(dealTicket.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
+          <div class="item-ctt">
+            <div class="item-ctt-title text-overflow">
+              {{dealTicket.ticketName}}
+            </div>
+            <div class="item-ctt-desc text-overflow">
+              {{dealTicket.orderDate}} {{dealTicket.startTime}} {{dealTicket.salesNum}}张
+            </div>
+          </div>
+        </div>
+        <!-- 报名 -->
+        <div class="order-content-item" v-for="dealSignup in serverData.dealSignupList" :key="dealSignup.dealSignupId">
+          <img class="item-img" :src="`${(dealSignup.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
+          <div class="item-ctt">
+            <div class="item-ctt-title text-overflow">
+              {{dealSignup.objectName}}
+            </div>
+            <div class="item-ctt-desc text-overflow">
+              {{dealSignup.objectStartDate}}至{{dealSignup.objectEndDate}}
+            </div>
+          </div>
+        </div>
+        <!-- 会员服务 -->
+        <div class="order-content-item" v-for="servicePub in serverData.dealServicePubList" :key="servicePub.serviceId">
+          <img class="item-img" :src="`${(servicePub.picUrl || [])[1] || `${CDN_IMG_HOST}/pubservice/0/`}140X90.jpg`">
+          <div class="item-ctt">
+            <div class="item-ctt-title text-overflow">
+              {{servicePub.serviceName}}
+            </div>
+            <div class="item-ctt-desc text-overflow">
+              {{servicePub.salesName}}
+            </div>
+          </div>
         </div>
       </div>
+    </Card>
+    <div class="clip-section">
+      <div class="clip-gap clip-gap-left"></div>
+      <div class="clip-line"></div>
+      <div class="clip-line"></div>
+      <div class="clip-gap clip-gap-right"></div>
     </div>
-    <!-- 会员服务 -->
-    <div v-if="serverData.dealServicePubList && serverData.dealServicePubList.length" class="ctx-bg list-box">
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="24">
-          {{serverData.dealServicePubList[0].salesName}}
+    <Card class="amount-list">
+      <el-row>
+        <el-col :span="18">
+          订单合计：
+        </el-col>
+        <el-col :span="6" class="text-right">
+          ￥{{serverData.commonPay.payFeeTotal || 0}}
         </el-col>
       </el-row>
-      <div v-for="servicePub in serverData.dealServicePubList" :key="servicePub.id">
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            服务名称
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{servicePub.serviceName}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            数量
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{servicePub.buyNum}}张
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            储值金额
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{servicePub.serviceAmountValue}}
-          </el-col>
-        </el-row>
+      <el-row>
+        <el-col :span="18">
+          优惠：
+        </el-col>
+        <el-col :span="6" class="text-right">
+          - ￥{{discountAmount}}
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="18">
+          实付款：
+        </el-col>
+        <el-col :span="6" class="text-right">
+          ￥{{serverData.commonPay.payFeePaid || 0}}
+        </el-col>
+      </el-row>
+    </Card>
+    <Card class="order-status" :title-html="`订单状态：<span style='${serverData.deal.dealStatus != 3 ? 'color: #F26A3E' : ''}'>${serverData.deal.dealStatusValue || ''}</span>`">
+      <div class="order-status-field">
+        创建时间：
       </div>
-    </div>
-    <!-- 报名订单 -->
-    <div v-if="serverData.dealSignupList && serverData.dealSignupList.length" class="ctx-bg list-box">
-      <div v-for="signup in serverData.dealSignupList" :key="signup.id">
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            名称
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{signup.exerciseList.exerciseName}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            开始日期
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{signup.exerciseList.startDateValue}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            地址
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{signup.exerciseList.exerciseAddress}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            状态
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{signup.dealStateValue}}
-          </el-col>
-        </el-row>
-        <el-row v-if="signup.signupStrValueValue" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            报名信息
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{signup.signupStrValueValue}}
-          </el-col>
-        </el-row>
-        <el-row v-if="signup.pubUserBasicStr" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            团队信息
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{signup.pubUserBasicStr}}
-          </el-col>
-        </el-row>
+      <div class="order-status-field">
+        支付时间：
       </div>
-    </div>
-    <!-- 票务订单 -->
-    <div v-if="serverData.dealTicketList && serverData.dealTicketList.length" class="ctx-bg list-box">
-      <div v-for="ticket in serverData.dealTicketList" :key="ticket.id">
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="24">
-            {{ticket.salesName}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            票名
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{ticket.platformParentName ? ticket.platformParentName : ticket.ticketName}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            数量
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{ticket.salesNum}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            单价
-          </el-col>
-          <el-col :span="16" class="text-right">
-            ￥{{ticket.ticketPriceValue}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            地址
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{ticket.salesName}}-{{ticket.platformName}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto" v-if="ticket.platformMapId">
-          <el-col :span="8">
-            座位号
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{ticket.platformMapName}}
-          </el-col>
-        </el-row>
-        <template v-if="ticket.orderDate">
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              开始日期
-            </el-col>
-            <el-col :span="16" class="text-right">
-              {{ticket.orderDateValue}}
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              开始时间
-            </el-col>
-            <el-col :span="16" class="text-right">
-              {{ticket.startTimeValue}}
-            </el-col>
-          </el-row>
-        </template>
-        <template v-else>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              有效期
-            </el-col>
-            <el-col :span="16" class="text-right">
-              {{ticket.fromDateValue}}至{{ticket.toDateValue}}
-            </el-col>
-          </el-row>
-        </template>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            状态
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{ticket.dealStateValue}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            验证码
-          </el-col>
-          <el-col :span="16" class="text-right">
-            {{ticket.ticketValidCode}}
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto" v-if="ticket.matrixUrl">
-          <el-col :span="24">
-            <img :src="ticket.matrixUrl">
-          </el-col>
-        </el-row>
+      <!-- <div class="order-status-field">
+                        完成时间：
+                      </div> -->
+      <div class="ticket-matrix-item text-center" v-for="dealTicket in serverData.dealTicketList" :key="dealTicket.dealTicketId">
+        <div class="ticket-desc">
+          验证码：
+          <span>{{dealTicket.ticketValidCode}}</span>
+        </div>
+        <img :src="dealTicket.matrixUrl">
+        <div class="ticket-name">
+          {{dealTicket.ticketName}}
+        </div>
       </div>
-    </div>
-    <!-- 支付信息 -->
-    <div v-if="serverData.commonPay" class="ctx-bg list-box">
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="24">
-          付款信息
-        </el-col>
-      </el-row>
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          订单总价
-        </el-col>
-        <el-col :span="16">
-          ￥{{serverData.commonPay.payFeeTotalValue}}
-        </el-col>
-      </el-row>
-      <el-row v-if="serverData.commonPay.payStatusValue" class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          支付状态
-        </el-col>
-        <el-col :span="16">
-          {{serverData.commonPay.payStatusValue}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          实付款
-        </el-col>
-        <el-col :span="16">
-          {{serverData.commonPay.payFeePaidValue}}
-        </el-col>
-      </el-row>
-      <template v-if="serverData.commonPay.payFeePaid">
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="24">
-            支付方式
-          </el-col>
-        </el-row>
-        <el-row v-if="serverData.commonPay.payPointsTotal" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            积分支付
-          </el-col>
-          <el-col :span="16">
-            {{serverData.commonPay.payPointsTotalValue}}分
-          </el-col>
-        </el-row>
-        <el-row v-if="serverData.commonPay.payFeeCash" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            现金支付
-          </el-col>
-          <el-col :span="16">
-            ￥{{serverData.commonPay.payFeeCashValue}}分
-          </el-col>
-        </el-row>
-        <el-row v-if="serverData.commonPay.pubAccountId && serverData.commonPay.payAccountFeeTicket" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            会员/账户支付
-          </el-col>
-          <el-col :span="16">
-            ￥{{serverData.commonPay.payAccountFeeTicketValue}}
-          </el-col>
-        </el-row>
-        <el-row v-if="serverData.commonPay.payZfbCash && serverData.commonPay.payZfbCash && serverData.commonPay.payZfbId" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            支付宝
-          </el-col>
-          <el-col :span="16">
-            ￥{{serverData.commonPay.payZfbCashValue}}
-          </el-col>
-        </el-row>
-        <el-row v-if="serverData.commonPay.payWechatCash && serverData.commonPay.payWechatCash && serverData.commonPay.payWechatId" class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            微信支付
-          </el-col>
-          <el-col :span="16">
-            ￥{{serverData.commonPay.payWechatCashValue}}
-          </el-col>
-        </el-row>
-      </template>
-      <template v-if="serverData.commonPay.pubServiceAccountId && serverData.commonPay.payServiceAccountFee || serverData.commonPay.payPubServiceData">
-        <template v-if="serverData.commonPay.pubServiceAccountId && serverData.commonPay.payServiceAccountFee">
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="24">
-              优惠信息
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              服务结算
-            </el-col>
-            <el-col :span="16">
-              {{serverData.commonPay.pubServiceName}}
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              服务账户支付
-            </el-col>
-            <el-col :span="16">
-              已优惠￥{{serverData.commonPay.payServiceAccountFeeValue}}
-            </el-col>
-          </el-row>
-        </template>
-        <template v-if="serverData.commonPay.payPubServiceData">
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              服务支付
-            </el-col>
-            <el-col :span="16">
-              {{serverData.commonPay.payPubServiceData}}
-            </el-col>
-          </el-row>
-          <el-row class="nav-panel nav-panel-auto">
-            <el-col :span="8">
-              剩余服务
-            </el-col>
-            <el-col :span="16">
-              {{serverData.commonPay.payPubServiceBalance}}
-            </el-col>
-          </el-row>
-        </template>
-      </template>
-    </div>
+    </Card>
 
-    <!-- 订单信息 -->
-    <div v-if="serverData.commonPay" class="ctx-bg list-box">
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="24">
-          订单时间
+    <Card v-if="serverData.commonSales" class="venue-info">
+      <el-row>
+        <el-col :span="18">
+          <div class="venue-name">{{serverData.commonSales.salesName}}</div>
+          <div class="venue-address">{{serverData.commonSales.province}}{{serverData.commonSales.city}}{{serverData.commonSales.district}}{{serverData.commonSales.salesAddress}}</div>
+        </el-col>
+        <el-col :span="6">
+          <a :href="`tel:${serverData.commonSales.salesTel}`">
+            <div class="venue-contact">
+              <div>
+                <i class="fa fa-phone" aria-hidden="true"></i>
+              </div>
+              <div>联系商家</div>
+            </div>
+          </a>
         </el-col>
       </el-row>
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          创建时间
-        </el-col>
-        <el-col :span="16">
-          {{serverData.deal.createTimeValue}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          付款时间
-        </el-col>
-        <el-col :span="16">
-          {{serverData.deal.updateTimeValue}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          成交时间
-        </el-col>
-        <el-col :span="16">
-          {{serverData.deal.updateTimeValue}}
-        </el-col>
-      </el-row>
-    </div>
+    </Card>
 
-    <!-- 订单备注 -->
-    <div v-if="serverData.deal && serverData.deal.remark" class="ctx-bg list-box">
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="24">
-          订单备注
-        </el-col>
-      </el-row>
-      <el-row class="nav-panel nav-panel-auto">
-        <el-col :span="8">
-          &nbsp;
-        </el-col>
-        <el-col :span="16">
-          {{serverData.deal.remark}}
-        </el-col>
-      </el-row>
-    </div>
-    <div class="fixed-bt">
-      <template v-if="hasRefererPaid">
-        <el-button type="info" @click="continueBooking" v-if="serverData.dealPlatformList && serverData.dealPlatformList.length">继续订场</el-button>
-        <!-- <el-button type="info" @click="viewEvents" v-if="serverData.dealSignupList && serverData.dealSignupList.length">查看活动</el-button> -->
-        <el-button type="primary" @click="toHome">回到首页</el-button>
-      </template>
-      <template v-else>
-        <el-button type="danger" v-if="serverData.data && serverData.data.isCancel" @click="toCancel">取消</el-button>
-        <el-button type="warning" v-if="serverData.operationState == 1 || serverData.operationState == 2" @click.stop="toPay">去支付</el-button>
-      </template>
-    </div>
-  </PageContainer>
+    <Card v-if="serverData.deal.remark" :invisible="true" class="terms-conditions">
+      <div>使用须知</div>
+      <!-- <ul>
+              <li>serverData.deal.remark</li>
+              <li>sdfdsf</li>
+              <li>sdfdsf</li>
+              <li>sdfdsf</li>
+            </ul> -->
+      <div>
+        {{serverData.deal.remark}}
+      </div>
+    </Card>
+  </section>
 </template>
 
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
+import math from '../../components/math'
 import { Row, Col, Button } from 'element-ui'
-import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
-import PageContainer from '../vue-features/components/PageContainer'
+import Card from '../vue-features/components/Card'
+import bdStyleMixin from '../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
 
 export default {
-  name: 'order',
   validate({ params, query }) {
     return /^\d+$/.test(params.id)
   },
@@ -498,14 +189,25 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    PageContainer
+    Card
   },
   mounted() {
-    this.$http.get('/deal/detail.do', {
-      dealId: this.orderId
-    }).then(data => {
-      _.assign(this.serverData, data || {})
-    })
+    this.$http
+      .get('/deal/detail.do', {
+        dealId: this.orderId
+      })
+      .then(data => {
+        data = data || {}
+        data.commonPay = data.commonPay || {}
+        // data.commonSales = data.commonSales || {}
+        data.deal = data.deal || {}
+        _.assign(this.serverData, data)
+      })
+  },
+  computed: {
+    discountAmount() {
+      return math.sub(this.serverData.commonPay.payFeeTotal || 0, this.serverData.commonPay.payFeePaid || 0)
+    }
   },
   methods: {
     viewEvents() {
@@ -518,11 +220,13 @@ export default {
       this.$router.push('/')
     },
     toCancel() {
-      this.$http.post('/deal/cancel.do', {
-        dealId: this.orderId
-      }).then(data => {
-        this.$router.push('/order')
-      })
+      this.$http
+        .post('/deal/cancel.do', {
+          dealId: this.orderId
+        })
+        .then(data => {
+          this.$router.push('/order')
+        })
     },
     toPay() {
       this.$router.push(`/pay/${this.orderId}`)
@@ -532,9 +236,9 @@ export default {
     const orderId = this.$route.params['id']
     return {
       orderId,
-      bodyClass: `${DefaultConfig.bodyClass} bd-pt-order`,
       serverData: {
-        data: {},
+        commonSales: null,
+        commonPay: {},
         deal: {},
         dealItemList: null,
         dealPlatformList: null,
@@ -549,31 +253,133 @@ export default {
 }
 </script>
 
-<style lang="scss">
-body.bd-pt-order {
-  padding-bottom: 120px;
-}
-</style>
-
 <style lang="scss" scoped>
-.state-2 {
-  color: #f60;
-}
-
-.list-box {
-  .nav-panel {
-    i {
-      color: #aaa;
+.container {
+  .order-content {
+    .order-content-item {
+      padding: 2px 0;
+      .item-img {
+        width: 50px;
+        height: 50px;
+        vertical-align: top;
+      }
+      .item-ctt {
+        display: inline-block;
+        width: calc(100% - 50px);
+        height: 50px;
+        padding-left: 8px;
+        .item-ctt-title {
+          color: #222;
+          font-size: 18px;
+          font-weight: bolder;
+          line-height: 30px;
+        }
+        .item-ctt-desc {
+          line-height: 20px;
+        }
+      }
     }
-    .platform-icon {
-      width: 18px;
-      height: 18px;
-      margin: 2px;
+  }
+
+  .clip-section {
+    position: relative;
+    background-color: white;
+    .clip-line {
+      line-height: 10px;
+      height: 10px;
+    }
+    .clip-line + .clip-line {
+      border-top: 2px dashed #f0f0f0;
+    }
+    .clip-gap {
+      position: absolute;
+      top: 0;
+      width: 10px;
+      height: 20px;
+      background-color: #f8f8f8;
+      display: inline-block;
+      border: 1px solid #f0f0f0;
+      &.clip-gap-left {
+        left: 0;
+        border-radius: 0 10px 10px 0;
+        border-left: 0;
+      }
+      &.clip-gap-right {
+        right: 0;
+        border-radius: 10px 0 0 10px;
+        border-right: 0;
+      }
+    }
+  }
+
+  .amount-list {
+    .el-row {
+      padding: 3px 0;
+      .el-col {
+        &:last-child {
+          color: #f26a3e;
+        }
+      }
+    }
+  }
+
+  .order-status {
+    .order-status-field {
+      padding: 3px 0;
+    }
+
+    .ticket-matrix-item {
+      margin-top: 25px;
+      .ticket-desc,
+      .ticket-name {
+        padding: 3px 0;
+      }
+      .ticket-desc {
+        color: #222;
+        line-height: 18px;
+        span {
+          color: #f26a3e;
+          font-size: 18px;
+          vertical-align: top;
+        }
+      }
+      .ticket-name {
+        font-size: 12px;
+        color: #999;
+      }
+    }
+  }
+
+  .venue-info {
+    .venue-name,
+    .venue-address {
+      padding: 3px 0;
+    }
+    .venue-address {
+      font-size: 12px;
+      color: #999;
+    }
+    .venue-contact {
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      border-left: 1px solid #f0f0f0;
+      padding-left: 15px;
+      i {
+        font-size: 28px;
+        color: #666;
+      }
+    }
+  }
+
+  .terms-conditions {
+    ul {
+      padding-left: 15px;
+      li {
+        padding: 3px 0;
+      }
     }
   }
 }
-
-.list-box~.list-box {
-  margin-top: 15px;
-}
 </style>
+

@@ -2,34 +2,34 @@
   <section class="container container-pd">
     <Card title-text="我的订单" title-icon="fa fa-id-card">
       <div class="col-percent el-card__edge el-card__edge-bottom el-card__edge-nobody">
-        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == null}" @click="switchTab($event)">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == null}" @click="switchTab()">
           <el-button type="text" class="full-width">全部</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_PAY}" @click="switchTab($event, DealStatusMap.NOT_PAY)">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_PAY}" @click="switchTab(DealStatusMap.NOT_PAY)">
           <el-button type="text" class="full-width">待支付</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_USE}" @click="switchTab($event, DealStatusMap.NOT_USE)">
-          <el-button type="text" class="full-width">待使用</el-button>
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.REFUNDED}" @click="switchTab(DealStatusMap.REFUNDED)">
+          <el-button type="text" class="full-width">已退款</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.COMPLETE}" @click="switchTab($event, DealStatusMap.COMPLETE)">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.COMPLETE}" @click="switchTab(DealStatusMap.COMPLETE)">
           <el-button type="text" class="full-width">已完成</el-button>
           <div class="btn-selected-tag"></div>
         </div>
-        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.CANCEL}" @click="switchTab($event, DealStatusMap.CANCEL)">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.CANCEL}" @click="switchTab(DealStatusMap.CANCEL)">
           <el-button type="text" class="full-width">已取消</el-button>
           <div class="btn-selected-tag"></div>
         </div>
       </div>
     </Card>
     <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
-      <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" :auto-fill="false" ref="loadmore">
+      <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
         <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`" @click.native="toDetail(item.deal.dealId)">
           <template slot="header-desc">
             <span :class="`deal-status-${item.deal.dealStatus}`">{{item.deal.dealStatusValue}}</span>
-            <span :class="`deal-status-${item.deal.dealStatus}`">
+            <span v-if="item.deal.dealStatus != DealStatusMap.NOT_PAY" :class="`deal-status-${item.deal.dealStatus}`" @click.stop="toDel(item.deal.dealId)">
               <i class="el-icon-delete"></i>
             </span>
           </template>
@@ -37,13 +37,13 @@
             <!-- 场地 -->
             <div class="order-content-item" v-for="dealPlatform in item.dealPlatformList" :key="dealPlatform.dealPlatformId">
               <img class="item-img" :src="`${(item.commonSales.picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
-              <div class="item-ctt text-overflow">
-                <div class="item-ctt-title">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
                   {{dealPlatform.salesName}}
                 </div>
                 <div class="item-ctt-desc">
                   <el-row>
-                    <el-col :span="20">
+                    <el-col :span="20" class="text-overflow">
                       {{dealPlatform.platformName}} {{dealPlatform.startTime}}-{{dealPlatform.endTime}}
                     </el-col>
                     <el-col :span="4" class="text-center">
@@ -56,13 +56,13 @@
             <!-- 服务人员 -->
             <div class="order-content-item" v-for="serviceUser in item.dealServiceUserList" :key="serviceUser.sysUserId">
               <img class="item-img" :src="`${(serviceUser.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}60X60.jpg`">
-              <div class="item-ctt text-overflow">
-                <div class="item-ctt-title">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
                   {{serviceUser.career}}
                 </div>
                 <div class="item-ctt-desc">
                   <el-row>
-                    <el-col :span="20">
+                    <el-col :span="20" class="text-overflow">
                       {{serviceUser.professional}}-{{serviceUser.realName}}
                     </el-col>
                     <el-col :span="4" class="text-center">
@@ -76,13 +76,13 @@
             <template v-for="dealItem in item.dealItemList">
               <div class="order-content-item" v-for="dealItemSnap in dealItem.dealItemSnapList" :key="dealItemSnap.itemId">
                 <img class="item-img" :src="`${(dealItemSnap.picUrl || [])[1] || `${CDN_IMG_HOST}/gift/0/`}60X60.jpg`">
-                <div class="item-ctt text-overflow">
-                  <div class="item-ctt-title">
+                <div class="item-ctt">
+                  <div class="item-ctt-title text-overflow">
                     {{dealItemSnap.itemName}}
                   </div>
                   <div class="item-ctt-desc">
                     <el-row>
-                      <el-col :span="20">
+                      <el-col :span="20" class="text-overflow">
                         {{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}
                       </el-col>
                       <el-col :span="4" class="text-center">
@@ -96,13 +96,13 @@
             <!-- 票务 -->
             <div class="order-content-item" v-for="dealTicket in item.dealTicketList" :key="dealTicket.dealTicketId">
               <img class="item-img" :src="`${(dealTicket.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
-              <div class="item-ctt text-overflow">
-                <div class="item-ctt-title">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
                   {{dealTicket.ticketName}}
                 </div>
                 <div class="item-ctt-desc">
                   <el-row>
-                    <el-col :span="20">
+                    <el-col :span="20" class="text-overflow">
                       {{dealTicket.orderDate}} {{dealTicket.startTime}} {{dealTicket.salesNum}}张
                     </el-col>
                     <el-col :span="4" class="text-center">
@@ -115,13 +115,13 @@
             <!-- 报名 -->
             <div class="order-content-item" v-for="dealSignup in item.dealSignupList" :key="dealSignup.dealSignupId">
               <img class="item-img" :src="`${(dealSignup.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
-              <div class="item-ctt text-overflow">
-                <div class="item-ctt-title">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
                   {{dealSignup.objectName}}
                 </div>
                 <div class="item-ctt-desc">
                   <el-row>
-                    <el-col :span="20">
+                    <el-col :span="20" class="text-overflow">
                       {{dealSignup.objectStartDate}}至{{dealSignup.objectEndDate}}
                     </el-col>
                     <el-col :span="4" class="text-center">
@@ -134,13 +134,13 @@
             <!-- 会员服务 -->
             <div class="order-content-item" v-for="servicePub in item.dealServicePubList" :key="servicePub.serviceId">
               <img class="item-img" :src="`${(servicePub.picUrl || [])[1] || `${CDN_IMG_HOST}/pubservice/0/`}140X90.jpg`">
-              <div class="item-ctt text-overflow">
-                <div class="item-ctt-title">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
                   {{servicePub.serviceName}}
                 </div>
                 <div class="item-ctt-desc">
                   <el-row>
-                    <el-col :span="20">
+                    <el-col :span="20" class="text-overflow">
                       {{servicePub.salesName}}
                     </el-col>
                     <el-col :span="4" class="text-center">
@@ -151,6 +151,15 @@
               </div>
             </div>
           </div>
+
+          <el-row v-if="item.deal.dealStatus == DealStatusMap.NOT_PAY" class="el-card__edge el-card__edge-bottom">
+            <el-col :span="12">
+              <el-button type="text" class="full-width" @click.stop="toCancel(item.deal.dealId)">取消</el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button type="text" class="full-width" @click.stop="toPay(item.deal.dealId)">去支付</el-button>
+            </el-col>
+          </el-row>
         </Card>
       </mt-loadmore>
     </div>
@@ -247,17 +256,34 @@ export default {
     toPay(id) {
       this.$router.push(`/pay/${id}`)
     },
-    switchTab(event, status) {
+    toDel(id) {
+      // TODO 删除订单
+    },
+    toCancel(id) {
+      this.$http
+        .post('/deal/cancel.do', {
+          dealId: id
+        })
+        .then(data => {
+          this.$router.go(0)
+        })
+    },
+    switchTab(status) {
       this.params.dealStatus = status
+    },
+    toDetail(dealId) {
+      this.$router.push(`/order/${dealId}`)
+    }
+  },
+  watch: {
+    'params.dealStatus'() {
       this.list = []
+      this.allLoaded = false
       this.serverData = {
         page: 0,
         total: 0
       }
       this.loadBottom()
-    },
-    toDetail(dealId) {
-      this.$router.push(`/order/${dealId}`)
     }
   },
   data() {
@@ -281,8 +307,14 @@ export default {
       //   '100': '报名'
       // },
       DealStatusMap: {
+        // NEWS(0, "订单开始"),
+        // NOT_PAY(1, "待支付"),
+        // NOT_USE(2, "待使用"),
+        // COMPLETE(3, "已完成"),
+        // CANCEL(4, "已取消"),
+        // REFUNDED(5, "已退款");
         NOT_PAY: 1,
-        NOT_USE: 2,
+        REFUNDED: 5,
         COMPLETE: 3,
         CANCEL: 4
       }
@@ -339,6 +371,10 @@ export default {
         }
       }
     }
+  }
+
+  .deal-status-1 {
+    color: #f26a3e;
   }
 }
 </style>
