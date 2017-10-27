@@ -118,8 +118,8 @@
         支付时间：
       </div>
       <!-- <div class="order-status-field">
-        完成时间：
-      </div> -->
+              完成时间：
+            </div> -->
       <div class="ticket-matrix-item text-center" v-for="dealTicket in serverData.dealTicketList" :key="dealTicket.dealTicketId">
         <div class="ticket-desc">
           验证码：
@@ -154,11 +154,11 @@
     <Card v-if="serverData.deal.remark" :invisible="true" class="terms-conditions">
       <div>使用须知</div>
       <!-- <ul>
-        <li>serverData.deal.remark</li>
-        <li>sdfdsf</li>
-        <li>sdfdsf</li>
-        <li>sdfdsf</li>
-      </ul> -->
+              <li>serverData.deal.remark</li>
+              <li>sdfdsf</li>
+              <li>sdfdsf</li>
+              <li>sdfdsf</li>
+            </ul> -->
       <div>
         {{serverData.deal.remark}}
       </div>
@@ -180,6 +180,7 @@
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
+import popup from '../../components/popup'
 import math from '../../components/math'
 import { Row, Col, Button } from 'element-ui'
 import Card from '../vue-features/components/Card'
@@ -222,13 +223,18 @@ export default {
   },
   methods: {
     toCancel() {
-      this.$http
-        .post('/deal/cancel.do', {
-          dealId: this.dealId
+      popup
+        .confirm('确认取消订单吗？')
+        .then(action => {
+          this.$http
+            .post('/deal/cancel.do', {
+              dealId: this.dealId
+            })
+            .then(data => {
+              this.$router.push('/order')
+            })
         })
-        .then(data => {
-          this.$router.push('/order')
-        })
+        .catch(e => {})
     },
     toPay() {
       this.$router.push(`/pay/${this.dealId}`)

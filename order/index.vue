@@ -174,6 +174,7 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
+import popup from '../../components/popup'
 import Card from '../vue-features/components/Card'
 import { Row, Col, Button } from 'element-ui'
 import { Loadmore } from 'mint-ui'
@@ -260,13 +261,18 @@ export default {
       // TODO 删除订单
     },
     toCancel(id) {
-      this.$http
-        .post('/deal/cancel.do', {
-          dealId: id
+      popup
+        .confirm('确认取消订单吗？')
+        .then(action => {
+          this.$http
+            .post('/deal/cancel.do', {
+              dealId: id
+            })
+            .then(data => {
+              this.$router.go(0)
+            })
         })
-        .then(data => {
-          this.$router.go(0)
-        })
+        .catch(e => {})
     },
     switchTab(status) {
       this.params.dealStatus = status
