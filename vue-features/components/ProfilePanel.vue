@@ -41,7 +41,7 @@ export default {
       type: String,
       default: 'user'
     },
-    protruding: {
+    protruding: { // 头像往上突出
       type: Boolean,
       default: true
     }

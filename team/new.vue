@@ -1,38 +1,39 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/team/my">
-    <el-row class="team-category">
-      <el-col :span="6" class="category-item" v-for="item in serverData" :key="item.key">
-        <div class="category-content" @click="onSelect(item.key)" :ref="`key-${item.key}`">
-          <el-tag type="primary">
-            {{item.value}}
-          </el-tag>
-        </div>
+  <section class="container container-pd">
+    <el-row :gutter="6">
+      <el-col :span="12" v-for="item in serverData" :key="item.key" class="category-item">
+        <Card :mini="true" @click.native="onSelect(item.key)">
+          <div class="category-item__content">
+            <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.key}.png`">
+            <span>{{item.value}}</span>
+          </div>
+        </Card>
       </el-col>
     </el-row>
-  </PageContainer>
+  </section>
 </template>
 
 <script>
 // import _ from 'lodash'
 import Vue from 'vue'
 import popop from '../../components/popup'
-import { Row, Col, Button, Tag } from 'element-ui'
-import PageContainer from '../vue-features/components/PageContainer'
+import { Row, Col, Button } from 'element-ui'
+import bdStyleMixin from '../vue-features/mixins/body-style'
+import Card from '../vue-features/components/Card'
 
-Vue.component(Tag.name, Tag)
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
 
 export default {
-  name: 'team-new',
   head() {
     return {
       title: '创建团队'
     }
   },
+  mixins: [bdStyleMixin],
   components: {
-    PageContainer
+    Card
   },
   mounted() {
     this.$http.get('/team/teamProfessionalList.do').then(data => {
@@ -40,7 +41,7 @@ export default {
       this.serverData.push.apply(this.serverData, data || [])
 
       if (this.defaultKey) {
-        // this.$refs[`key-${this.defaultKey}`]
+        this.onSelect(this.defaultKey)
       }
     })
   },
@@ -69,22 +70,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.team-category {
-  .category-item {
-    padding: 10px;
-    .category-content {
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      .el-tag {
-        padding: 8px 0;
-        height: auto;
-        width: 100%;
-        cursor: pointer;
-        &:active {
-          background-color: rgba(32, 160, 255, .3);
-        }
-      }
+.category-item {
+  padding: 3px 0;
+  .category-item__content {
+    padding: 10px 20px;
+    img {
+      height: 24px;
+      width: 24px;
+      vertical-align: middle;
+    }
+    span {
+      padding-left: 20px;
     }
   }
 }

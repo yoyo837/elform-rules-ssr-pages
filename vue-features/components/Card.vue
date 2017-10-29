@@ -1,5 +1,5 @@
 <template>
-  <el-card :class="{'el-card-invisible': invisible}">
+  <el-card :class="{'el-card-mini':mini, 'el-card-invisible': invisible}">
     <template v-if="titleText || titleHtml || titleIcon" slot="header">
       <i v-if="titleIcon" :class="titleIcon" aria-hidden="true"></i>
       <span v-if="titleHtml" v-html="titleHtml"></span>
@@ -25,6 +25,10 @@ export default {
     titleIcon: String,
     titleHtml: String,
     invisible: {
+      type: Boolean,
+      default: false
+    },
+    mini: {
       type: Boolean,
       default: false
     }
