@@ -1,7 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card title-text="个人资料" title-icon="fa fa-id-card">
-      <ProfilePanel :pic-path="serverData.picPath" :protruding="false" @afterUpload="afterUpload" :pub-account-id="serverData.id" :pic-type="serverData.picType">
+      <ProfilePanel :pic-path="serverData.avatar" :protruding="false" @afterUpload="afterUpload" :pub-account-id="serverData.id">
         <!-- {{serverData.realName}}/{{serverData.mobile}} -->
       </ProfilePanel>
       <el-form ref="form" :model="serverData" :rules="rules" label-width="80px">
@@ -154,7 +154,7 @@ export default {
   methods: {
     afterUpload(data) {
       data = data || {}
-      this.serverData.picPath = data.url
+      this.serverData.avatar = data.url
     },
     mergeParams(params) {
       params = params || {}
@@ -244,14 +244,13 @@ export default {
       },
       serverData: {
         id: null,
-        picType: null,
         canEdit: false,
         realName: null,
         mobile: null,
         gender: 0,
         idcard: null,
         birthday: null,
-        picPath: null,
+        avatar: null,
         userProfessionalInfo: {
           extFieldList: [],
           professionalId: null,

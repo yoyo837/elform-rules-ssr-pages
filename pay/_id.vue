@@ -1,67 +1,194 @@
 <template>
-  <section class="container container-pd">
+  <mt-tab-container v-model="activePage">
+    <mt-tab-container-item id="payPage">
+      <section class="container container-pd">
+        <Card class="timeout-tips">
+          <i class="el-icon-warning" aria-hidden="true"></i>
+          <div class="tips-text">
+            <div>订单已提交，请在{{waitTimeText}}内完成支付!</div>
+            <div>剩余时间:
+              <span>{{payTimeText}}</span> 后将取消订单!</div>
+          </div>
+        </Card>
 
-    <Card class="timeout-tips">
-      <i class="el-icon-warning" aria-hidden="true"></i>
-      <div class="tips-text">
-        <div>订单已提交，请在{{waitTimeText}}内完成支付!</div>
-        <div>剩余时间:
-          <span>{{payTimeText}}</span> 后将取消订单!</div>
-      </div>
-    </Card>
+        <Card title-text="订单信息">
+          <div class="order-content">
+            <!-- 场地 -->
+            <div class="order-content-item" v-for="dealPlatform in item.dealPlatformList" :key="dealPlatform.dealPlatformId">
+              <img class="item-img" :src="`${(item.commonSales.picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
+                  {{dealPlatform.salesName}}
+                </div>
+                <div class="item-ctt-desc">
+                  <el-row>
+                    <el-col :span="20" class="text-overflow">
+                      {{dealPlatform.platformName}} {{dealPlatform.startTime}}-{{dealPlatform.endTime}}
+                    </el-col>
+                    <el-col :span="4" class="text-center">
+                      ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+            <!-- 服务人员 -->
+            <div class="order-content-item" v-for="serviceUser in item.dealServiceUserList" :key="serviceUser.sysUserId">
+              <img class="item-img" :src="`${(serviceUser.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}60X60.jpg`">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
+                  {{serviceUser.career}}
+                </div>
+                <div class="item-ctt-desc">
+                  <el-row>
+                    <el-col :span="20" class="text-overflow">
+                      {{serviceUser.professional}}-{{serviceUser.realName}}
+                    </el-col>
+                    <el-col :span="4" class="text-center">
+                      ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+            <!-- 商品 -->
+            <template v-for="dealItem in item.dealItemList">
+              <div class="order-content-item" v-for="dealItemSnap in dealItem.dealItemSnapList" :key="dealItemSnap.itemId">
+                <img class="item-img" :src="`${(dealItemSnap.picUrl || [])[1] || `${CDN_IMG_HOST}/gift/0/`}60X60.jpg`">
+                <div class="item-ctt">
+                  <div class="item-ctt-title text-overflow">
+                    {{dealItemSnap.itemName}}
+                  </div>
+                  <div class="item-ctt-desc">
+                    <el-row>
+                      <el-col :span="20" class="text-overflow">
+                        {{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}
+                      </el-col>
+                      <el-col :span="4" class="text-center">
+                        ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+                      </el-col>
+                    </el-row>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <!-- 票务 -->
+            <div class="order-content-item" v-for="dealTicket in item.dealTicketList" :key="dealTicket.dealTicketId">
+              <img class="item-img" :src="`${(dealTicket.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
+                  {{dealTicket.ticketName}}
+                </div>
+                <div class="item-ctt-desc">
+                  <el-row>
+                    <el-col :span="20" class="text-overflow">
+                      {{dealTicket.orderDate}} {{dealTicket.startTime}} {{dealTicket.salesNum}}张
+                    </el-col>
+                    <el-col :span="4" class="text-center">
+                      ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+            <!-- 报名 -->
+            <div class="order-content-item" v-for="dealSignup in item.dealSignupList" :key="dealSignup.dealSignupId">
+              <img class="item-img" :src="`${(dealSignup.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
+                  {{dealSignup.objectName}}
+                </div>
+                <div class="item-ctt-desc">
+                  <el-row>
+                    <el-col :span="20" class="text-overflow">
+                      {{dealSignup.objectStartDate}}至{{dealSignup.objectEndDate}}
+                    </el-col>
+                    <el-col :span="4" class="text-center">
+                      ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+            <!-- 会员服务 -->
+            <div class="order-content-item" v-for="servicePub in item.dealServicePubList" :key="servicePub.serviceId">
+              <img class="item-img" :src="`${(servicePub.picUrl || [])[1] || `${CDN_IMG_HOST}/pubservice/0/`}140X90.jpg`">
+              <div class="item-ctt">
+                <div class="item-ctt-title text-overflow">
+                  {{servicePub.serviceName}}
+                </div>
+                <div class="item-ctt-desc">
+                  <el-row>
+                    <el-col :span="20" class="text-overflow">
+                      {{servicePub.salesName}}
+                    </el-col>
+                    <el-col :span="4" class="text-center">
+                      ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+                    </el-col>
+                  </el-row>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
 
-    <Card title-text="优惠信息" class="coupon-info">
-      <template slot="header-desc">
-        <span class="select-coupon">请选择
-          <i class="el-icon-arrow-right" aria-hidden="true"></i>
-        </span>
-      </template>
-    </Card>
+        <Card title-text="优惠信息" class="coupon-info">
+          <template slot="header-desc">
+            <span class="select-coupon">请选择
+              <i class="el-icon-arrow-right" aria-hidden="true"></i>
+            </span>
+          </template>
+        </Card>
 
-    <Card title-text="支付方式" class="pay-mode-list">
-      <el-row v-if="amountAvail">
-        <el-col :span="20">
-          <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
-          <span class="balance-desc">(余额{{(this.serverData.pubAccount || {}).amount || 0}}元)</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <el-radio class="radio" v-model="form.payMeansId" :label="5" :disabled="!(canPay && canUseBalance)">&nbsp;</el-radio>
-        </el-col>
-      </el-row>
-      <el-row v-for="(commonPayMean, i) in serverData.commonPayMeans" :key="commonPayMean.payMeansId" v-if="payModeIcons[commonPayMean.payMode]">
-        <el-col :span="20">
-          <img :src="`${CDN_STATIC_HOST}${payModeIcons[commonPayMean.payMode]}`"> {{commonPayMean.payMeansName}}
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <el-radio class="radio" v-model="form.payMeansId" :label="commonPayMean.payMeansId" :disabled="!canPay">&nbsp;</el-radio>
-        </el-col>
-      </el-row>
-    </Card>
+        <Card title-text="支付方式" class="pay-mode-list">
+          <el-row v-if="amountAvail">
+            <el-col :span="20">
+              <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
+              <span class="balance-desc">(余额{{formatMoney((this.serverData.pubAccount || {}).amount || 0)}}元)</span>
+            </el-col>
+            <el-col :span="4" class="text-right">
+              <el-radio class="radio" v-model="form.payMeansId" :label="5" :disabled="!(canPay && canUseBalance)">&nbsp;</el-radio>
+            </el-col>
+          </el-row>
+          <el-row v-for="(commonPayMean, i) in serverData.commonPayMeans" :key="commonPayMean.payMeansId" v-if="payModeIcons[commonPayMean.payMode]">
+            <el-col :span="20">
+              <img :src="`${CDN_STATIC_HOST}${payModeIcons[commonPayMean.payMode]}`"> {{commonPayMean.payMeansName}}
+            </el-col>
+            <el-col :span="4" class="text-right">
+              <el-radio class="radio" v-model="form.payMeansId" :label="commonPayMean.payMeansId" :disabled="!canPay">&nbsp;</el-radio>
+            </el-col>
+          </el-row>
+        </Card>
 
-    <section class="fixed-bt">
-      <el-row>
-        <el-col :span="12" class="amount-wrapper">
-          <el-button type="text" class="full-width">
-            实付款：￥
-            <span>{{priceText(totalPrice)}}</span>
-          </el-button>
-        </el-col>
-        <el-col :span="12" class="pay-wrapper">
-          <el-button type="text" class="primary-button full-width">确认支付</el-button>
-        </el-col>
-      </el-row>
-    </section>
+        <section class="open-browser-tips" v-show="showBrowserTips" @click="hideBrowserTip">
+          <img v-if="isiOS" :src="`${CDN_STATIC_HOST}/themes/mobile/pay/ios.png`">
+          <img v-else :src="`${CDN_STATIC_HOST}/themes/mobile/pay/android.png`">
+        </section>
 
-    <section class="open-browser-tips" v-show="showBrowserTips" @click="hideBrowserTip">
-      <img v-if="isiOS" :src="`${CDN_STATIC_HOST}/themes/mobile/pay/ios.png`">
-      <img v-else :src="`${CDN_STATIC_HOST}/themes/mobile/pay/android.png`">
-    </section>
+        <form ref="alipay-form" class="alipay-form" method="POST" :action="alipayForm.action">
+          <input type="hidden" v-for="field in alipayForm.fields" :key="field.name" :name="field.name" :value="field.value">
+        </form>
 
-    <form ref="alipay-form" class="alipay-form" method="POST" :action="alipayForm.action">
-      <input type="hidden" v-for="field in alipayForm.fields" :key="field.name" :name="field.name" :value="field.value">
-    </form>
+        <section class="fixed-bt">
+          <el-row>
+            <el-col :span="12" class="amount-wrapper">
+              <el-button type="text" class="full-width">
+                实付款：￥
+                <span>{{priceText(totalPrice)}}</span>
+              </el-button>
+            </el-col>
+            <el-col :span="12" class="pay-wrapper">
+              <el-button type="text" class="primary-button full-width">确认支付</el-button>
+            </el-col>
+          </el-row>
+        </section>
 
-  </section>
+      </section>
+    </mt-tab-container-item>
+    <mt-tab-container-item id="couponPage">
+
+    </mt-tab-container-item>
+  </mt-tab-container>
 </template>
 
 <script>
@@ -72,6 +199,7 @@ import utils from '../../components/utils'
 import popup from '../../components/popup'
 import math from '../../components/math'
 import { Row, Col, Button, Radio, Checkbox } from 'element-ui'
+import { TabContainer, TabContainerItem } from 'mint-ui'
 import Card from '../vue-features/components/Card'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 // nuxt.config.js的externals配置似乎不可用
@@ -83,6 +211,9 @@ Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
 Vue.component(Radio.name, Radio)
 Vue.component(Checkbox.name, Checkbox)
+
+Vue.component(TabContainer.name, TabContainer)
+Vue.component(TabContainerItem.name, TabContainerItem)
 
 export default {
   asyncData({ isClient }) {
@@ -118,11 +249,15 @@ export default {
         }
         data = data || {}
         data.dealInfo = data.dealInfo || {}
+        data.dealInfo.deal = data.dealInfo.deal || {}
         data.dealInfo.commonPay = data.dealInfo.commonPay || {}
+
+        // https://github.com/nuxt/nuxt.js/issues/1975
+        data.dealInfo.commonSales = data.dealInfo.commonSales || {}
 
         // TEST
         // data.pubAccount = data.pubAccount || {}
-        // data.pubAccount.amount = 0.5
+        // data.pubAccount.amount = 50
 
         _.assign(this.serverData, data)
 
@@ -155,6 +290,7 @@ export default {
       })
   },
   methods: {
+    formatMoney: utils.formatMoney,
     // @click.prevent
     onPubServiceClick(event) {
       const dom = event.currentTarget
@@ -232,11 +368,9 @@ export default {
       //         signature: jsConfig.signature,
       //         jsApiList: ['chooseWXPay']
       //       })
-
       //       wx.error(res => {
       //         popup.alert(res.errMsg)
       //       })
-
       //       wx.ready(() => {
       //         this.initWXCode().then(result => {
       //           if (result) {
@@ -298,7 +432,6 @@ export default {
       //               }
       //             })
       //         })
-
       //         this.$nextTick().then(() => {
       //           this.$refs['alipay-form'].submit() // 跳转到支付宝
       //         })
@@ -355,7 +488,7 @@ export default {
   },
   computed: {
     amountAvail() {
-      return (this.serverData.pubAccount || {}).amount
+      return (this.serverData.pubAccount || {}).amount > 0
     },
     canUseBalance() {
       return this.amount >= this.totalPrice
@@ -453,6 +586,7 @@ export default {
   },
   data() {
     return {
+      activePage: 'payPage',
       showBrowserTips: false,
       isiOS: utils.isiOS(),
       payModeIcons: {
@@ -525,6 +659,32 @@ body.bd-pt-pay {
         padding: 3px 0;
         span {
           color: #f26a3e;
+        }
+      }
+    }
+  }
+
+  .order-content {
+    .order-content-item {
+      padding: 2px 0;
+      .item-img {
+        width: 40px;
+        height: 40px;
+        vertical-align: top;
+      }
+      .item-ctt {
+        display: inline-block;
+        width: calc(100% - 40px);
+        height: 40px;
+        padding-left: 8px;
+        .item-ctt-title {
+          color: #222;
+          line-height: 25px;
+        }
+        .item-ctt-desc {
+          font-size: 12px;
+          color: #999;
+          line-height: 15px;
         }
       }
     }

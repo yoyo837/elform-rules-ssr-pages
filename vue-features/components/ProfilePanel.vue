@@ -7,15 +7,14 @@
       <div class="profile-name" v-if="$slots.default">
         <slot>&nbsp;</slot>
       </div>
-      <el-row v-if="showSlotForSub" class="profile-sub">
+      <el-row class="profile-sub">
         <el-col :span="12">
-          <slot name="left">&nbsp;</slot>
+          <slot name="left"></slot>
         </el-col>
         <el-col :span="12">
-          <slot name="right">&nbsp;</slot>
+          <slot name="right"></slot>
         </el-col>
       </el-row>
-      <slot name="built-in"></slot>
     </div>
   </Card>
 </template>
@@ -32,19 +31,12 @@ export default {
   components: {
     Card
   },
-  mounted() {
-    this.showSlotForSub =
-      Object.keys(this.$slots).filter(item => {
-        return !['default', 'built-in'].includes(item)
-      }).length > 0
-  },
   props: {
     picPath: {
       type: String,
       default: utils.DEFAULT_USER_AVATAR_PIC_PATH
     },
     pubAccountId: Number,
-    picType: Number,
     type: {
       type: String,
       default: 'user'
@@ -57,8 +49,8 @@ export default {
   methods: {
     onImgClick() {
       if (this._events.afterUpload) {
-        if (this.pubAccountId && this.picType) {
-          upload.avatarUpload(this.pubAccountId, this.picType).then(data => {
+        if (this.pubAccountId) {
+          upload.avatarUpload(this.pubAccountId).then(data => {
             this._events.afterUpload.forEach(fn => {
               fn.call(this, data)
             })
@@ -74,7 +66,6 @@ export default {
         this.type === 'team'
           ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
           : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
-      showSlotForSub: false, // 附属内容slot显示
       timestamp: null
     }
   },

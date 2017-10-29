@@ -4,7 +4,7 @@
       <div class="text-center account-card-content">
         <div class="balance-title">账户余额：</div>
         <div class="balance-value ac-value">
-          <span>{{serverData.amountAvail}}</span>元
+          <span>{{serverData.pubAccount.amount}}</span>元
         </div>
       </div>
       <el-row class="el-card__edge el-card__edge-bottom">
@@ -17,11 +17,11 @@
       </el-row>
     </Card>
 
-    <Card title-text="我的积分" title-icon="fa fa-id-card" v-if="serverData.isFee">
+    <Card title-text="我的积分" title-icon="fa fa-id-card" v-if="serverData.viewFee">
       <div class="text-center account-card-content">
         <div class="balance-title">当前积分：</div>
         <div class="balance-value ac-value">
-          <span>{{serverData.accountFee}}</span>分
+          <span>{{serverData.pubAccount.accountFee}}</span>分
         </div>
       </div>
       <el-row class="el-card__edge el-card__edge-bottom">
@@ -33,8 +33,8 @@
 
     <Card title-text="我的优惠" title-icon="fa fa-id-card">
       <div class="account-card-content">
-        <div v-if="serverData.pubServiceAccountVoList && serverData.pubServiceAccountVoList.length">
-          <div v-for="item in serverData.pubServiceAccountVoList" :key="item.id" class="stamp">
+        <div v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
+          <div v-for="item in serverData.pubServiceAccountList" :key="item.pubServiceId" class="stamp">
             <div class="stamp-header">
               <div class="stamp-title text-overflow" :title="item.serviceName">
                 {{item.serviceName}}
@@ -94,16 +94,28 @@ export default {
   },
   mounted() {
     this.$http.get('/pubUser/pubAccount.do').then(data => {
-      _.assign(this.serverData, data || {})
+      data = data || {}
+      data.pubAccount = data.pubAccount || {}
+      _.assign(this.serverData, data)
     })
   },
   data() {
     return {
       serverData: {
-        isFee: false,
-        accountFee: 0,
-        amountAvail: 0,
-        pubServiceAccountVoList: []
+        viewFee: false,
+        pubServiceAccountList: [],
+        pubAccount: {
+          accountFee: 0,
+          amount: 0,
+          companyId: null,
+          mobile: '--',
+          avatar: '',
+          pubAccountId: null,
+          pubUserId: null,
+          realName: '--',
+          srvId: null,
+          wechatId: ''
+        }
       }
     }
   }
@@ -147,7 +159,7 @@ export default {
       background-position: 3px 8px;
 
       .highlight {
-        color: #F26A3E;
+        color: #f26a3e;
       }
 
       .stamp-header {

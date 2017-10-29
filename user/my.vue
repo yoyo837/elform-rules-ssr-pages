@@ -3,14 +3,16 @@
     <div class="profile-bg">
     </div>
     <section class="container container-pd">
-      <ProfilePanel :pic-path="serverData.picPath" @afterUpload="afterUpload" :pub-account-id="serverData.id" :pic-type="serverData.picType">
-        <template slot="left" v-if="serverData.isFee">
-          <span class="fee">积分：<span class="fee-value">{{serverData.accountFee}}</span></span>
+      <ProfilePanel :pic-path="pubAccount.avatar" @afterUpload="afterUpload" :pub-account-id="pubAccount.pubAccountId">
+        <template slot="left" v-if="serverData.viewFee">
+          <span class="fee">积分：
+            <span class="fee-value">{{pubAccount.accountFee}}</span>
+          </span>
         </template>
         <template>
-          {{serverData.realName}}/{{serverData.mobile}}
+          {{pubAccount.realName}}/{{pubAccount.mobile}}
         </template>
-        <template slot="right" v-if="serverData.isFee">
+        <template slot="right" v-if="serverData.viewFee">
           <nuxt-link to="/user/sign">
             <el-button type="ellipse" size="mini" class="sign-btn">签到</el-button>
           </nuxt-link>
@@ -117,9 +119,15 @@ export default {
   },
   mounted() {
     this.$http.get('/pubUser/my.do').then(data => {
-      _.assign(this.serverData, data || {})
-      this.serverData.isFee = true
+      data = data || {}
+      data.pubAccount = data.pubAccount || {}
+      _.assign(this.serverData, data)
     })
+  },
+  computed: {
+    pubAccount() {
+      return this.serverData.pubAccount
+    }
   },
   methods: {
     toLogout() {
@@ -130,20 +138,25 @@ export default {
     },
     afterUpload(data) {
       data = data || {}
-      this.serverData.picPath = data.url
+      this.pubAccount.avatar = data.url
     }
   },
   data() {
     return {
       serverData: {
-        id: null,
-        picType: null,
-        wechatId: '',
-        isFee: false,
-        accountFee: 0,
-        picPath: '',
-        realName: '--',
-        mobile: '--'
+        viewFee: false,
+        pubAccount: {
+          accountFee: 0,
+          amount: 0,
+          companyId: null,
+          mobile: '--',
+          avatar: '',
+          pubAccountId: null,
+          pubUserId: null,
+          realName: '--',
+          srvId: null,
+          wechatId: ''
+        }
       }
     }
   }
