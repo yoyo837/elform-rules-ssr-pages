@@ -1,8 +1,8 @@
 <template>
   <div class="order-content" :class="`order-content__${size}`">
     <!-- 场地 -->
-    <div class="order-content-item" v-for="dealPlatform in dealInfo.dealPlatformList" :key="dealPlatform.dealPlatformId">
-      <img class="item-img" :src="`${((dealInfo.commonSales || {}).picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
+    <div class="order-content-item" v-for="dealPlatform in dataObj.dealPlatformList" :key="dealPlatform.dealPlatformId">
+      <img class="item-img" :src="`${(dataObj.commonSales.picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
       <div class="item-ctt">
         <div class="item-ctt-title text-overflow">
           {{dealPlatform.salesName}}
@@ -20,7 +20,7 @@
       </div>
     </div>
     <!-- 服务人员 -->
-    <div class="order-content-item" v-for="serviceUser in dealInfo.dealServiceUserList" :key="serviceUser.sysUserId">
+    <div class="order-content-item" v-for="serviceUser in dataObj.dealServiceUserList" :key="serviceUser.sysUserId">
       <img class="item-img" :src="`${(serviceUser.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}60X60.jpg`">
       <div class="item-ctt">
         <div class="item-ctt-title text-overflow">
@@ -39,7 +39,7 @@
       </div>
     </div>
     <!-- 商品 -->
-    <template v-for="dealItem in dealInfo.dealItemList">
+    <template v-for="dealItem in dataObj.dealItemList">
       <div class="order-content-item" v-for="dealItemSnap in dealItem.dealItemSnapList" :key="dealItemSnap.itemId">
         <img class="item-img" :src="`${(dealItemSnap.picUrl || [])[1] || `${CDN_IMG_HOST}/gift/0/`}60X60.jpg`">
         <div class="item-ctt">
@@ -60,7 +60,7 @@
       </div>
     </template>
     <!-- 票务 -->
-    <div class="order-content-item" v-for="dealTicket in dealInfo.dealTicketList" :key="dealTicket.dealTicketId">
+    <div class="order-content-item" v-for="dealTicket in dataObj.dealTicketList" :key="dealTicket.dealTicketId">
       <img class="item-img" :src="`${(dealTicket.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
       <div class="item-ctt">
         <div class="item-ctt-title text-overflow">
@@ -79,7 +79,7 @@
       </div>
     </div>
     <!-- 报名 -->
-    <div class="order-content-item" v-for="dealSignup in dealInfo.dealSignupList" :key="dealSignup.dealSignupId">
+    <div class="order-content-item" v-for="dealSignup in dataObj.dealSignupList" :key="dealSignup.dealSignupId">
       <img class="item-img" :src="`${(dealSignup.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
       <div class="item-ctt">
         <div class="item-ctt-title text-overflow">
@@ -98,7 +98,7 @@
       </div>
     </div>
     <!-- 会员服务 -->
-    <div class="order-content-item" v-for="servicePub in dealInfo.dealServicePubList" :key="servicePub.serviceId">
+    <div class="order-content-item" v-for="servicePub in dataObj.dealServicePubList" :key="servicePub.serviceId">
       <img class="item-img" :src="`${(servicePub.picUrl || [])[1] || `${CDN_IMG_HOST}/pubservice/0/`}140X90.jpg`">
       <div class="item-ctt">
         <div class="item-ctt-title text-overflow">
@@ -133,6 +133,16 @@ export default {
       required: true
     },
     size: String
+  },
+  computed: {
+    dataObj() {
+      if (this.dealInfo == null) {
+        return null
+      }
+      // https://github.com/nuxt/nuxt.js/issues/1975
+      this.dealInfo.commonSales = this.dealInfo.commonSales || {}
+      return this.dealInfo
+    }
   }
 }
 </script>
