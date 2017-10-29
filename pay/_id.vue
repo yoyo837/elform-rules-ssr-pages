@@ -186,7 +186,15 @@
       </section>
     </mt-tab-container-item>
     <mt-tab-container-item id="couponPage">
-
+      <section class="container container-pd">
+        <Card v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
+          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceId" @click.native="onPubServiceClick(pubService.pubServiceId)">
+          </Stamp>
+        </Card>
+        <Card v-else>
+          <div class="empty-coupon text-center">暂无优惠</div>
+        </Card>
+      </section>
     </mt-tab-container-item>
   </mt-tab-container>
 </template>
@@ -201,6 +209,7 @@ import math from '../../components/math'
 import { Row, Col, Button, Radio, Checkbox } from 'element-ui'
 import { TabContainer, TabContainerItem } from 'mint-ui'
 import Card from '../vue-features/components/Card'
+import Stamp from '../vue-features/components/Stamp'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 // nuxt.config.js的externals配置似乎不可用
 // import wx from 'jweixin'
@@ -231,7 +240,8 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    Card
+    Card,
+    Stamp
   },
   mounted() {
     if (this.isClient) {
@@ -290,20 +300,23 @@ export default {
       })
   },
   methods: {
-    formatMoney: utils.formatMoney,
-    // @click.prevent
-    onPubServiceClick(event) {
-      const dom = event.currentTarget
-      const radio = this.$refs['pbs'].find(pbs => {
-        return pbs.$el === dom
-      })
-      // console.log(radio.label, radio.value, this.form.pubServiceId)
-      if (this.form.pubServiceId && radio.label === this.form.pubServiceId) {
-        // 当前选中
+    onPubServiceClick(pubServiceId) {
+      if (this.form.pubServiceId === pubServiceId) {
         this.form.pubServiceId = null
       } else {
-        this.form.pubServiceId = radio.label
+        this.form.pubServiceId = pubServiceId
       }
+      // const dom = event.currentTarget
+      // const radio = this.$refs['pbs'].find(pbs => {
+      //   return pbs.$el === dom
+      // })
+      // // console.log(radio.label, radio.value, this.form.pubServiceId)
+      // if (this.form.pubServiceId && radio.label === this.form.pubServiceId) {
+      //   // 当前选中
+      //   this.form.pubServiceId = null
+      // } else {
+      //   this.form.pubServiceId = radio.label
+      // }
     },
     async initWXCode() {
       if (this.wxCode) {
@@ -586,7 +599,8 @@ export default {
   },
   data() {
     return {
-      activePage: 'payPage',
+      // activePage: 'payPage',
+      activePage: 'couponPage',
       showBrowserTips: false,
       isiOS: utils.isiOS(),
       payModeIcons: {
@@ -755,6 +769,12 @@ body.bd-pt-pay {
   }
   .alipay-form {
     display: none;
+  }
+
+  .empty-coupon {
+    color: #999;
+    font-size: 12px;
+    padding: 15px 0;
   }
 }
 </style>

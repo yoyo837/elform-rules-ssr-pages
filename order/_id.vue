@@ -233,7 +233,6 @@ export default {
     }
   },
   methods: {
-    formatDateTime: utils.formatDateTime,
     toCancel() {
       popup
         .confirm('确认取消订单吗？')
