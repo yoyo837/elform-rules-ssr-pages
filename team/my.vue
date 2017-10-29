@@ -1,9 +1,25 @@
 <template>
   <section class="container container-pd">
     <Card title-text="我的团队" title-icon="fa fa-id-card">
-      <ProfilePanel :pic-path="serverData.loginAccountVo.picPath" :protruding="false">
+      <ProfilePanel :pic-path="serverData.loginAccountVo.avatar" :protruding="false">
         {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
       </ProfilePanel>
+      <div v-if="serverData.teamList && serverData.teamList.length" class="team-list">
+        <el-row class="nav-menu" v-for="item in serverData.teamList" :key="item.id">
+          <nuxt-link :to="`/team/profile?teamid=${item.id}`">
+            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
+              <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.professionalId}.png`">
+              <span>{{item.teamName}}</span>
+            </el-col>
+            <el-col :span="4" class="nav-menu-col text-right">
+              <i class="el-icon-arrow-right" aria-hidden="true"></i>
+            </el-col>
+          </nuxt-link>
+        </el-row>
+      </div>
+      <div v-else class="team-list empty-list text-center">
+        暂无信息
+      </div>
     </Card>
     <section class="operation">
       <el-row :gutter="5">
@@ -63,4 +79,17 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.container {
+  .team-list {
+    border-top: 1px solid #f0f0f0;
+  }
+  .empty-list {
+    padding: 15px 0;
+    font-size: 12px;
+    color: #999;
+  }
+}
+</style>
 

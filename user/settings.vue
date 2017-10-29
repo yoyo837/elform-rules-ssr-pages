@@ -1,14 +1,14 @@
 <template>
   <section class="container container-pd">
-    <Card>
+    <Card :mini="true">
       <el-row class="nav-menu" title="修改密码">
         <nuxt-link to="/user/changepwd">
           <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
             <i class="fa fa-id-card"></i>
-            修改密码
+            <span>修改密码</span>
           </el-col>
           <el-col :span="4" class="nav-menu-col text-right">
-            <i class="el-icon-arrow-right"></i>
+            <i class="el-icon-arrow-right" aria-hidden="true"></i>
           </el-col>
         </nuxt-link>
       </el-row>
@@ -16,24 +16,24 @@
         <nuxt-link to="/user/profile">
           <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
             <i class="fa fa-id-card"></i>
-            个人资料
+            <span>个人资料</span>
           </el-col>
           <el-col :span="4" class="nav-menu-col text-right">
-            <i class="el-icon-arrow-right"></i>
+            <i class="el-icon-arrow-right" aria-hidden="true"></i>
           </el-col>
         </nuxt-link>
       </el-row>
     </Card>
 
-    <Card>
+    <Card :mini="true">
       <el-row class="nav-menu" title="关于我们">
         <nuxt-link to="/about">
           <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
             <i class="fa fa-id-card"></i>
-            关于我们
+            <span>关于我们</span>
           </el-col>
           <el-col :span="4" class="nav-menu-col text-right">
-            <i class="el-icon-arrow-right"></i>
+            <i class="el-icon-arrow-right" aria-hidden="true"></i>
           </el-col>
         </nuxt-link>
       </el-row>
