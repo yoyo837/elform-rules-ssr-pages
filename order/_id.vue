@@ -1,82 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card>
-      <div class="order-content">
-        <!-- 场地 -->
-        <div class="order-content-item" v-for="dealPlatform in serverData.dealPlatformList" :key="dealPlatform.dealPlatformId">
-          <img class="item-img" :src="`${((serverData.commonSales || {}).picUrl || [])[1] || `${CDN_IMG_HOST}/commonsales/0/`}58X58.gif`">
-          <div class="item-ctt">
-            <div class="item-ctt-title text-overflow">
-              {{dealPlatform.salesName}}
-            </div>
-            <div class="item-ctt-desc text-overflow">
-              {{dealPlatform.platformName}} {{dealPlatform.startTime}}-{{dealPlatform.endTime}}
-            </div>
-          </div>
-        </div>
-        <!-- 服务人员 -->
-        <div class="order-content-item" v-for="serviceUser in serverData.dealServiceUserList" :key="serviceUser.sysUserId">
-          <img class="item-img" :src="`${(serviceUser.picUrl || [])[1] || `${CDN_IMG_HOST}/user/0/`}60X60.jpg`">
-          <div class="item-ctt">
-            <div class="item-ctt-title text-overflow">
-              {{serviceUser.career}}
-            </div>
-            <div class="item-ctt-desc text-overflow">
-              {{serviceUser.professional}}-{{serviceUser.realName}}
-            </div>
-          </div>
-        </div>
-        <!-- 商品 -->
-        <template v-for="dealItem in serverData.dealItemList">
-          <div class="order-content-item" v-for="dealItemSnap in dealItem.dealItemSnapList" :key="dealItemSnap.itemId">
-            <img class="item-img" :src="`${(dealItemSnap.picUrl || [])[1] || `${CDN_IMG_HOST}/gift/0/`}60X60.jpg`">
-            <div class="item-ctt">
-              <div class="item-ctt-title text-overflow">
-                {{dealItemSnap.itemName}}
-              </div>
-              <div class="item-ctt-desc text-overflow">
-                {{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}
-              </div>
-            </div>
-          </div>
-        </template>
-        <!-- 票务 -->
-        <div class="order-content-item" v-for="dealTicket in serverData.dealTicketList" :key="dealTicket.dealTicketId">
-          <img class="item-img" :src="`${(dealTicket.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
-          <div class="item-ctt">
-            <div class="item-ctt-title text-overflow">
-              {{dealTicket.ticketName}}
-            </div>
-            <div class="item-ctt-desc text-overflow">
-              {{dealTicket.orderDate}} {{dealTicket.startTime}} {{dealTicket.salesNum}}张
-            </div>
-          </div>
-        </div>
-        <!-- 报名 -->
-        <div class="order-content-item" v-for="dealSignup in serverData.dealSignupList" :key="dealSignup.dealSignupId">
-          <img class="item-img" :src="`${(dealSignup.picUrl || [])[1] || `${CDN_IMG_HOST}/exerciselist/0/`}125X80.jpg`">
-          <div class="item-ctt">
-            <div class="item-ctt-title text-overflow">
-              {{dealSignup.objectName}}
-            </div>
-            <div class="item-ctt-desc text-overflow">
-              {{dealSignup.objectStartDate}}至{{dealSignup.objectEndDate}}
-            </div>
-          </div>
-        </div>
-        <!-- 会员服务 -->
-        <div class="order-content-item" v-for="servicePub in serverData.dealServicePubList" :key="servicePub.serviceId">
-          <img class="item-img" :src="`${(servicePub.picUrl || [])[1] || `${CDN_IMG_HOST}/pubservice/0/`}140X90.jpg`">
-          <div class="item-ctt">
-            <div class="item-ctt-title text-overflow">
-              {{servicePub.serviceName}}
-            </div>
-            <div class="item-ctt-desc text-overflow">
-              {{servicePub.salesName}}
-            </div>
-          </div>
-        </div>
-      </div>
+      <OrderList :deal-info="serverData" size="large"></OrderList>
     </Card>
     <div class="clip-section">
       <div class="clip-gap clip-gap-left"></div>
@@ -195,6 +120,7 @@ import popup from '../../components/popup'
 import math from '../../components/math'
 import { Row, Col, Button } from 'element-ui'
 import Card from '../vue-features/components/Card'
+import OrderList from '../vue-features/components/OrderList'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
@@ -212,7 +138,8 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    Card
+    Card,
+    OrderList
   },
   mounted() {
     this.$http
@@ -280,32 +207,6 @@ body.bd-pt-order-detail {
 
 <style lang="scss" scoped>
 .container {
-  .order-content {
-    .order-content-item {
-      padding: 2px 0;
-      .item-img {
-        width: 50px;
-        height: 50px;
-        vertical-align: top;
-      }
-      .item-ctt {
-        display: inline-block;
-        width: calc(100% - 50px);
-        height: 50px;
-        padding-left: 8px;
-        .item-ctt-title {
-          color: #222;
-          font-size: 18px;
-          font-weight: bolder;
-          line-height: 30px;
-        }
-        .item-ctt-desc {
-          line-height: 20px;
-        }
-      }
-    }
-  }
-
   .clip-section {
     position: relative;
     background-color: white;
