@@ -160,7 +160,7 @@
               <el-button type="text" class="full-width" @click.stop="toPay(item.deal.dealId)">去支付</el-button>
             </el-col>
           </el-row>
-          <div v-else-if="item.deal.dealStatus == DealStatusMap.COMPLETE" class="el-card__edge el-card__edge-bottom sign-cancel">
+          <div v-else-if="item.deal.dealStatus == DealStatusMap.COMPLETE && (item.deal.latestCancelTime > +now.format('x'))" class="el-card__edge el-card__edge-bottom sign-cancel">
             <div class="sign-cancel-desc">
               <i aria-hidden="true" class="el-icon-warning"></i>{{item.deal.latestCancelDescr}}
             </div>
@@ -181,6 +181,7 @@
 
 <script>
 import _ from 'lodash'
+import moment from 'moment'
 import Vue from 'vue'
 import utils from '../../components/utils'
 import popup from '../../components/popup'
@@ -206,6 +207,9 @@ export default {
   },
   mounted() {
     this.$nextTick().then(() => {
+      if (process.browser) {
+        this.mq()
+      }
       this.loadBottom()
     })
   },
@@ -222,6 +226,13 @@ export default {
     }
   },
   methods: {
+    mq() {
+      // 刷新当前时间
+      this.now = moment()
+      if (this.timerSwitch) {
+        setTimeout(this.mq, 1000 * 1)
+      }
+    },
     loadBottom() {
       if (this.allLoaded) {
         return
@@ -303,6 +314,8 @@ export default {
   },
   data() {
     return {
+      now: moment(),
+      timerSwitch: true,
       allLoaded: false,
       list: [],
       pageSize: 4,
@@ -323,6 +336,9 @@ export default {
       // },
       DealStatusMap: utils.DealStatusMap
     }
+  },
+  destroyed() {
+    this.timerSwitch = false
   }
 }
 </script>
