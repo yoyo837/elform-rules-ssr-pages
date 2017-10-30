@@ -30,6 +30,7 @@ export default {
   mixins: [bdStyleMixin],
   mounted() {
     this.$http.get('/pubActivity/dealSignupInfo.do', {
+      pubActivityId: this.pubActivityId
     }).then(data => {})
   },
   components: {
@@ -41,7 +42,7 @@ export default {
       serverData: {
         list: []
       },
-      pubActivityId: this.$route.params['pubActivityId']
+      pubActivityId: this.$route.params['id']
     }
   }
 }
