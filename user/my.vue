@@ -89,7 +89,7 @@
       </Card>
 
       <section class="operation">
-        <el-button type="primary" class="full-width shadow-button">退出账号</el-button>
+        <el-button type="primary" class="full-width shadow-button" @click="toLogout">退出账号</el-button>
       </section>
     </section>
   </section>
