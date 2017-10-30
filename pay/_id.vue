@@ -17,9 +17,10 @@
 
         <Card title-text="优惠信息" class="coupon-info">
           <template slot="header-desc">
-            <span class="select-coupon" @click="toSwitchCouponPage">请选择
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
+            <span class="select-coupon text-overflow" :title="couponText" @click="toSwitchCouponPage">
+              {{couponText}}
             </span>
+            <i class="el-icon-arrow-right" aria-hidden="true"></i>
           </template>
         </Card>
 
@@ -61,7 +62,7 @@
               </el-button>
             </el-col>
             <el-col :span="12" class="pay-wrapper">
-              <el-button type="text" class="primary-button full-width">确认支付</el-button>
+              <el-button type="text" class="primary-button full-width" @click="toPay">确认支付</el-button>
             </el-col>
           </el-row>
         </section>
@@ -71,7 +72,7 @@
     <mt-tab-container-item id="couponPage">
       <section class="container container-pd">
         <Card v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
-          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceAccountId" @click.native="onPubServiceClick(pubService.pubServiceAccountId)">
+          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceAccountId" @click.native="onPubServiceClick(pubService)">
           </Stamp>
         </Card>
         <Card v-else>
@@ -97,7 +98,7 @@ import OrderList from '../vue-features/components/OrderList'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 // nuxt.config.js的externals配置似乎不可用
 // import wx from 'jweixin'
-// const wx = process.browser ? window.wx || {} : {}
+const wx = process.browser ? window.wx || {} : {}
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
@@ -219,12 +220,14 @@ export default {
       document.body.scrollTop = 0
       window.history.pushState({ activePage: this.activePage }, null, `${prefix}${this.activePage}`)
     },
-    onPubServiceClick(pubServiceAccountId) {
+    onPubServiceClick(pubService) {
+      const pubServiceAccountId = pubService.pubServiceAccountId
       if (this.form.pubServiceAccountId === pubServiceAccountId) {
         this.form.pubServiceAccountId = null
       } else {
         this.form.pubServiceAccountId = pubServiceAccountId
       }
+      this.toSwitchPayPage()
     },
     async initWXCode() {
       if (this.wxCode) {
@@ -263,104 +266,104 @@ export default {
         })
     },
     toPay() {
-      // if (this.payMode === 5 || this.totalPrice <= 0) {
-      //   // 账户支付
-      //   this.$http
-      //     .post('/pay/pubAccountPay.do', {
-      //       dealId: this.dealId,
-      //       pubServiceAccountId: this.form.pubServiceAccountId
-      //     })
-      //     .then(data => {
-      //       this.$router.push(`/pay/result/${this.dealId}`)
-      //     })
-      //   return
-      // }
-      // if (this.payMode === 7) {
-      //   // 微信支付
-      //   if (utils.isWeiXin()) {
-      //     // 在微信中
-      //     this.$wxConfig(true).then(jsConfig => {
-      //       jsConfig = jsConfig || {}
-      //       wx.config({
-      //         debug: false,
-      //         appId: jsConfig.appId,
-      //         timestamp: jsConfig.timestamp,
-      //         nonceStr: jsConfig.nonStr,
-      //         signature: jsConfig.signature,
-      //         jsApiList: ['chooseWXPay']
-      //       })
-      //       wx.error(res => {
-      //         popup.alert(res.errMsg)
-      //       })
-      //       wx.ready(() => {
-      //         this.initWXCode().then(result => {
-      //           if (result) {
-      //             this.$http
-      //               .post('/pay/wechatPay.do', {
-      //                 dealId: this.dealId,
-      //                 pubServiceAccountId: this.form.pubServiceAccountId,
-      //                 payMeansId: this.form.payMeansId,
-      //                 redirectUrl: location.href.split('#')[0],
-      //                 code: this.wxCode
-      //               })
-      //               .then(data => {
-      //                 data = data || {}
-      //                 wx.chooseWXPay({
-      //                   appId: data.appId,
-      //                   timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-      //                   nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
-      //                   package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-      //                   signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-      //                   paySign: data.paySign, // 支付签名
-      //                   success: res => {
-      //                     // console.log(res)
-      //                     this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
-      //                   }
-      //                 })
-      //               })
-      //           }
-      //         })
-      //       })
-      //     })
-      //   } else {
-      //     popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
-      //   }
-      // } else if (this.payMode === 2) {
-      //   // 支付宝
-      //   if (utils.isWeiXin()) {
-      //     // 在微信中
-      //     this.showBrowserTip()
-      //   } else {
-      //     this.$http
-      //       .post('/pay/zfbPay.do', {
-      //         dealId: this.dealId,
-      //         pubServiceAccountId: this.form.pubServiceAccountId,
-      //         payMeansId: this.form.payMeansId,
-      //         returnUrl: `/pay/result/${this.dealId}`
-      //       })
-      //       .then(data => {
-      //         data = data || {}
-      //         _.assign(this.alipayForm, {
-      //           action: data['action'],
-      //           fields: Object.keys(data)
-      //             .filter(key => {
-      //               return key !== 'action'
-      //             })
-      //             .map(key => {
-      //               return {
-      //                 name: key,
-      //                 value: data[key]
-      //               }
-      //             })
-      //         })
-      //         this.$nextTick().then(() => {
-      //           this.$refs['alipay-form'].submit() // 跳转到支付宝
-      //         })
-      //       })
-      //   }
-      // } else {
-      //   popup.alert('不支持的第三方支付方式')
-      // }
+      if (this.payMode === 5 || this.totalPrice <= 0) {
+        // 账户支付
+        this.$http
+          .post('/pay/pubAccountPay.do', {
+            dealId: this.dealId,
+            pubServiceAccountId: this.form.pubServiceAccountId
+          })
+          .then(data => {
+            this.$router.push(`/pay/result/${this.dealId}`)
+          })
+        return
+      }
+      if (this.payMode === 7) {
+        // 微信支付
+        if (utils.isWeiXin()) {
+          // 在微信中
+          this.$wxConfig(true).then(jsConfig => {
+            jsConfig = jsConfig || {}
+            wx.config({
+              debug: false,
+              appId: jsConfig.appId,
+              timestamp: jsConfig.timestamp,
+              nonceStr: jsConfig.nonStr,
+              signature: jsConfig.signature,
+              jsApiList: ['chooseWXPay']
+            })
+            wx.error(res => {
+              popup.alert(res.errMsg)
+            })
+            wx.ready(() => {
+              this.initWXCode().then(result => {
+                if (result) {
+                  this.$http
+                    .post('/pay/wechatPay.do', {
+                      dealId: this.dealId,
+                      pubServiceAccountId: this.form.pubServiceAccountId,
+                      payMeansId: this.form.payMeansId,
+                      redirectUrl: location.href.split('#')[0],
+                      code: this.wxCode
+                    })
+                    .then(data => {
+                      data = data || {}
+                      wx.chooseWXPay({
+                        appId: data.appId,
+                        timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                        nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+                        package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                        signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                        paySign: data.paySign, // 支付签名
+                        success: res => {
+                          // console.log(res)
+                          this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
+                        }
+                      })
+                    })
+                }
+              })
+            })
+          })
+        } else {
+          popup.alert('暂不支持在微信外使用微信支付，请在微信中打开或选择其他支付方式')
+        }
+      } else if (this.payMode === 2) {
+        // 支付宝
+        if (utils.isWeiXin()) {
+          // 在微信中
+          this.showBrowserTip()
+        } else {
+          this.$http
+            .post('/pay/zfbPay.do', {
+              dealId: this.dealId,
+              pubServiceAccountId: this.form.pubServiceAccountId,
+              payMeansId: this.form.payMeansId,
+              returnUrl: `/pay/result/${this.dealId}`
+            })
+            .then(data => {
+              data = data || {}
+              _.assign(this.alipayForm, {
+                action: data['action'],
+                fields: Object.keys(data)
+                  .filter(key => {
+                    return key !== 'action'
+                  })
+                  .map(key => {
+                    return {
+                      name: key,
+                      value: data[key]
+                    }
+                  })
+              })
+              this.$nextTick().then(() => {
+                this.$refs['alipay-form'].submit() // 跳转到支付宝
+              })
+            })
+        }
+      } else {
+        popup.alert('不支持的第三方支付方式')
+      }
     },
     mq() {
       // 刷新当前时间
@@ -435,6 +438,15 @@ export default {
         }
       }
       return 0
+    },
+    couponText() {
+      if (this.couponInfo && this.form.pubServiceAccountId) {
+        return ((this.serverData.pubServiceAccountList || []).find(item => {
+          return item.pubServiceAccountId === this.form.pubServiceAccountId
+        }) || {}
+        ).serviceName
+      }
+      return '请选择'
     },
     /**
      * 服务扣除，这个才是最终支付金额应该扣除的
@@ -594,11 +606,14 @@ body.bd-pt-pay {
     .select-coupon {
       color: #f26a3e;
       font-size: 12px;
-      i {
-        color: #d8d8d8;
-        font-size: 12px;
-        vertical-align: middle;
-      }
+      max-width: 150px;
+      vertical-align: middle;
+      padding: 0;
+    }
+    i {
+      color: #d8d8d8;
+      font-size: 12px;
+      vertical-align: middle;
     }
   }
 
