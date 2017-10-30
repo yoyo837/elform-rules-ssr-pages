@@ -77,7 +77,7 @@ export default {
         }
         return
       }
-      this.imgUrl = `${val || utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg?_t=${this.timestamp || ''}`
+      this.imgUrl = `${val || `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`}?_t=${this.timestamp || ''}`
     }
   }
 }
