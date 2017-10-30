@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     toDetailPage(dataId) {
-      dataId && (location.href = `/page.shtml?id=101418&dataType=94&dataId=${dataId}`)
+      this.$router.push(`/event/${dataId}`)
     },
     loadBottom() {
       if (this.allLoaded) {
