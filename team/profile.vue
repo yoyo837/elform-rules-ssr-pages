@@ -1,12 +1,12 @@
 <template>
-  <section class="container">
-    <ProfilePanel :pic-path="serverData.picPath" size="small" type="team">
-      <template slot="left">{{serverData.memberCount}}人</template>
-      <template>{{serverData.teamInfo.teamName || '&nbsp;'}}</template>
-      <template slot="right">
-        <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/icont_1.png`" class="team-flag"> 团号{{serverData.teamInfo.id}}
-      </template>
-    </ProfilePanel>
+  <section class="container container-pd">
+    <Card>
+      <ProfilePanel :pic-path="serverData.picPath" :protruding="false" type="team">
+        <template slot="left">团号：{{serverData.teamInfo.id}}</template>
+        <template>{{serverData.teamInfo.teamName || '&nbsp;'}}</template>
+        <template slot="right">人数：{{serverData.memberCount}}</template>
+      </ProfilePanel>
+    </Card>
     <el-row class="members-box">
       <el-col :span="20">
         <div class="text-overflow members-list">
@@ -124,6 +124,7 @@ import Vue from 'vue'
 import utils from '../../components/utils'
 import popup from '../../components/popup'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
+import Card from '../vue-features/components/Card'
 import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
 import { Row, Col, Button } from 'element-ui'
 
@@ -139,47 +140,61 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    ProfilePanel
+    ProfilePanel,
+    Card
   },
   mounted() {
-    this.$http.get('/team/teamInfo.do', {
-      teamId: this.teamid
-    }).then(data => {
-      _.assign(this.serverData, data)
-    }).catch(e => {
-      this.$router.replace('/team/my')
-    })
+    this.$http
+      .get('/team/teamInfo.do', {
+        teamId: this.teamid
+      })
+      .then(data => {
+        _.assign(this.serverData, data)
+      })
+      .catch(e => {
+        this.$router.replace('/team/my')
+      })
 
     this.$wxConfig()
   },
   methods: {
     toJoin() {
-      this.$http.post('/team/joinTeam.do', {
-        teamId: this.teamid
-      }).then(data => {
-        this.$router.push('/team/my')
-      })
+      this.$http
+        .post('/team/joinTeam.do', {
+          teamId: this.teamid
+        })
+        .then(data => {
+          this.$router.push('/team/my')
+        })
     },
     toQuit() {
-      popup.confirm('确认退出该团队吗？').then(action => {
-        this.$http.post('/team/delTeamMember.do', {
-          teamId: this.teamid
-          // memberIds 不给表示自己退出
-        }).then(data => {
-          this.$router.push('/team/my')
+      popup
+        .confirm('确认退出该团队吗？')
+        .then(action => {
+          this.$http
+            .post('/team/delTeamMember.do', {
+              teamId: this.teamid
+              // memberIds 不给表示自己退出
+            })
+            .then(data => {
+              this.$router.push('/team/my')
+            })
         })
-      }).catch(e => {
-      })
+        .catch(e => {})
     },
     toDisband() {
-      popup.confirm('确认解散该团队吗？').then(action => {
-        this.$http.post('/team/disbandTeam.do', {
-          teamId: this.teamid
-        }).then(data => {
-          this.$router.push('/team/my')
+      popup
+        .confirm('确认解散该团队吗？')
+        .then(action => {
+          this.$http
+            .post('/team/disbandTeam.do', {
+              teamId: this.teamid
+            })
+            .then(data => {
+              this.$router.push('/team/my')
+            })
         })
-      }).catch(e => {
-      })
+        .catch(e => {})
     },
     toEdit() {
       this.$router.push(`/team/edit?teamid=${this.teamid}`)

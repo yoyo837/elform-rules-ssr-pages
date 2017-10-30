@@ -17,7 +17,7 @@
 
         <Card title-text="优惠信息" class="coupon-info">
           <template slot="header-desc">
-            <span class="select-coupon">请选择
+            <span class="select-coupon" @click="toSwitchCouponPage">请选择
               <i class="el-icon-arrow-right" aria-hidden="true"></i>
             </span>
           </template>
@@ -108,6 +108,8 @@ Vue.component(Checkbox.name, Checkbox)
 Vue.component(TabContainer.name, TabContainer)
 Vue.component(TabContainerItem.name, TabContainerItem)
 
+const prefix = '#active-'
+
 export default {
   asyncData({ isClient }) {
     return {
@@ -134,6 +136,9 @@ export default {
       location.replace(location.href)
       return
     }
+
+    this.setActivePageByHash()
+
     this.$http
       .get('/pay/main.do', {
         dealId: this.dealId
@@ -141,6 +146,7 @@ export default {
       .then(data => {
         if (process.browser) {
           this.mq()
+          window.addEventListener('popstate', this.onPopstate)
         }
         data = data || {}
         data.dealInfo = data.dealInfo || {}
@@ -185,6 +191,34 @@ export default {
       })
   },
   methods: {
+    setActivePageByHash() {
+      if (this.$route.hash.startsWith(prefix)) {
+        const hashPage = this.$route.hash.substr(prefix.length)
+        if (this.containerPages.includes(hashPage)) {
+          this.activePage = hashPage
+          return
+        }
+      }
+      this.activePage = this.containerPages[0] // 因为默认0
+    },
+    onPopstate(popStateEvent) {
+      this.setActivePageByHash()
+    },
+    toSwitchCouponPage() {
+      this.toSwitchPage(1)
+    },
+    toSwitchPayPage() {
+      this.toSwitchPage(0)
+    },
+    toSwitchPage(num) {
+      if (num < 0 || num > this.containerPages.length - 1) {
+        return
+      }
+      this.activePage = this.containerPages[num]
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+      window.history.pushState({ activePage: this.activePage }, null, `${prefix}${this.activePage}`)
+    },
     onPubServiceClick(pubServiceId) {
       if (this.form.pubServiceId === pubServiceId) {
         this.form.pubServiceId = null
@@ -483,8 +517,10 @@ export default {
     }
   },
   data() {
+    const containerPages = ['payPage', 'couponPage']
     return {
-      activePage: 'payPage',
+      containerPages,
+      activePage: containerPages[0],
       // activePage: 'couponPage',
       showBrowserTips: false,
       isiOS: utils.isiOS(),
@@ -529,6 +565,11 @@ export default {
   },
   destroyed() {
     this.timerSwitch = false
+    if (process.browser) {
+      if (this.onPopstate) {
+        window.removeEventListener('popstate', this.onPopstate)
+      }
+    }
   }
 }
 </script>
