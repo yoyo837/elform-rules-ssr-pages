@@ -151,7 +151,6 @@ export default {
         data = data || {}
         data.dealInfo = data.dealInfo || {}
         data.dealInfo.deal = data.dealInfo.deal || {}
-        data.dealInfo.commonPay = data.dealInfo.commonPay || {}
 
         // https://github.com/nuxt/nuxt.js/issues/1975
         data.dealInfo.commonSales = data.dealInfo.commonSales || {}
@@ -463,7 +462,6 @@ export default {
      * 支付金额
      */
     totalPrice() {
-      // return Math.max((this.serverData.dealInfo.commonPay.payFeeTotal || 0) - this.deductionPrice, 0)
       return Math.max((this.serverData.dealTotalPrice || 0) - this.deductionPrice, 0)
     },
     waitTimeText() {
@@ -549,8 +547,7 @@ export default {
         dealFeePrice: 0, // 如果大于0则只有积分支付
         dealTotalPrice: 0, // 实收总价
         dealInfo: {
-          deal: {},
-          commonPay: {}
+          deal: {}
         }
       },
       now: moment(),
