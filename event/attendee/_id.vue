@@ -28,6 +28,10 @@ export default {
     return /^\d+$/.test(params.id)
   },
   mixins: [bdStyleMixin],
+  mounted() {
+    this.$http.get('/pubActivity/dealSignupInfo.do', {
+    }).then(data => {})
+  },
   components: {
     Card,
     IndexList
@@ -36,7 +40,8 @@ export default {
     return {
       serverData: {
         list: []
-      }
+      },
+      pubActivityId: this.$route.params['pubActivityId']
     }
   }
 }

@@ -66,6 +66,11 @@ export default {
     }
   },
   mixins: [bdStyleMixin],
+  mounted() {
+    this.$http.get('/pubActivity/queryPicList.do', {
+
+    }).then(data => {})
+  },
   components: {
     Card
   },

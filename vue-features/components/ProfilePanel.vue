@@ -93,9 +93,8 @@ export default {
     }
     .profile-header {
       .header-logo {
-        max-width: 40%;
-        min-width: 100px;
-        min-height: 100px;
+        width: 100px;
+        height: 100px;
         border-radius: 50%;
         border: 5px solid white;
       }

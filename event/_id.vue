@@ -6,6 +6,11 @@
 
 <script>
 export default {
+  head() {
+    return {
+      title: '跳转中...'
+    }
+  },
   validate({ params, query }) {
     return /^\d+$/.test(params.id)
   },
