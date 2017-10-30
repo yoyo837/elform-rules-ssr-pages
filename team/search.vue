@@ -97,7 +97,7 @@ export default {
             // 没用响应满页或者超过总数
             this.allLoaded = true
           }
-          this.$refs.loadmore.onTopLoaded()
+          this.$refs.loadmore.onBottomLoaded()
         })
     }
   },
@@ -173,9 +173,12 @@ export default {
       color: #999;
     }
   }
+  .el-button {
+    height: 60px;
+  }
 }
 
-.team-item+.team-item {
+.team-item + .team-item {
   border-top: 1px solid #f0f0f0;
 }
 
