@@ -161,6 +161,7 @@ export default {
         // data.pubAccount.amount = 50
 
         _.assign(this.serverData, data)
+        this.form.pubServiceId = this.serverData.pubServiceAccountId // 默认会员服务id
 
         this.$nextTick().then(() => {
           this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
@@ -462,7 +463,8 @@ export default {
      * 支付金额
      */
     totalPrice() {
-      return Math.max((this.serverData.dealInfo.commonPay.payFeeTotal || 0) - this.deductionPrice, 0)
+      // return Math.max((this.serverData.dealInfo.commonPay.payFeeTotal || 0) - this.deductionPrice, 0)
+      return Math.max((this.serverData.dealTotalPrice || 0) - this.deductionPrice, 0)
     },
     waitTimeText() {
       return this.calTimeText(this.serverData.payWaitTime)
@@ -545,7 +547,6 @@ export default {
         payExpireTime: 0,
         pubAccount: {},
         dealFeePrice: 0, // 如果大于0则只有积分支付
-        dealPaidPrice: 0, // 订单总价
         dealTotalPrice: 0, // 实收总价
         dealInfo: {
           deal: {},
