@@ -3,7 +3,7 @@
     <div class="profile-bg">
     </div>
     <section class="container container-pd">
-      <ProfilePanel :pic-path="pubAccount.avatar" @afterUpload="afterUpload" :pub-account-id="pubAccount.pubAccountId">
+      <ProfilePanel :pic-path="pubAccount.avatar" @afterUpload="afterUpload">
         <template slot="left" v-if="serverData.viewFee">
           <span class="fee">积分：
             <span class="fee-value">{{pubAccount.accountFee}}</span>

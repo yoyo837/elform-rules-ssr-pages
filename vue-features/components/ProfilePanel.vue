@@ -36,7 +36,6 @@ export default {
       type: [String, Number],
       default: utils.DEFAULT_USER_AVATAR_PIC_PATH
     },
-    pubAccountId: Number,
     type: {
       type: String,
       default: 'user'
@@ -50,14 +49,12 @@ export default {
   methods: {
     onImgClick() {
       if (this._events.afterUpload) {
-        if (this.pubAccountId) {
-          upload.avatarUpload(this.pubAccountId).then(data => {
-            this._events.afterUpload.forEach(fn => {
-              fn.call(this, data)
-            })
-            this.timestamp = Date.now()
+        upload.avatarUpload().then(data => {
+          this._events.afterUpload.forEach(fn => {
+            fn.call(this, data)
           })
-        }
+          this.timestamp = Date.now()
+        })
       }
     }
   },
