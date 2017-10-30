@@ -4,30 +4,32 @@
       <div v-if="list == null || list.length === 0" class="text-center empty-events">
         暂无活动
       </div>
-    </Card>
-    <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
-      <Card v-for="item in list" :key="item.id" class="event-item">
-        <div class="event-content">
-          <img src="https://imgsa.baidu.com/news/q%3D100/sign=fe0439bd861001e9483c100f880f7b06/6d81800a19d8bc3eecfd769e898ba61ea9d345e8.jpg">
-          <div class="event-content__desc">
-            <div class="event-content__desc-body">
-              <div class="event-content__desc-title">喜迎十九大</div>
-              <div class="event-content__desc-time">2017-10-10至2017-10-11</div>
+      <mt-loadmore v-else :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+        <div v-for="item in list" :key="item.exerciseId" class="event-item">
+          <div class="event-content">
+            <img :src="`${item.picUrl || `${CDN_IMG_HOST}/exerciselist/0/`}195X125.jpg`" @click="toDetailPage(item.exerciseId)">
+            <div class="event-content__desc">
+              <div class="event-content__desc-body">
+                <div class="event-content__desc-title">{{item.exerciseName}}</div>
+                <div class="event-content__desc-time">{{formatDate(item.exerciseStartDate)}}至{{formatDate(item.exerciseEndDate)}}</div>
+              </div>
             </div>
           </div>
+          <el-row class="event-operation">
+            <el-col :span="12">
+              <nuxt-link :to="`/event/attendee/${item.exerciseId}`">
+                <el-button type="text" class="full-width">查看名单</el-button>
+              </nuxt-link>
+            </el-col>
+            <el-col :span="12">
+              <nuxt-link :to="`/event/album/${item.exerciseId}`">
+                <el-button type="text" class="full-width">活动相册</el-button>
+              </nuxt-link>
+            </el-col>
+          </el-row>
         </div>
-        <el-row class="event-operation">
-          <el-col :span="12">
-            <nuxt-link to="/event/attendee/123">
-              <el-button type="text" class="full-width">查看名单</el-button>
-            </nuxt-link>
-          </el-col>
-          <el-col :span="12">
-            <el-button type="text" class="full-width">活动相册</el-button>
-          </el-col>
-        </el-row>
-      </Card>
-    </mt-loadmore>
+      </mt-loadmore>
+    </Card>
   </section>
 </template>
 
@@ -58,6 +60,9 @@ export default {
     this.loadBottom()
   },
   methods: {
+    toDetailPage(dataId) {
+      dataId && (location.href = `/page.shtml?id=101418&dataType=94&dataId=${dataId}`)
+    },
     loadBottom() {
       if (this.allLoaded) {
         return
@@ -105,6 +110,7 @@ export default {
     color: #999;
   }
   .event-item {
+    padding: 5px 0;
     .event-content {
       position: relative;
       padding: 8px 8px 0 8px;
@@ -133,9 +139,11 @@ export default {
     .el-row.event-operation {
       padding: 0 8px;
       .el-col {
+        background-color: #f8f8f8;
         .el-button {
           margin-bottom: 0;
           color: #666;
+          border-radius: 0;
         }
       }
       .el-col + .el-col {
@@ -144,6 +152,9 @@ export default {
         }
       }
     }
+  }
+  .event-item +.event-item {
+    border-top: 1px solid #f0f0f0;
   }
 }
 </style>
