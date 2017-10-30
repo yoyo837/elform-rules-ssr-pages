@@ -42,9 +42,9 @@
           </template>
         </el-form-item>
         <template v-if="serverData.userProfessionalInfo.extFieldList.length">
-          <div class="professional">
+          <!-- <div class="professional">
             {{serverData.userProfessionalInfo.professionalName}}
-          </div>
+          </div> -->
           <template v-for="field in serverData.userProfessionalInfo.extFieldList">
             <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
               <template v-if="serverData.canEdit">

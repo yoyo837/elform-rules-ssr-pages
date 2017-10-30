@@ -71,7 +71,7 @@
     <mt-tab-container-item id="couponPage">
       <section class="container container-pd">
         <Card v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
-          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceId" @click.native="onPubServiceClick(pubService.pubServiceId)">
+          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceAccountId" @click.native="onPubServiceClick(pubService.pubServiceAccountId)">
           </Stamp>
         </Card>
         <Card v-else>
@@ -160,12 +160,12 @@ export default {
         // data.pubAccount.amount = 50
 
         _.assign(this.serverData, data)
-        this.form.pubServiceId = this.serverData.pubServiceAccountId // 默认会员服务id
+        this.form.pubServiceAccountId = this.serverData.pubServiceAccountId // 默认会员服务id
 
         this.$nextTick().then(() => {
           this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
 
-          if (this.totalPrice <= 0 && this.form.pubServiceId == null) {
+          if (this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
             // 没有服务之前价格为0
             this.toPay()
             return
@@ -219,23 +219,12 @@ export default {
       document.body.scrollTop = 0
       window.history.pushState({ activePage: this.activePage }, null, `${prefix}${this.activePage}`)
     },
-    onPubServiceClick(pubServiceId) {
-      if (this.form.pubServiceId === pubServiceId) {
-        this.form.pubServiceId = null
+    onPubServiceClick(pubServiceAccountId) {
+      if (this.form.pubServiceAccountId === pubServiceAccountId) {
+        this.form.pubServiceAccountId = null
       } else {
-        this.form.pubServiceId = pubServiceId
+        this.form.pubServiceAccountId = pubServiceAccountId
       }
-      // const dom = event.currentTarget
-      // const radio = this.$refs['pbs'].find(pbs => {
-      //   return pbs.$el === dom
-      // })
-      // // console.log(radio.label, radio.value, this.form.pubServiceId)
-      // if (this.form.pubServiceId && radio.label === this.form.pubServiceId) {
-      //   // 当前选中
-      //   this.form.pubServiceId = null
-      // } else {
-      //   this.form.pubServiceId = radio.label
-      // }
     },
     async initWXCode() {
       if (this.wxCode) {
@@ -279,7 +268,7 @@ export default {
       //   this.$http
       //     .post('/pay/pubAccountPay.do', {
       //       dealId: this.dealId,
-      //       pubServiceAccountId: this.form.pubServiceId
+      //       pubServiceAccountId: this.form.pubServiceAccountId
       //     })
       //     .then(data => {
       //       this.$router.push(`/pay/result/${this.dealId}`)
@@ -309,7 +298,7 @@ export default {
       //             this.$http
       //               .post('/pay/wechatPay.do', {
       //                 dealId: this.dealId,
-      //                 pubServiceAccountId: this.form.pubServiceId,
+      //                 pubServiceAccountId: this.form.pubServiceAccountId,
       //                 payMeansId: this.form.payMeansId,
       //                 redirectUrl: location.href.split('#')[0],
       //                 code: this.wxCode
@@ -345,7 +334,7 @@ export default {
       //     this.$http
       //       .post('/pay/zfbPay.do', {
       //         dealId: this.dealId,
-      //         pubServiceAccountId: this.form.pubServiceId,
+      //         pubServiceAccountId: this.form.pubServiceAccountId,
       //         payMeansId: this.form.payMeansId,
       //         returnUrl: `/pay/result/${this.dealId}`
       //       })
@@ -494,23 +483,22 @@ export default {
         }
       }
     },
-    async 'form.pubServiceId'() {
-      // console.log('当前', this.form.pubServiceId)
-      if (this.couponCacheMap.has(this.form.pubServiceId)) {
-        this.couponInfo = this.couponCacheMap.get(this.form.pubServiceId)
+    async 'form.pubServiceAccountId'() {
+      if (this.couponCacheMap.has(this.form.pubServiceAccountId)) {
+        this.couponInfo = this.couponCacheMap.get(this.form.pubServiceAccountId)
       } else {
-        if (this.form.pubServiceId == null) {
+        if (this.form.pubServiceAccountId == null) {
           this.couponInfo = null
           return
         }
         await this.$http
           .get('/pay/calcPubServicePrice.do', {
             dealId: this.dealId,
-            pubServiceAccountId: this.form.pubServiceId
+            pubServiceAccountId: this.form.pubServiceAccountId
           })
           .then(data => {
             data = data || {}
-            this.couponCacheMap.set(this.form.pubServiceId, data)
+            this.couponCacheMap.set(this.form.pubServiceAccountId, data)
             this.couponInfo = data
           })
       }
@@ -532,7 +520,7 @@ export default {
       },
       form: {
         payMeansId: null,
-        pubServiceId: null
+        pubServiceAccountId: null
       },
       alipayForm: {
         // 支付宝支付表单
