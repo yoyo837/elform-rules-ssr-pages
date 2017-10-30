@@ -4,7 +4,7 @@
       <Card :mini="true">
         <div v-for="member in list" :key="member.pubAccountId" class="list-member" @click="onSelect(member)">
           <img :src="`${member.avatar}60X60.jpg`" class="member-avatar">
-          <div class="member-name">阿明</div>
+          <div class="member-name">{{member.realName}}</div>
           <div class="member-gender">
             <i class="fa fa-id-card" aria-hidden="true"></i>
           </div>
