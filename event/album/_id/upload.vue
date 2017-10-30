@@ -2,43 +2,32 @@
   <section class="container container-pd">
     <input type="file" accept="image/*" multiple="multiple" class="hidden" ref="input" @change="onSelectFiles">
     <Card>
-      <el-form>
-        <el-form-item>
-          <div class="pic-list">
-            <div v-for="item in inProcessFiles" :key="item.key" class="pic-item">
-              <img :src="item.value">
-              <div class="pic-item-uploading-cover" v-if="item.isUploading">
-                <div class="cover-div" :style="{width: `${item.percentUnComplete}%`}"></div>
-                <div class="cover-desc">{{100 - item.percentUnComplete}}%</div>
-              </div>
-              <div class="pic-item-del" @click="delPicItem(item)">
-                <i class="el-icon-close" aria-hidden="true"></i>
-              </div>
-              <!-- <div class="pic-item-cover" v-if="item.isCover"> -->
-              <!-- <div class="pic-item-cover">
-                            封面
-                          </div> -->
+      <div class="pic-list">
+        <div v-for="item in inProcessFiles" :key="item.key" class="pic-item">
+          <img :src="item.value">
+          <div class="pic-item-uploading-cover" v-if="item.isUploading">
+            <div class="cover-div" :style="{width: `${item.percentUnComplete}%`}"></div>
+            <div class="cover-desc">{{100 - item.percentUnComplete}}%</div>
+          </div>
+          <div class="pic-item-del" @click="delPicItem(item)">
+            <i class="el-icon-close" aria-hidden="true"></i>
+          </div>
+          <!-- <div class="pic-item-cover" v-if="item.isCover"> -->
+          <div class="pic-item-cover" v-if="item.isCover">
+            封面
+          </div>
+        </div>
+        <div class="pic-upload text-center">
+          <div class="pic-upload-emit" @click="toUpload">
+            <div class="camera-wrapper">
+              <i class="fa fa-camera" aria-hidden="true"></i>
             </div>
-            <div class="pic-upload text-center">
-              <div class="pic-upload-emit" @click="toUpload">
-                <div class="camera-wrapper">
-                  <i class="fa fa-camera" aria-hidden="true"></i>
-                </div>
-                <div>
-                  点击上传
-                </div>
-              </div>
+            <div>
+              点击上传
             </div>
           </div>
-        </el-form-item>
-        <el-form-item>
-          <el-input placeholder="点击添加相册名称"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-input type="textarea" placeholder="在这里详细描述一下您的相册内容…"></el-input>
-        </el-form-item>
-      </el-form>
-      <span>2017-10-20 13:34</span>
+        </div>
+      </div>
     </Card>
 
     <section class="operation">
@@ -60,6 +49,9 @@ Vue.component(Form.name, Form)
 Vue.component(Button.name, Button)
 
 export default {
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   head() {
     return {
       title: '上传图片'
@@ -109,6 +101,7 @@ export default {
             } else {
               const inProcessFile = {
                 key,
+                fileKey: null,
                 value,
                 file: f,
                 isUploading: true,
@@ -138,6 +131,7 @@ export default {
                 .then(data => {
                   inProcessFile.percentUnComplete = 0 // 完成上传
                   inProcessFile.isUploading = false
+                  inProcessFile.fileKey = data.fileKey
                 })
                 .catch(e => {
                   this.delPicItem(inProcessFile)
@@ -163,13 +157,25 @@ export default {
         })
       ) {
         popup.alert('请耐心等待上传完成！')
-        // return
+        return
       }
+      this.$http
+        .postJSON('/pubActivity/savePic.do', {
+          pubActivityId: this.pubActivityId,
+          commonPicParamList: this.inProcessFiles.map(item => {
+            return {
+              fileKey: item.fileKey,
+              preview: 0
+            }
+          })
+        })
+        .then(data => {})
     }
   },
   data() {
     return {
-      inProcessFiles: []
+      inProcessFiles: [],
+      pubActivityId: this.$route.params['id']
     }
   }
 }

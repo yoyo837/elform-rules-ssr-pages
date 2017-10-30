@@ -14,39 +14,16 @@
           上传图片大小不能超过2M
         </div>
       </div>
-      <div v-if="list && list.length" class="pic-list">
-        <nuxt-link to="/event/album/123/123">
-          <div class="pic-item">
-            <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
-          </div>
-        </nuxt-link>
-        <nuxt-link to="/event/album/123/123">
-          <div class="pic-item">
-            <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
-          </div>
-        </nuxt-link>
-        <nuxt-link to="/event/album/123/123">
-          <div class="pic-item">
-            <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
-          </div>
-        </nuxt-link>
-        <nuxt-link to="/event/album/123/123">
-          <div class="pic-item">
-            <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
-          </div>
-        </nuxt-link>
-        <nuxt-link to="/event/album/123/123">
-          <div class="pic-item">
-            <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
-          </div>
-        </nuxt-link>
-        <nuxt-link to="/event/album/123/123">
-          <div class="pic-item">
-            <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
-          </div>
-        </nuxt-link>
+      <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
+        <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+          <nuxt-link v-for="pic in list" to="/event/album/123/123" :key="pic">
+            <div class="pic-item">
+              <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
+            </div>
+          </nuxt-link>
+        </mt-loadmore>
       </div>
-      <div v-else class="pic-emptry text-center">
+      <div v-if="list == null || list.length === 0" class="pic-emptry text-center">
         暂无图片
       </div>
     </Card>
@@ -54,6 +31,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import bdStyleMixin from '../../../vue-features/mixins/body-style'
 import Card from '../../../vue-features/components/Card'
 export default {
@@ -67,23 +45,74 @@ export default {
   },
   mixins: [bdStyleMixin],
   mounted() {
-    this.$http.get('/pubActivity/queryPicList.do', {
-
-    }).then(data => {})
+    this.loadBottom()
   },
   components: {
     Card
   },
+  computed: {
+    wrapperHeight() {
+      if (this.list == null || this.list.length === 0) {
+        return 'auto'
+      }
+      const wrapper = this.$refs['wrapper']
+      return `${document.documentElement.clientHeight -
+        wrapper.getBoundingClientRect().top -
+        window.parseFloat(window.getComputedStyle(wrapper).marginTop) -
+        2}px`
+    }
+  },
   methods: {
     toUpload() {
-      this.$router.push(`/event/album/${this.id}/upload`)
+      this.$router.push(`/event/album/${this.pubActivityId}/upload`)
+    },
+    loadBottom() {
+      if (this.allLoaded) {
+        return
+      }
+      this.$http
+        .get('/pubActivity/queryPicList.do', {
+          page: this.serverData.page + 1,
+          pageSize: this.pageSize,
+          pubActivityId: this.pubActivityId
+        })
+        .then(data => {
+          _.assign(this.serverData, {
+            page: data.page,
+            total: data.total
+          })
+          const oldLength = this.list.length
+          this.list.push.apply(
+            this.list,
+            (data.rows || []).map(item => {
+              // 处理一下字段再给到vm
+              item.deal = item.deal || {}
+              item.commonPay = item.commonPay || {}
+              item.commonSales = item.commonSales || {}
+              return item
+            })
+          ) // 追加
+
+          if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
+            // 没用响应满页或者超过总数
+            this.allLoaded = true
+          }
+
+          const loadmore = this.$refs['loadmore']
+          loadmore && loadmore.onBottomLoaded()
+        })
     }
   },
   data() {
     return {
-      list: [{}],
-      serverData: {},
-      id: this.$route.params['id']
+      allLoaded: false,
+      list: [],
+      pageSize: 4,
+      serverData: {
+        page: 0,
+        total: 0
+      },
+      pubActivityId: this.$route.params['id']
     }
   }
 }
