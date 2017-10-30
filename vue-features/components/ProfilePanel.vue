@@ -33,7 +33,7 @@ export default {
   },
   props: {
     picPath: {
-      type: String,
+      type: [String, Number],
       default: utils.DEFAULT_USER_AVATAR_PIC_PATH
     },
     pubAccountId: Number,
@@ -41,7 +41,8 @@ export default {
       type: String,
       default: 'user'
     },
-    protruding: { // 头像往上突出
+    protruding: {
+      // 头像往上突出
       type: Boolean,
       default: true
     }
@@ -71,6 +72,14 @@ export default {
   },
   watch: {
     picPath(val, oldVal) {
+      if (this.type === 'team') {
+        if (val == null) {
+          this.imgUrl = utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
+        } else {
+          this.imgUrl = `${utils.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${val}.png` // picPath是专业id
+        }
+        return
+      }
       this.imgUrl = `${val || utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg?_t=${this.timestamp || ''}`
     }
   }

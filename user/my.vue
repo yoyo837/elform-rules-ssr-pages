@@ -14,7 +14,7 @@
         </template>
         <template slot="right" v-if="serverData.viewFee">
           <nuxt-link to="/user/sign">
-            <el-button type="ellipse" size="mini" class="sign-btn">签到</el-button>
+            <el-button type="desc" size="mini" class="el-button--ellipse sign-btn">签到</el-button>
           </nuxt-link>
         </template>
       </ProfilePanel>
