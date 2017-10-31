@@ -56,7 +56,7 @@ export default {
           })
           return
         }
-        this.$router.push(`/team/edit?key=${key}`)
+        this.$router.push(`/team/0/edit?key=${key}`)
       })
     }
   },

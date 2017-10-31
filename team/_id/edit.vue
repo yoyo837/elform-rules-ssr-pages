@@ -51,9 +51,9 @@ import _ from 'lodash'
 import moment from 'moment'
 import Vue from 'vue'
 import { Form, FormItem, Button, Input, RadioGroup, Radio } from 'element-ui'
-import bdStyleMixin, { DefaultConfig } from '../vue-features/mixins/body-style'
-import ProfilePanel from '../vue-features/components/ProfilePanel'
-import DatetimePicker from '../vue-features/components/DatetimePicker'
+import bdStyleMixin, { DefaultConfig } from '../../vue-features/mixins/body-style'
+import ProfilePanel from '../../vue-features/components/ProfilePanel'
+import DatetimePicker from '../../vue-features/components/DatetimePicker'
 
 Vue.component(Form.name, Form)
 Vue.component(FormItem.name, FormItem)
@@ -63,7 +63,14 @@ Vue.component(RadioGroup.name, RadioGroup)
 Vue.component(Radio.name, Radio)
 
 export default {
-  name: 'team-edit',
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
+  head() {
+    return {
+      title: '团队信息'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel,
@@ -71,25 +78,30 @@ export default {
   },
   mounted() {
     if (this.teamid) {
-      this.$http.get('/team/teamEditInfo.do', {
-        teamId: this.teamid
-      }).then(data => {
-        if (!data.roleIsTeamAdmin) {
-          this.$router.replace('/team/my')
-          return
-        }
-        _.assign(this.serverData, data.teamInfo)
-        this.serverData.extFieldList = this.optimizeExtFieldList(data.extFieldList)
-
-        data.extFieldList.forEach(field => {
-          this.serverData[field.extName] = field.dataValue
+      this.$http
+        .get('/team/teamEditInfo.do', {
+          teamId: this.teamid
         })
-      })
+        .then(data => {
+          if (!data.roleIsTeamAdmin) {
+            this.$router.replace('/team/my')
+            return
+          }
+          _.assign(this.serverData, data.teamInfo)
+          this.serverData.extFieldList = this.optimizeExtFieldList(data.extFieldList)
+
+          data.extFieldList.forEach(field => {
+            this.serverData[field.extName] = field.dataValue
+          })
+        })
       // serverData.canEdit  如果没权限直接跳走
     } else if (this.key) {
-      Promise.all([this.$http.get('/team/getIndustryInfo.do', {
-        professionalId: this.key
-      }), this.getExtFieldList()]).then(resultList => {
+      Promise.all([
+        this.$http.get('/team/getIndustryInfo.do', {
+          professionalId: this.key
+        }),
+        this.getExtFieldList()
+      ]).then(resultList => {
         // 行业/专业信息
         const industryInfo = resultList[0]
         industryInfo.industry = industryInfo.industry || {}
@@ -113,9 +125,11 @@ export default {
         const baseReq = item != null && item.dataId && item.extDataType // 过滤非法
         if (baseReq && item.extDataType === 3) {
           if (_.isArray(item.dataTypeValue)) {
-            return item.dataTypeValue.filter(selectItem => {
-              return selectItem.value != null
-            }).length > 0
+            return (
+              item.dataTypeValue.filter(selectItem => {
+                return selectItem.value != null
+              }).length > 0
+            )
           }
           return false
         }
@@ -129,7 +143,7 @@ export default {
       return result
     },
     submitForm() {
-      this.$refs['form'].validate((valid) => {
+      this.$refs['form'].validate(valid => {
         if (valid) {
           const params = {
             teamInfo: {
@@ -156,7 +170,7 @@ export default {
           }
 
           this.$http.postJSON('/team/saveTeam.do', params).then(data => {
-            this.$router.push(`/team/profile?teamid=${data.id}`)
+            this.$router.push(`/team/${data.id}`)
           })
         }
         return false
@@ -165,15 +179,25 @@ export default {
   },
   data() {
     return {
-      startDate: moment().subtract(100, 'years').toDate(),
+      startDate: moment()
+        .subtract(100, 'years')
+        .toDate(),
       endDate: moment().toDate(),
       rules: {
-        teamName: [{
-          required: true, message: '请填写团队名称', trigger: 'blur'
-        }],
-        contact: [{
-          required: true, message: '请填写联系方式', trigger: 'blur'
-        }]
+        teamName: [
+          {
+            required: true,
+            message: '请填写团队名称',
+            trigger: 'blur'
+          }
+        ],
+        contact: [
+          {
+            required: true,
+            message: '请填写联系方式',
+            trigger: 'blur'
+          }
+        ]
       },
       serverData: {
         canEdit: true,
@@ -184,7 +208,7 @@ export default {
 
         extFieldList: []
       },
-      teamid: this.$route.query['teamid'],
+      teamid: this.$route.params['id'],
       key: this.$route.query['key'],
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-team-edit`
     }

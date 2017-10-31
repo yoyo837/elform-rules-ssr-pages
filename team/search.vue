@@ -14,7 +14,7 @@
       <mt-loadmore :bottom-method="load" :bottom-all-loaded="allLoaded" ref="loadmore">
         <Card :mini="true">
           <el-row class="team-item" v-for="item in list" :key="item.id">
-            <nuxt-link :to="`/team/profile?teamid=${item.id}`">
+            <nuxt-link :to="`/team/${item.id}`">
               <el-col :span="18">
                 <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.professionalId}.png`">
                 <div class="team-desc">

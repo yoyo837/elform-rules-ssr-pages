@@ -6,7 +6,7 @@
         <!-- <template>{{serverData.teamInfo.teamName || '&nbsp;'}}</template> -->
         <template slot="right">人数：{{serverData.memberCount}}</template>
       </ProfilePanel>
-      <nuxt-link :to="`/team/members?teamid=${teamid}`">
+      <nuxt-link :to="`/team/${teamid}/members`">
         <el-button type="primary" size="mini" class="el-button--ellipse member-list-btn">成员列表</el-button>
       </nuxt-link>
       <el-row class="nav-menu">
@@ -113,11 +113,11 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import utils from '../../components/utils'
-import popup from '../../components/popup'
-import ProfilePanel from '../vue-features/components/ProfilePanel'
-import Card from '../vue-features/components/Card'
-import bdStyleMixin from '../vue-features/mixins/body-style'
+import utils from '../../../components/utils'
+import popup from '../../../components/popup'
+import ProfilePanel from '../../vue-features/components/ProfilePanel'
+import Card from '../../vue-features/components/Card'
+import bdStyleMixin from '../../vue-features/mixins/body-style'
 import { Row, Col, Button } from 'element-ui'
 
 Vue.component(Row.name, Row)
@@ -125,6 +125,9 @@ Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
 
 export default {
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   head() {
     return {
       title: `团队-${this.serverData.teamInfo.teamName || ''}`
@@ -193,14 +196,15 @@ export default {
         .catch(e => {})
     },
     toEdit() {
-      this.$router.push(`/team/edit?teamid=${this.teamid}`)
+      this.$router.push(`/team/${this.teamid}/edit`)
     },
     toShareGuide() {
       if (
         this.$wxShare({
           title: `团队:${this.serverData.teamInfo.teamName || ''}`,
-          link: `http://${location.host}/team/share2join/${this.serverData.teamInfo.id}`,
-          img: `http://${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo.professionalId}.png`,
+          link: `http://${location.host}/team/${this.serverData.teamInfo.id}/share2join`,
+          img: `http://${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
+            .professionalId}.png`,
           desc: '快来加入我的团队'
         })
       ) {
@@ -225,8 +229,7 @@ export default {
         roleIsTeamMember: false,
         roleIsTeamAdmin: false
       },
-      teamid: this.$route.query['teamid'],
-      // key: this.$route.query['key'],
+      teamid: this.$route.params['id'],
       defUserAvatar: utils.DEFAULT_USER_AVATAR_PIC_PATH,
       showShareImg: false
     }

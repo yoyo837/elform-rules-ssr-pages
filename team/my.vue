@@ -6,7 +6,7 @@
       </ProfilePanel>
       <div v-if="serverData.teamList && serverData.teamList.length" class="team-list">
         <el-row class="nav-menu" v-for="item in serverData.teamList" :key="item.id">
-          <nuxt-link :to="`/team/profile?teamid=${item.id}`">
+          <nuxt-link :to="`/team/${item.id}`">
             <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
               <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.professionalId}.png`">
               <span>{{item.teamName}}</span>

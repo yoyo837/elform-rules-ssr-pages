@@ -6,10 +6,18 @@
 
 <script>
 import _ from 'lodash'
-import bdStyleMixin from '../vue-features/mixins/body-style'
-import IndexList from '../vue-features/components/IndexList'
+import bdStyleMixin from '../../vue-features/mixins/body-style'
+import IndexList from '../../vue-features/components/IndexList'
 
 export default {
+  head() {
+    return {
+      title: '团队成员'
+    }
+  },
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   mixins: [bdStyleMixin],
   components: {
     IndexList
@@ -36,7 +44,7 @@ export default {
       serverData: {
         list: []
       },
-      teamid: this.$route.query['teamid']
+      teamid: this.$route.params['id']
     }
   }
 }
