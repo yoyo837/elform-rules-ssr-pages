@@ -15,10 +15,10 @@
         </div>
       </div>
       <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
-        <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
-          <nuxt-link v-for="pic in list" to="/event/album/123/123" :key="pic">
+        <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" class="pic-list">
+          <nuxt-link v-for="pic in list" to="/event/album/123/123" :key="pic.fileKey">
             <div class="pic-item">
-              <img src="https://imgsa.baidu.com/news/q%3D100/sign=82cb3f9f5a3d269728d30c5d65fbb24f/11385343fbf2b211b134871bc18065380cd78e48.jpg">
+              <img :src="pic.url">
             </div>
           </nuxt-link>
         </mt-loadmore>
@@ -32,8 +32,13 @@
 
 <script>
 import _ from 'lodash'
+import Vue from 'vue'
 import bdStyleMixin from '../../../vue-features/mixins/body-style'
 import Card from '../../../vue-features/components/Card'
+import { Loadmore } from 'mint-ui'
+
+Vue.component(Loadmore.name, Loadmore)
+
 export default {
   validate({ params, query }) {
     return /^\d+$/.test(params.id)
