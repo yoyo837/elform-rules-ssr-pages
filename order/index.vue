@@ -174,7 +174,7 @@ export default {
               dealId: id
             })
             .then(data => {
-              this.$router.go(0)
+              this.reload()
             })
         })
         .catch(e => {})
@@ -184,10 +184,8 @@ export default {
     },
     toDetail(dealId) {
       this.$router.push(`/order/${dealId}`)
-    }
-  },
-  watch: {
-    'params.dealStatus'() {
+    },
+    reload() {
       this.list = []
       this.allLoaded = false
       this.serverData = {
@@ -195,6 +193,11 @@ export default {
         total: 0
       }
       this.loadBottom()
+    }
+  },
+  watch: {
+    'params.dealStatus'() {
+      this.reload()
     }
   },
   data() {

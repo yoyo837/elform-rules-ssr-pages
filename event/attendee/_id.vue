@@ -83,19 +83,22 @@ export default {
   },
   mixins: [bdStyleMixin],
   mounted() {
-    this.$http
-      .get('/pubActivity/dealSignupInfo.do', {
-        pubActivityId: this.pubActivityId
-      })
-      .then(data => {
-        _.assign(this.serverData, data || {})
-      })
+    this.loadData()
   },
   components: {
     Card,
     DialogComp
   },
   methods: {
+    loadData() {
+      this.$http
+        .get('/pubActivity/dealSignupInfo.do', {
+          pubActivityId: this.pubActivityId
+        })
+        .then(data => {
+          _.assign(this.serverData, data || {})
+        })
+    },
     onDialogClose() {
       this.closeDialog()
     },
@@ -134,10 +137,7 @@ export default {
             replaceAddMemberId: this.selectIds[0],
             type: 'replace'
           })
-          .then(data => {
-            this.$router.go(0)
-          })
-          .catch(this.signupGroupInfoResultHandler)
+          .then(this.signupGroupInfoResultHandler)
       } else {
         this.$http
           .post('/pubActivity/updateDealSignupGroupInfo.do', {
@@ -146,14 +146,39 @@ export default {
             memberId: this.selectIds.join(','),
             type: 'add'
           })
-          .then(data => {
-            this.$router.go(0)
-          })
-          .catch(this.signupGroupInfoResultHandler)
+          .then(this.signupGroupInfoResultHandler)
       }
     },
-    signupGroupInfoResultHandler(e) {
-      console.log(e)
+    signupGroupInfoResultHandler(data) {
+      data = data || {}
+      if (data.pageTag) {
+        if (data.memberId) {
+          let foundMember = this.serverData.dealSignupGroupInfoList.find(item => {
+            return item.dealSignupGroupList.find(member => {
+              return member.pubAccountId === data.memberId
+            })
+          })
+          foundMember = foundMember || {
+            pubAccountId: data.memberId
+          }
+          popup.alert(
+            `${foundMember.pubRealName ||
+              foundMember.realName ||
+              foundMember.pubAccountId}(${foundMember.age}):${data.pageTagMsg}`
+          )
+          return
+        }
+        if (data.groupId) {
+          const foundGroup = this.serverData.dealSignupGroupInfoList.find(item => {
+            return item.groupId === data.groupId
+          })
+          popup.alert(`${foundGroup.groupName}:${data.pageTagMsg}`)
+          return
+        }
+        popup.alert('未知错误')
+        return
+      }
+      this.reload()
     },
     addDealSignupGroupMember(group) {
       this.selectSingle = false
@@ -173,7 +198,7 @@ export default {
           pubActivityId: this.pubActivityId
         })
         .then(data => {
-          this.$router.go(0)
+          this.reload()
         })
     },
     updateGroupProps(member, group, type) {
@@ -184,10 +209,11 @@ export default {
           memberId: member.pubAccountId,
           type
         })
-        .then(data => {
-          this.$router.go(0)
-        })
-        .catch(this.signupGroupInfoResultHandler)
+        .then(this.signupGroupInfoResultHandler)
+    },
+    reload() {
+      this.closeDialog()
+      this.loadData()
     }
   },
   data() {
