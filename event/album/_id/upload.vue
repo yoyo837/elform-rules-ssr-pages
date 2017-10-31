@@ -151,6 +151,10 @@ export default {
       )
     },
     toSave() {
+      if (this.inProcessFiles.length === 0) {
+        popup.alert('没有可保存的文件')
+        return
+      }
       if (
         this.inProcessFiles.some(item => {
           return item.isUploading
@@ -169,7 +173,9 @@ export default {
             }
           })
         })
-        .then(data => {})
+        .then(data => {
+          this.$router.go(-1)
+        })
     }
   },
   data() {
