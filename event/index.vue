@@ -7,7 +7,7 @@
       <mt-loadmore v-else :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
         <div v-for="item in list" :key="item.exerciseId" class="event-item">
           <div class="event-content">
-            <img :src="`${item.picUrl || `${CDN_IMG_HOST}/exerciselist/0/`}195X125.jpg`" @click="toDetailPage(item.exerciseId)">
+            <img :src="`${item.picUrl[0] || `${CDN_IMG_HOST}/exerciselist/0/195X125.jpg`}`" @click="toDetailPage(item.exerciseId)">
             <div class="event-content__desc">
               <div class="event-content__desc-body">
                 <div class="event-content__desc-title">{{item.exerciseName}}</div>
