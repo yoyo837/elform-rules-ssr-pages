@@ -199,7 +199,7 @@ export default {
       if (
         this.$wxShare({
           title: `团队:${this.serverData.teamInfo.teamName || ''}`,
-          link: `/team/share2join/${this.serverData.teamInfo.id}`,
+          link: `//${location.host}/team/share2join/${this.serverData.teamInfo.id}`,
           img: `${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo.professionalId}.png`,
           desc: '快来加入我的团队'
         })
