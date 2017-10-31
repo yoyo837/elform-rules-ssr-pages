@@ -90,7 +90,7 @@ import Vue from 'vue'
 import utils from '../../components/utils'
 import popup from '../../components/popup'
 import math from '../../components/math'
-import { Row, Col, Button, Radio, Checkbox } from 'element-ui'
+import { Row, Col, Button, Radio } from 'element-ui'
 import { TabContainer, TabContainerItem } from 'mint-ui'
 import Card from '../vue-features/components/Card'
 import Stamp from '../vue-features/components/Stamp'
@@ -104,7 +104,6 @@ Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 Vue.component(Button.name, Button)
 Vue.component(Radio.name, Radio)
-Vue.component(Checkbox.name, Checkbox)
 
 Vue.component(TabContainer.name, TabContainer)
 Vue.component(TabContainerItem.name, TabContainerItem)

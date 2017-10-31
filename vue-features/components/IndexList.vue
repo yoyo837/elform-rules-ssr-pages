@@ -94,28 +94,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.index-list-box {
-  .list-member {
-    padding: 15px;
-    .member-avatar {
-      border-radius: 50%;
-      vertical-align: middle;
-      height: 50px;
-      width: 50px;
-    }
-    .member-name,
-    .member-gender {
-      display: inline-block;
-      padding-left: 8px;
-    }
-    .member-name {
-      color: #222;
-    }
-  }
-  .list-member + .list-member {
-    border-top: 1px solid #f0f0f0;
-  }
-}
-</style>
