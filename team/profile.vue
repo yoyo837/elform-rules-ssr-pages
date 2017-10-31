@@ -119,6 +119,7 @@ import ProfilePanel from '../vue-features/components/ProfilePanel'
 import Card from '../vue-features/components/Card'
 import bdStyleMixin from '../vue-features/mixins/body-style'
 import { Row, Col, Button } from 'element-ui'
+import wxShare from '../../components/wx-share'
 
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
@@ -198,10 +199,19 @@ export default {
       this.$router.push(`/team/edit?teamid=${this.teamid}`)
     },
     toShareGuide() {
-      this.showShareImg = true
-      if (process.browser) {
-        document.documentElement.scrollTop = 0
-        document.body.scrollTop = 0
+      if (
+        wxShare({
+          title: `团队:${this.serverData.teamInfo.teamName || ''}`,
+          link: `/team/share2join/${this.serverData.teamInfo.id}`,
+          img: `${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo.professionalId}.png`,
+          desc: '快来加入我的团队'
+        })
+      ) {
+        this.showShareImg = true
+        if (process.browser) {
+          document.documentElement.scrollTop = 0
+          document.body.scrollTop = 0
+        }
       }
     },
     closeShare() {
