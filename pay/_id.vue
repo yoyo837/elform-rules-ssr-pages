@@ -133,7 +133,7 @@ export default {
   mounted() {
     if (this.isClient) {
       // 微信SPA认证问题
-      location.replace(location.href)
+      this.$router.go(0)
       return
     }
 

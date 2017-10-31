@@ -152,8 +152,6 @@ export default {
       .catch(e => {
         this.$router.replace('/team/my')
       })
-
-    this.$wxConfig()
   },
   methods: {
     toJoin() {
