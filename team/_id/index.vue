@@ -203,7 +203,7 @@ export default {
         this.$wxShare({
           title: `团队:${this.serverData.teamInfo.teamName || ''}`,
           link: `http://${location.host}/team/${this.serverData.teamInfo.id}/share2join`,
-          img: `http://${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
+          img: `http:${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
             .professionalId}.png`,
           desc: '快来加入我的团队'
         })
