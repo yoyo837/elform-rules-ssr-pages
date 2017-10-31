@@ -155,6 +155,13 @@ export default {
       .catch(e => {
         this.$router.replace('/team/my')
       })
+    this.$wxShare({
+      title: `团队:${this.serverData.teamInfo.teamName || ''}`,
+      link: `http://${location.host}/team/${this.serverData.teamInfo.id}/share2join`,
+      img: `http:${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
+        .professionalId}.png`,
+      desc: '快来加入我的团队'
+    })
   },
   methods: {
     toJoin() {
@@ -199,20 +206,10 @@ export default {
       this.$router.push(`/team/${this.teamid}/edit`)
     },
     toShareGuide() {
-      if (
-        this.$wxShare({
-          title: `团队:${this.serverData.teamInfo.teamName || ''}`,
-          link: `http://${location.host}/team/${this.serverData.teamInfo.id}/share2join`,
-          img: `http:${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
-            .professionalId}.png`,
-          desc: '快来加入我的团队'
-        })
-      ) {
-        this.showShareImg = true
-        if (process.browser) {
-          document.documentElement.scrollTop = 0
-          document.body.scrollTop = 0
-        }
+      this.showShareImg = true
+      if (process.browser) {
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
       }
     },
     closeShare() {
