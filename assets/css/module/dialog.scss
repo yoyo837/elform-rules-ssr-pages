@@ -1,0 +1,59 @@
+.el-dialog__title {
+  color: #222;
+  font-size: 18px;
+}
+
+.portal-dialog {
+  .el-dialog__header {
+    text-align: center;
+  }
+  .el-button {
+    margin-top: 20px;
+    width: 100%;
+  }
+  &.transparent-dialog {
+    .el-dialog {
+      background-color: transparent;
+      box-shadow: none;
+      .el-dialog__header {
+        button {
+          i {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.portal-dialog-mobile {
+  .el-dialog {
+    width: 80%;
+  }
+}
+
+.verify-dialog {
+  .el-dialog__body {
+    text-align: center;
+    .el-form {
+      .el-form-item {
+        .el-form-item__content {
+          .el-input {
+            .el-input__inner {
+              text-align: center;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.el-dialog__headerbtn {
+  &:focus,
+  &:hover {
+    .el-dialog__close {
+      color: #f26a3e;
+    }
+  }
+}
