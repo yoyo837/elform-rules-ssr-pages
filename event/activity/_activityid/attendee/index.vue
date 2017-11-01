@@ -60,11 +60,11 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import popup from '../../../components/popup'
-import bdStyleMixin from '../../vue-features/mixins/body-style'
+import popup from '../../../../../components/popup'
+import bdStyleMixin from '../../../../vue-features/mixins/body-style'
 import { Button, Row, Col, Checkbox, CheckboxGroup } from 'element-ui'
-import Card from '../../vue-features/components/Card'
-import DialogComp from '../../vue-features/components/Dialog'
+import Card from '../../../../vue-features/components/Card'
+import DialogComp from '../../../../vue-features/components/Dialog'
 
 Vue.component(Button.name, Button)
 Vue.component(Row.name, Row)
@@ -74,7 +74,7 @@ Vue.component(CheckboxGroup.name, CheckboxGroup)
 
 export default {
   validate({ params, query }) {
-    return /^\d+$/.test(params.id)
+    return /^\d+$/.test(params.activityid)
   },
   head() {
     return {
@@ -232,7 +232,7 @@ export default {
         dealSignupGroupInfoList: [],
         memberList: [] // 换人/加人的成员列表
       },
-      pubActivityId: this.$route.params['id']
+      pubActivityId: this.$route.params['activityid']
     }
   }
 }

@@ -17,12 +17,12 @@
           </div>
           <el-row class="event-operation">
             <el-col :span="12">
-              <nuxt-link :to="`/event/attendee/${item.pubActivityId}`">
+              <nuxt-link :to="`/event/activity/${item.pubActivityId}/attendee`">
                 <el-button type="text" class="full-width">查看名单</el-button>
               </nuxt-link>
             </el-col>
             <el-col :span="12">
-              <nuxt-link :to="`/event/album/${item.pubActivityId}`">
+              <nuxt-link :to="`/event/activity/${item.pubActivityId}/album`">
                 <el-button type="text" class="full-width">活动相册</el-button>
               </nuxt-link>
             </el-col>

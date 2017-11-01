@@ -39,8 +39,8 @@
 <script>
 import MD5 from 'md5.js'
 import Vue from 'vue'
-import popup from '../../../../components/popup'
-import Card from '../../../vue-features/components/Card'
+import popup from '../../../../../components/popup'
+import Card from '../../../../vue-features/components/Card'
 import { Form, FormItem, Input, Button } from 'element-ui'
 
 Vue.component(Input.name, Input)
@@ -50,7 +50,7 @@ Vue.component(Button.name, Button)
 
 export default {
   validate({ params, query }) {
-    return /^\d+$/.test(params.id)
+    return /^\d+$/.test(params.activityid)
   },
   head() {
     return {
@@ -181,7 +181,7 @@ export default {
   data() {
     return {
       inProcessFiles: [],
-      pubActivityId: this.$route.params['id']
+      pubActivityId: this.$route.params['activityid']
     }
   }
 }

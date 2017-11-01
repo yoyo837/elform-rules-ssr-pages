@@ -16,32 +16,57 @@
       </div>
       <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
         <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" class="pic-list">
-          <nuxt-link v-for="pic in list" to="/event/album/123/123" :key="pic.fileKey">
-            <div class="pic-item">
-              <img :src="pic.url">
-            </div>
-          </nuxt-link>
+          <div v-for="pic in list" :key="pic.fileKey" class="pic-item" @click="onPicClick(pic)">
+            <img :src="pic.url">
+          </div>
         </mt-loadmore>
       </div>
       <div v-if="list == null || list.length === 0" class="pic-emptry text-center">
         暂无图片
       </div>
     </Card>
+
+    <section class="pic-preview" v-if="previewPic">
+      <img :src="previewPic.url" @click="onPreviewPicClick">
+      <div class="operation">
+        <el-row>
+          <el-col :span="6">
+            <el-button type="text" class="full-width">旋转</el-button>
+          </el-col>
+          <el-col :span="6">
+            <el-button type="text" class="full-width" @click="toDel">删除</el-button>
+          </el-col>
+          <el-col :span="6">
+            <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
+          </el-col>
+          <el-col :span="6">
+            <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </section>
+
   </section>
 </template>
 
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import bdStyleMixin from '../../../vue-features/mixins/body-style'
-import Card from '../../../vue-features/components/Card'
+import utils from '../../../../../components/utils'
+import popup from '../../../../../components/popup'
+import bdStyleMixin from '../../../../vue-features/mixins/body-style'
+import Card from '../../../../vue-features/components/Card'
+import { Row, Col, Button } from 'element-ui'
 import { Loadmore } from 'mint-ui'
 
 Vue.component(Loadmore.name, Loadmore)
+Vue.component(Row.name, Row)
+Vue.component(Col.name, Col)
+Vue.component(Button.name, Button)
 
 export default {
   validate({ params, query }) {
-    return /^\d+$/.test(params.id)
+    return /^\d+$/.test(params.activityid)
   },
   head() {
     return {
@@ -68,8 +93,49 @@ export default {
     }
   },
   methods: {
+    saveImg(src) {
+      const blob = new Blob([''], { type: 'application/octet-stream' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = src
+      a.download = src.replace(/(.*\/)*([^.]+.*)/gi, '$2').split('?')[0]
+      const e = document.createEvent('MouseEvents')
+      e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+      a.dispatchEvent(e)
+      URL.revokeObjectURL(url)
+    },
+    onPicClick(pic) {
+      if (pic) {
+        this.previewPic = pic
+        utils.disableBodyScroll()
+      }
+    },
+    onPreviewPicClick() {
+      this.previewPic = null
+      utils.enableBodyScroll()
+    },
+    toDel() {
+      this.$http
+        .postJSON('/pubActivity/deletePic.do', {
+          pubActivityId: this.pubActivityId,
+          fileKeys: [this.fileKey]
+        })
+        .then(data => {
+          this.$router.replace(`/event/${this.pubActivityId}/album`)
+        })
+    },
+    setCover() {
+      this.$http
+        .post('/pubActivity/updatePicPre.do', {
+          pubActivityId: this.pubActivityId,
+          fileKey: this.fileKey
+        })
+        .then(data => {
+          popup.alert('设置成功')
+        })
+    },
     toUpload() {
-      this.$router.push(`/event/album/${this.pubActivityId}/upload`)
+      this.$router.push(`/event/activity/${this.pubActivityId}/album/upload`)
     },
     loadBottom() {
       if (this.allLoaded) {
@@ -110,6 +176,7 @@ export default {
   },
   data() {
     return {
+      previewPic: null,
       allLoaded: false,
       list: [],
       pageSize: 4,
@@ -117,7 +184,7 @@ export default {
         page: 0,
         total: 0
       },
-      pubActivityId: this.$route.params['id']
+      pubActivityId: this.$route.params['activityid']
     }
   }
 }
@@ -172,6 +239,44 @@ export default {
     padding: 15px 0 20px 0;
     font-size: 12px;
     color: #999;
+  }
+}
+
+.pic-preview {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  height: calc(100% - 44px);
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f8f8f8;
+  img {
+    width: 100%;
+  }
+  .operation {
+    background-color: white;
+    border-top: 1px solid #f0f0f0;
+    margin: 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    font-size: 14px;
+    height: 44px;
+    line-height: 44px;
+    .el-row {
+      .el-col {
+        .el-button {
+          margin: 0;
+          color: #666;
+        }
+      }
+      .el-col + .el-col {
+        .el-button {
+          border-left: 1px solid #f0f0f0;
+        }
+      }
+    }
   }
 }
 </style>
