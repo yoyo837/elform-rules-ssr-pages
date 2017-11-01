@@ -3,16 +3,15 @@
     <input type="file" accept="image/*" multiple="multiple" class="hidden" ref="input" @change="onSelectFiles">
     <Card>
       <div class="pic-list">
-        <div v-for="item in inProcessFiles" :key="item.key" class="pic-item">
+        <div v-for="item in inProcessFiles" :key="item.key" class="pic-item" @click="topreviewPic(item)">
           <img :src="item.value">
           <div class="pic-item-uploading-cover" v-if="item.isUploading">
             <div class="cover-div" :style="{width: `${item.percentUnComplete}%`}"></div>
             <div class="cover-desc">{{100 - item.percentUnComplete}}%</div>
           </div>
-          <div class="pic-item-del" @click="delPicItem(item)">
+          <div class="pic-item-del" @click.stop="delPicItem(item)">
             <i class="el-icon-close" aria-hidden="true"></i>
           </div>
-          <!-- <div class="pic-item-cover" v-if="item.isCover"> -->
           <div class="pic-item-cover" v-if="item.isCover">
             封面
           </div>
@@ -33,6 +32,20 @@
     <section class="operation">
       <el-button type="primary" class="full-width shadow-button" @click="toSave">保存</el-button>
     </section>
+
+    <DialogComp v-if="previewPic" :visible="dialogVisible" @onClose="onDialogClose" class="transparent-dialog upload-preview">
+      <div class="dialog-content">
+        <img :src="previewPic.value">
+        <el-row>
+          <el-col :span="12">
+            <el-button type="text" class="full-width">旋转</el-button>
+          </el-col>
+          <el-col :span="12">
+            <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </DialogComp>
   </section>
 </template>
 
@@ -41,12 +54,15 @@ import MD5 from 'md5.js'
 import Vue from 'vue'
 import popup from '../../../../../components/popup'
 import Card from '../../../../vue-features/components/Card'
-import { Form, FormItem, Input, Button } from 'element-ui'
+import DialogComp from '../../../../vue-features/components/Dialog'
+import { Row, Col, Form, FormItem, Input, Button } from 'element-ui'
 
 Vue.component(Input.name, Input)
 Vue.component(FormItem.name, FormItem)
 Vue.component(Form.name, Form)
 Vue.component(Button.name, Button)
+Vue.component(Row.name, Row)
+Vue.component(Col.name, Col)
 
 export default {
   validate({ params, query }) {
@@ -58,14 +74,30 @@ export default {
     }
   },
   components: {
-    Card
+    Card,
+    DialogComp
   },
   mounted() {
     this.showSelectFile()
   },
   methods: {
+    setCover() {
+      if (this.previewPic) {
+        this.inProcessFiles.forEach(item => {
+          item.isCover = false
+        })
+        this.previewPic.isCover = true
+      }
+      this.previewPic = null
+    },
+    onDialogClose() {
+      this.previewPic = null
+    },
     showSelectFile() {
       this.$refs['input'].click()
+    },
+    topreviewPic(item) {
+      this.previewPic = item
     },
     toUpload() {
       this.showSelectFile()
@@ -105,7 +137,8 @@ export default {
                 value,
                 file: f,
                 isUploading: true,
-                percentUnComplete: 100
+                percentUnComplete: 100,
+                isCover: false
               }
               this.inProcessFiles.push(inProcessFile)
               this.$http
@@ -149,6 +182,13 @@ export default {
         }),
         1
       )
+      // const files = this.$refs['input'].files
+      // console.log(files.splice)
+      // [...files].findIndex(file => {
+      //   return file === inProcessFile.file
+      // })
+      // console.log(a)
+      // console.log(this.$refs['input'].files)
     },
     toSave() {
       if (this.inProcessFiles.length === 0) {
@@ -169,7 +209,7 @@ export default {
           commonPicParamList: this.inProcessFiles.map(item => {
             return {
               fileKey: item.fileKey,
-              preview: 0
+              preview: item.isCover ^ 0
             }
           })
         })
@@ -178,9 +218,16 @@ export default {
         })
     }
   },
+  watch: {
+    previewPic(val) {
+      this.dialogVisible = val != null
+    }
+  },
   data() {
     return {
+      dialogVisible: false,
       inProcessFiles: [],
+      previewPic: null,
       pubActivityId: this.$route.params['activityid']
     }
   }
@@ -291,6 +338,36 @@ export default {
           height: 100%;
           background-color: rgba(0, 0, 0, 0.5);
           display: inline-block;
+        }
+      }
+    }
+  }
+}
+
+.upload-preview {
+  .dialog-content {
+    img {
+      width: 100%;
+      height: auto;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      vertical-align: middle;
+    }
+    .el-row {
+      background-color: white;
+      border-top: 1px solid #f0f0f0;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      .el-col {
+        &:first-child {
+          .el-button {
+            color: #666;
+          }
+        }
+        .el-button {
+          margin: 0;
+          height: 44px;
+          border-radius: 0;
         }
       }
     }
