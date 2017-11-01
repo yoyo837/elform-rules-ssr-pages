@@ -26,20 +26,35 @@
       </div>
     </Card>
 
-    <section class="pic-preview" v-if="previewPic">
-      <img :src="previewPic.url" @click="onPreviewPicClick">
-      <div class="operation">
+    <section v-if="previewPic" class="pic-preview" :class="{'pic-preview-edit': editMode}">
+      <img :src="previewPic.url" @click="onPreviewPicClick" ref="previewPic" :style="{transform: `rotate(${this.editData.rotate || 0}deg)`}">
+      <div v-if="editMode" class="operation operation-top">
         <el-row>
-          <el-col :span="6">
-            <el-button type="text" class="full-width">旋转</el-button>
+          <el-col :span="12">
+            <el-button type="text" class="full-width" @click="toCancelEdit">取消</el-button>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="12">
+            <el-button type="text" class="full-width sure-btn" @click="saveEdit">确定</el-button>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="operation">
+        <el-row v-if="editMode">
+          <el-col :span="24">
+            <el-button type="text" class="full-width" @click="toRotate">旋转</el-button>
+          </el-col>
+        </el-row>
+        <el-row v-else>
+          <el-col :span="8">
+            <el-button type="text" class="full-width" @click="toEditPic">编辑图片</el-button>
+          </el-col>
+          <el-col :span="8">
             <el-button type="text" class="full-width" @click="toDel">删除</el-button>
           </el-col>
-          <el-col :span="6">
+          <!-- <el-col :span="6">
             <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
-          </el-col>
-          <el-col :span="6">
+          </el-col> -->
+          <el-col :span="8">
             <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
           </el-col>
         </el-row>
@@ -80,6 +95,32 @@ export default {
   components: {
     Card
   },
+  watch: {
+    'editData.rotate'() {
+      this.$nextTick().then(() => {
+        const img = this.$refs['previewPic']
+        if (img == null) {
+          return
+        }
+        if (this.editData.rotate % 180 === 0) {
+          img.style.height = ''
+          img.style.width = ''
+          img.style.marginLeft = ''
+        } else {
+          const szz = utils.screenSize()
+          _.assign(img.style, {
+            height: `${szz.width}px`,
+            width: 'auto'
+          })
+          this.$nextTick().then(() => {
+            _.assign(img.style, {
+              marginLeft: `${(szz.width - img.offsetWidth) / 2}px`
+            })
+          })
+        }
+      })
+    }
+  },
   computed: {
     wrapperHeight() {
       if (this.list == null || this.list.length === 0) {
@@ -93,6 +134,36 @@ export default {
     }
   },
   methods: {
+    toEditPic() {
+      this.editMode = true
+    },
+    toCancelEdit() {
+      this.toCloseEdit()
+    },
+    toCloseEdit() {
+      this.editMode = false
+      this.setEditByDefault()
+    },
+    toRotate() {
+      this.editData.rotate = this.editData.rotate || 0
+      const onceDeg = 90
+      this.editData.rotate += onceDeg
+      if (this.editData.rotate === onceDeg * 4) {
+        this.editData.rotate = 0
+      }
+    },
+    saveEdit() {
+      this.$http.post('/commonFile/updateStyle.do', _.assign({
+        fileKey: this.previewPic.fileKey
+      }, this.editData)).then(data => {
+        this.toCloseEdit()
+        this.exitPreview()
+        this.reload()
+      })
+    },
+    setEditByDefault() {
+      this.editData = _.cloneDeep(this.defaultEditData)
+    },
     saveImg(src) {
       const blob = new Blob([''], { type: 'application/octet-stream' })
       const url = URL.createObjectURL(blob)
@@ -111,6 +182,9 @@ export default {
       }
     },
     onPreviewPicClick() {
+      this.exitPreview()
+    },
+    exitPreview() {
       this.previewPic = null
       utils.enableBodyScroll()
     },
@@ -118,7 +192,7 @@ export default {
       this.$http
         .postJSON('/pubActivity/deletePic.do', {
           pubActivityId: this.pubActivityId,
-          fileKeys: [this.fileKey]
+          fileKeys: [this.previewPic.fileKey]
         })
         .then(data => {
           this.$router.replace(`/event/${this.pubActivityId}/album`)
@@ -126,9 +200,8 @@ export default {
     },
     setCover() {
       this.$http
-        .post('/pubActivity/updatePicPre.do', {
-          pubActivityId: this.pubActivityId,
-          fileKey: this.fileKey
+        .post('/commonFile/updateConver.do', {
+          fileKey: this.previewPic.fileKey
         })
         .then(data => {
           popup.alert('设置成功')
@@ -172,14 +245,29 @@ export default {
           const loadmore = this.$refs['loadmore']
           loadmore && loadmore.onBottomLoaded()
         })
+    },
+    reload() {
+      this.list = []
+      this.allLoaded = false
+      this.serverData = {
+        page: 0,
+        total: 0
+      }
+      this.loadBottom()
     }
   },
   data() {
+    const defaultEditData = {
+      rotate: 0
+    }
     return {
       previewPic: null,
+      editMode: false,
+      editData: _.cloneDeep(defaultEditData),
+      defaultEditData: defaultEditData,
       allLoaded: false,
       list: [],
-      pageSize: 4,
+      pageSize: 30,
       serverData: {
         page: 0,
         total: 0
@@ -220,6 +308,7 @@ export default {
     }
   }
   .pic-list {
+    text-align: center;
     padding-top: 5px;
     .pic-item {
       width: 80px;
@@ -262,18 +351,42 @@ export default {
     width: 100%;
     bottom: 0;
     font-size: 14px;
-    height: 44px;
-    line-height: 44px;
     .el-row {
       .el-col {
         .el-button {
           margin: 0;
           color: #666;
+          height: 44px;
         }
       }
       .el-col + .el-col {
         .el-button {
           border-left: 1px solid #f0f0f0;
+        }
+      }
+    }
+  }
+  .operation-top {
+    bottom: auto;
+    top: 0;
+    .el-row {
+      .el-col {
+        .el-button {
+          &.sure-btn {
+            color: #f26a3e;
+          }
+        }
+      }
+    }
+  }
+}
+.pic-preview-edit {
+  .operation {
+    background-color: #999;
+    .el-row {
+      .el-col {
+        .el-button {
+          color: white;
         }
       }
     }
