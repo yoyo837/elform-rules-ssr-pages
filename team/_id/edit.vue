@@ -68,7 +68,7 @@ export default {
   },
   head() {
     return {
-      title: '团队信息'
+      title: `${this.teamid === 0 ? '创建一个团队' : '团队信息'}`
     }
   },
   mixins: [bdStyleMixin],
@@ -77,7 +77,31 @@ export default {
     DatetimePicker
   },
   mounted() {
-    if (this.teamid) {
+    if (this.teamid === 0) {
+      if (this.key) {
+        Promise.all([
+          this.$http.get('/team/getIndustryInfo.do', {
+            professionalId: this.key
+          }),
+          this.getExtFieldList()
+        ]).then(resultList => {
+          // 行业/专业信息
+          const industryInfo = resultList[0]
+          industryInfo.industry = industryInfo.industry || {}
+          industryInfo.professional = industryInfo.professional || {}
+          _.assign(this.serverData, {
+            industryId: industryInfo.industry.key, // 行业
+            industryIdValue: industryInfo.industry.value,
+            professionalId: industryInfo.professional.key, // 专业
+            professionalIdValue: industryInfo.professional.value
+          })
+
+          this.serverData.extFieldList = this.optimizeExtFieldList(resultList[1])
+        })
+      } else {
+        this.$router.push('/team/my')
+      }
+    } else {
       this.$http
         .get('/team/teamEditInfo.do', {
           teamId: this.teamid
@@ -95,28 +119,6 @@ export default {
           })
         })
       // serverData.canEdit  如果没权限直接跳走
-    } else if (this.key) {
-      Promise.all([
-        this.$http.get('/team/getIndustryInfo.do', {
-          professionalId: this.key
-        }),
-        this.getExtFieldList()
-      ]).then(resultList => {
-        // 行业/专业信息
-        const industryInfo = resultList[0]
-        industryInfo.industry = industryInfo.industry || {}
-        industryInfo.professional = industryInfo.professional || {}
-        _.assign(this.serverData, {
-          industryId: industryInfo.industry.key, // 行业
-          industryIdValue: industryInfo.industry.value,
-          professionalId: industryInfo.professional.key, // 专业
-          professionalIdValue: industryInfo.professional.value
-        })
-
-        this.serverData.extFieldList = this.optimizeExtFieldList(resultList[1])
-      })
-    } else {
-      this.$router.push('/team/my')
     }
   },
   methods: {
@@ -208,7 +210,7 @@ export default {
 
         extFieldList: []
       },
-      teamid: this.$route.params['id'],
+      teamid: +this.$route.params['id'],
       key: this.$route.query['key'],
       bodyClass: `${DefaultConfig.bodyClass} bd-pt-team-edit`
     }
