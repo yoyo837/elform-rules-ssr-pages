@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     onSelect(member) {
-      this.$router.push(`/user/profile?accountid=${member.pubAccountId}&teamid=${this.teamid}`)
+      this.$router.push(`/user/${member.pubAccountId}?teamid=${this.teamid}`)
     }
   },
   data() {

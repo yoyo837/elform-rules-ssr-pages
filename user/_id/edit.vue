@@ -43,8 +43,8 @@
         </el-form-item>
         <template v-if="serverData.userProfessionalInfo.extFieldList.length">
           <!-- <div class="professional">
-                                  {{serverData.userProfessionalInfo.professionalName}}
-                                </div> -->
+                                    {{serverData.userProfessionalInfo.professionalName}}
+                                  </div> -->
           <template v-for="field in serverData.userProfessionalInfo.extFieldList">
             <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
               <template v-if="serverData.canEdit">
@@ -79,11 +79,11 @@
 import _ from 'lodash'
 import moment from 'moment'
 import Vue from 'vue'
-import Card from '../vue-features/components/Card'
-import ProfilePanel from '../vue-features/components/ProfilePanel'
-import DatetimePicker from '../vue-features/components/DatetimePicker'
-import bdStyleMixin from '../vue-features/mixins/body-style'
-import Picker from '../vue-features/components/Picker'
+import Card from '../../vue-features/components/Card'
+import ProfilePanel from '../../vue-features/components/ProfilePanel'
+import DatetimePicker from '../../vue-features/components/DatetimePicker'
+import bdStyleMixin from '../../vue-features/mixins/body-style'
+import Picker from '../../vue-features/components/Picker'
 import { Form, FormItem, Button, Input, RadioGroup, Radio } from 'element-ui'
 
 Vue.component(Form.name, Form)
@@ -112,10 +112,12 @@ const staticSlotList = [{
 }]
 
 export default {
-  name: 'profile',
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id)
+  },
   head() {
     return {
-      title: '个人信息'
+      title: '编辑个人信息'
     }
   },
   mixins: [bdStyleMixin],
@@ -157,8 +159,8 @@ export default {
       if (this.key) {
         params['professionalId'] = this.key
       }
-      if (this.accountId) {
-        params['pubAccountId'] = this.accountId
+      if (this.pubAccountId) {
+        params['pubAccountId'] = this.pubAccountId
       }
       return params
     },
@@ -242,7 +244,7 @@ export default {
       },
       teamid: this.$route.query['teamid'],
       key: this.$route.query['key'],
-      accountId: this.$route.query['accountid']
+      pubAccountId: +this.$route.params['id']
     }
   }
 }

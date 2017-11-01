@@ -95,7 +95,7 @@ export default {
               smsCode: this.form.smsCode
             })
             .then(() => {
-              this.$router.push('/user/profile')
+              this.$router.push('/user/0')
             })
         }
         return false

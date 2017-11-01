@@ -19,7 +19,7 @@
         </span>
       </template>
       <template v-for="member in group.dealSignupGroupList">
-        <nuxt-link :key="member.pubAccountId" :to="`/user/profile?accountid=${member.pubAccountId}&teamid=${serverData.teamId}`">
+        <nuxt-link :key="member.pubAccountId" :to="`/user/${member.pubAccountId}?teamid=${serverData.teamId}`">
           <div class="list-member">
             <img :src="`${member.avatar}`" class="member-avatar">
             <div class="member-content">

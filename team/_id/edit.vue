@@ -84,7 +84,7 @@ export default {
           if (data && data.pageTag === 'needAddInfo') {
             popop.alert(`${data.pageTagMsg || 'needAddInfo'} 跳转中...`, {
               callback: () => {
-                this.$router.push(`/user/profile?key=${this.key}`)
+                this.$router.push(`/user/0/edit?key=${this.key}`)
               }
             })
             return

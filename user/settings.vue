@@ -13,7 +13,7 @@
         </nuxt-link>
       </el-row>
       <el-row class="nav-menu" title="个人资料">
-        <nuxt-link to="/user/profile">
+        <nuxt-link to="/user/0">
           <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
             <i class="fa fa-id-card"></i>
             <span>个人资料</span>
