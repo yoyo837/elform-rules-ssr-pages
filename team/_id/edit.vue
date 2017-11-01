@@ -48,6 +48,7 @@
 
 <script>
 import _ from 'lodash'
+import popop from '../../../components/popup'
 import moment from 'moment'
 import Vue from 'vue'
 import { Form, FormItem, Button, Input, RadioGroup, Radio } from 'element-ui'
@@ -79,24 +80,34 @@ export default {
   mounted() {
     if (this.teamid === 0) {
       if (this.key) {
-        Promise.all([
-          this.$http.get('/team/getIndustryInfo.do', {
-            professionalId: this.key
-          }),
-          this.getExtFieldList()
-        ]).then(resultList => {
-          // 行业/专业信息
-          const industryInfo = resultList[0]
-          industryInfo.industry = industryInfo.industry || {}
-          industryInfo.professional = industryInfo.professional || {}
-          _.assign(this.serverData, {
-            industryId: industryInfo.industry.key, // 行业
-            industryIdValue: industryInfo.industry.value,
-            professionalId: industryInfo.professional.key, // 专业
-            professionalIdValue: industryInfo.professional.value
-          })
+        this.$http.get('/team/checkNeedAddInfo.do', { professionalId: this.key }).then(data => {
+          if (data && data.pageTag === 'needAddInfo') {
+            popop.alert(`${data.pageTagMsg || 'needAddInfo'} 跳转中...`, {
+              callback: () => {
+                this.$router.push(`/user/profile?key=${this.key}`)
+              }
+            })
+            return
+          }
+          Promise.all([
+            this.$http.get('/team/getIndustryInfo.do', {
+              professionalId: this.key
+            }),
+            this.getExtFieldList()
+          ]).then(resultList => {
+            // 行业/专业信息
+            const industryInfo = resultList[0]
+            industryInfo.industry = industryInfo.industry || {}
+            industryInfo.professional = industryInfo.professional || {}
+            _.assign(this.serverData, {
+              industryId: industryInfo.industry.key, // 行业
+              industryIdValue: industryInfo.industry.value,
+              professionalId: industryInfo.professional.key, // 专业
+              professionalIdValue: industryInfo.professional.value
+            })
 
-          this.serverData.extFieldList = this.optimizeExtFieldList(resultList[1])
+            this.serverData.extFieldList = this.optimizeExtFieldList(resultList[1])
+          })
         })
       } else {
         this.$router.push('/team/my')
