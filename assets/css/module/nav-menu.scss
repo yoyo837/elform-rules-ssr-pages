@@ -1,24 +1,25 @@
 .nav-menu {
-    line-height: 44px;
-    height: 44px;
-    .nav-menu-col {
-        &.nav-menu-title {
-            color: #222;
-            i {
-                color: #666;
-            }
-            img {
-              height: 16px;
-              width: auto;
-            }
-            span {
-              padding-left: 10px;
-            }
-        }
+  line-height: 44px;
+  height: 44px;
+  .nav-menu-col {
+    color: #666;
+    &.nav-menu-title {
+      color: #222;
+      i {
+        color: #666;
+      }
+      img {
+        height: 16px;
+        width: auto;
+      }
+      span {
+        padding-left: 10px;
+      }
     }
-    i {
-        color: #d8d8d8;
-    }
+  }
+  i {
+    color: #d8d8d8;
+  }
 }
 
 .el-card-mini {
@@ -27,6 +28,6 @@
   }
 }
 
-.nav-menu+.nav-menu {
+.nav-menu + .nav-menu {
   border-top: 1px solid #f0f0f0;
 }

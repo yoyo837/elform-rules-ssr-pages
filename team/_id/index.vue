@@ -9,79 +9,43 @@
       <nuxt-link :to="`/team/${teamid}/members`">
         <el-button type="primary" size="mini" class="el-button--ellipse member-list-btn">成员列表</el-button>
       </nuxt-link>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          创建人：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.createRealName}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          团队名称：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.teamName || '&nbsp;'}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          成立时间：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.teamCreateDateValue}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          所属分类：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.professionalIdValue}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          联系方式：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.contact}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          选择地区：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
+      <ProfileField>
+        <template>创建人</template>
+        <template slot="value">{{serverData.teamInfo.createRealName}}</template>
+      </ProfileField>
+      <ProfileField>
+        <template>团队名称</template>
+        <template slot="value">{{serverData.teamInfo.teamName}}</template>
+      </ProfileField>
+      <ProfileField>
+        <template>成立时间</template>
+        <template slot="value">{{serverData.teamInfo.teamCreateDateValue}}</template>
+      </ProfileField>
+      <ProfileField>
+        <template>所属分类</template>
+        <template slot="value">{{serverData.teamInfo.professionalIdValue}}</template>
+      </ProfileField>
+      <ProfileField>
+        <template>联系方式</template>
+        <template slot="value">{{serverData.teamInfo.contact}}</template>
+      </ProfileField>
+      <ProfileField>
+        <template>选择地区</template>
+        <template slot="value"></template>
+      </ProfileField>
+      <ProfileField>
+        <template>详细地址</template>
+        <template slot="value">{{serverData.teamInfo.address}}</template>
+      </ProfileField>
+      <ProfileField>
+        <template>所属行业</template>
+        <template slot="value">{{serverData.teamInfo.industryIdValue}}</template>
+      </ProfileField>
 
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          详细地址：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.address}}
-        </el-col>
-      </el-row>
-      <el-row class="nav-menu">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          所属行业：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{serverData.teamInfo.industryIdValue}}
-        </el-col>
-      </el-row>
-
-      <el-row class="nav-menu" v-for="field in serverData.extFieldList" :key="field.dataId">
-        <el-col :span="8" class="nav-menu-col nav-menu-title text-overflow">
-          {{field.extShowName}}：
-        </el-col>
-        <el-col :span="16" class="nav-menu-col text-right">
-          {{field.dataShowValue}}
-        </el-col>
-      </el-row>
+      <ProfileField v-for="field in serverData.extFieldList" :key="field.dataId">
+        <template>{{field.extShowName}}</template>
+        <template slot="value">{{field.dataShowValue}}</template>
+      </ProfileField>
     </Card>
 
     <section class="operation">
@@ -118,6 +82,7 @@ import popup from '../../../components/popup'
 import ProfilePanel from '../../vue-features/components/ProfilePanel'
 import Card from '../../vue-features/components/Card'
 import bdStyleMixin from '../../vue-features/mixins/body-style'
+import ProfileField from '../../vue-features/components/ProfileField'
 import { Row, Col, Button } from 'element-ui'
 
 Vue.component(Row.name, Row)
@@ -136,7 +101,8 @@ export default {
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel,
-    Card
+    Card,
+    ProfileField
   },
   mounted() {
     this.$http
@@ -188,7 +154,7 @@ export default {
               this.$router.push('/team/my')
             })
         })
-        .catch(e => {})
+        .catch(e => { })
     },
     toDisband() {
       popup
@@ -202,7 +168,7 @@ export default {
               this.$router.push('/team/my')
             })
         })
-        .catch(e => {})
+        .catch(e => { })
     },
     toEdit() {
       this.$router.push(`/team/${this.teamid}/edit`)
@@ -240,13 +206,6 @@ export default {
 <style lang="scss" scoped>
 .profile-panel-card {
   border-bottom: 1px solid #f0f0f0;
-}
-.nav-menu {
-  .nav-menu-col {
-    &.nav-menu-title {
-      color: #999;
-    }
-  }
 }
 
 .member-list-btn {

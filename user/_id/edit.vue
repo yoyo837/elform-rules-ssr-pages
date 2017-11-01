@@ -1,7 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card title-text="个人资料" title-icon="fa fa-id-card">
-      <ProfilePanel :pic-path="serverData.avatar" :protruding="false" @afterUpload="afterUpload" :pub-account-id="serverData.id">
+      <ProfilePanel :pic-path="serverData.avatar" :protruding="false" @afterUpload="afterUpload">
         <!-- {{serverData.realName}}/{{serverData.mobile}} -->
       </ProfilePanel>
       <el-form ref="form" :model="serverData" :rules="rules" label-width="80px">
@@ -43,8 +43,8 @@
         </el-form-item>
         <template v-if="serverData.userProfessionalInfo.extFieldList.length">
           <!-- <div class="professional">
-                                    {{serverData.userProfessionalInfo.professionalName}}
-                                  </div> -->
+            {{serverData.userProfessionalInfo.professionalName}}
+          </div> -->
           <template v-for="field in serverData.userProfessionalInfo.extFieldList">
             <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
               <template v-if="serverData.canEdit">
