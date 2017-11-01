@@ -37,10 +37,13 @@
       <div class="dialog-content">
         <img :src="previewPic.value">
         <el-row>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
             <el-button type="text" class="full-width">旋转</el-button>
           </el-col>
           <el-col :span="12">
+            <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
+          </el-col> -->
+          <el-col :span="24">
             <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
           </el-col>
         </el-row>
@@ -359,11 +362,11 @@ export default {
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       .el-col {
-        &:first-child {
-          .el-button {
-            color: #666;
-          }
-        }
+        // &:first-child {
+        //   .el-button {
+        //     color: #666;
+        //   }
+        // }
         .el-button {
           margin: 0;
           height: 44px;
