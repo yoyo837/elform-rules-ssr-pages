@@ -7,7 +7,7 @@
       </div>
       <div class="attendee-desc">
         团号：{{serverData.teamId}} 人数：{{serverData.dealSignupUserTotal}}
-        <el-button v-if="serverData.dealSignupAdmin" type="text" class="update-list-btn" @click="updateDealSignupTeamInfo">更新列表</el-button>
+        <el-button v-if="serverData.dealSignupAdmin" type="text" class="update-list-btn" @click="updateDealSignupTeamInfo">更新团队</el-button>
       </div>
     </Card>
 
