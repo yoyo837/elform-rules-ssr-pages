@@ -43,8 +43,8 @@
         </el-form-item>
         <template v-if="serverData.userProfessionalInfo.extFieldList.length">
           <!-- <div class="professional">
-            {{serverData.userProfessionalInfo.professionalName}}
-          </div> -->
+                            {{serverData.userProfessionalInfo.professionalName}}
+                          </div> -->
           <template v-for="field in serverData.userProfessionalInfo.extFieldList">
             <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
               <template v-if="serverData.canEdit">
@@ -95,28 +95,21 @@ Vue.component(Radio.name, Radio)
 
 // defaultIndex静态数据不起作用，组件bug
 // defaultIndex: 2,
-const staticSlotList = [
-  {
-    values: [
-      {
-        key: 0,
-        label: '身份证'
-      },
-      {
-        key: 1,
-        label: '护照'
-      },
-      {
-        key: 2,
-        label: '驾驶证'
-      },
-      {
-        key: 3,
-        label: '其他'
-      }
-    ]
-  }
-]
+const staticSlotList = [{
+  values: [{
+    key: 0,
+    label: '身份证'
+  }, {
+    key: 1,
+    label: '护照'
+  }, {
+    key: 2,
+    label: '驾驶证'
+  }, {
+    key: 3,
+    label: '其他'
+  }]
+}]
 
 export default {
   name: 'profile',
