@@ -43,8 +43,8 @@
         </el-form-item>
         <template v-if="serverData.userProfessionalInfo.extFieldList.length">
           <!-- <div class="professional">
-                            {{serverData.userProfessionalInfo.professionalName}}
-                          </div> -->
+                                  {{serverData.userProfessionalInfo.professionalName}}
+                                </div> -->
           <template v-for="field in serverData.userProfessionalInfo.extFieldList">
             <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
               <template v-if="serverData.canEdit">
@@ -201,39 +201,29 @@ export default {
       endDate: moment().toDate(),
       certificates: staticSlotList,
       rules: {
-        realName: [
-          {
-            required: true,
-            message: '请填写姓名',
-            trigger: 'blur'
-          }
-        ],
-        gender: [
-          {
-            required: true,
-            message: '请选择性别'
-          }
-        ],
-        birthday: [
-          {
-            required: true,
-            message: '请选择生日'
-          }
-        ],
-        idcardType: [
-          {
-            required: true,
-            message: '请选择证件类型',
-            trigger: 'blur'
-          }
-        ],
-        idcard: [
-          {
-            required: true,
-            message: '请填写证件号码',
-            trigger: 'blur'
-          }
-        ]
+        realName: [{
+          required: true,
+          message: '请填写姓名',
+          trigger: 'blur'
+        }],
+        gender: [{
+          required: true,
+          message: '请选择性别'
+        }],
+        birthday: [{
+          required: true,
+          message: '请选择生日'
+        }],
+        idcardType: [{
+          required: true,
+          message: '请选择证件类型',
+          trigger: 'blur'
+        }],
+        idcard: [{
+          required: true,
+          message: '请填写证件号码',
+          trigger: 'blur'
+        }]
       },
       serverData: {
         id: null,
@@ -252,7 +242,7 @@ export default {
       },
       teamid: this.$route.query['teamid'],
       key: this.$route.query['key'],
-      accountId: this.$route.query['account']
+      accountId: this.$route.query['accountid']
     }
   }
 }

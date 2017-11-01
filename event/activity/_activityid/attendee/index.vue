@@ -19,22 +19,24 @@
         </span>
       </template>
       <template v-for="member in group.dealSignupGroupList">
-        <div class="list-member" :key="member.pubAccountId">
-          <img :src="`${member.avatar}`" class="member-avatar">
-          <div class="member-content">
-            <div class="member-desc text-overflow">
-              <div class="member-name">{{member.pubRealName}}</div>
-              <div class="member-gender">
-                <i class="fa fa-id-card" aria-hidden="true"></i>
+        <nuxt-link :key="member.pubAccountId" :to="`/user/profile?accountid=${member.pubAccountId}&teamid=${serverData.teamId}`">
+          <div class="list-member">
+            <img :src="`${member.avatar}`" class="member-avatar">
+            <div class="member-content">
+              <div class="member-desc text-overflow">
+                <div class="member-name">{{member.pubRealName}}</div>
+                <div class="member-gender">
+                  <i class="fa fa-id-card" aria-hidden="true"></i>
+                </div>
+              </div>
+              <div v-if="serverData.dealSignupAdmin" class="member-operation">
+                <el-button type="text" @click.stop="updateGroupProps(member, group,'update')">更新</el-button>
+                <el-button type="text" @click.stop="replaceDealSignupGroupMember(member, group)">换人</el-button>
+                <el-button type="text" @click.stop="updateGroupProps(member, group,'del')">删除</el-button>
               </div>
             </div>
-            <div v-if="serverData.dealSignupAdmin" class="member-operation">
-              <el-button type="text" @click="updateGroupProps(member, group,'update')">更新</el-button>
-              <el-button type="text" @click="replaceDealSignupGroupMember(member, group)">换人</el-button>
-              <el-button type="text" @click="updateGroupProps(member, group,'del')">删除</el-button>
-            </div>
           </div>
-        </div>
+        </nuxt-link>
       </template>
     </Card>
 
@@ -43,7 +45,7 @@
         <el-row v-for="member in serverData.memberList" :key="member.pubAccountId">
           <el-col :span="9" class="text-overflow">
             <i class="fa fa-id-card" aria-hidden="true"></i>{{member.realName}}</el-col>
-          <el-col :span="5" class="text-overflow">(20岁)</el-col>
+          <el-col :span="5" class="text-overflow">({{member.age}}岁)</el-col>
           <el-col :span="8" class="text-overflow">/{{member.mobile}}</el-col>
           <el-col :span="2">
             <el-checkbox :label="member.pubAccountId">&nbsp;</el-checkbox>
@@ -153,18 +155,24 @@ export default {
       data = data || {}
       if (data.pageTag) {
         if (data.memberId) {
-          let foundMember = this.serverData.dealSignupGroupInfoList.find(item => {
-            return item.dealSignupGroupList.find(member => {
+          let foundMember
+          this.serverData.dealSignupGroupInfoList.some(item => {
+            const mb = item.dealSignupGroupList.find(member => {
               return member.pubAccountId === data.memberId
             })
+            if (mb) {
+              foundMember = mb
+              return true
+            }
+            return false
           })
           foundMember = foundMember || {
             pubAccountId: data.memberId
           }
           popup.alert(
             `${foundMember.pubRealName ||
-              foundMember.realName ||
-              foundMember.pubAccountId}(${foundMember.age}):${data.pageTagMsg}`
+            foundMember.realName ||
+            foundMember.pubAccountId}(${foundMember.age}):${data.pageTagMsg}`
           )
           return
         }
