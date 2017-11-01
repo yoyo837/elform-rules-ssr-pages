@@ -70,7 +70,7 @@
     </Card>
 
     <section class="operation" v-if="serverData.canEdit">
-      <el-button type="primary" @click="submitForm" class="full-width shadow-button">保存设置</el-button>
+      <el-button type="primary" @click="submitForm" class="full-width shadow-button">保存修改</el-button>
     </section>
   </section>
 </template>
