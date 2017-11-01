@@ -52,8 +52,8 @@
             <el-button type="text" class="full-width" @click="toDel">删除</el-button>
           </el-col>
           <!-- <el-col :span="6">
-            <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
-          </el-col> -->
+              <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
+            </el-col> -->
           <el-col :span="8">
             <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
           </el-col>
@@ -195,7 +195,8 @@ export default {
           fileKeys: [this.previewPic.fileKey]
         })
         .then(data => {
-          this.$router.replace(`/event/${this.pubActivityId}/album`)
+          this.exitPreview()
+          this.reload()
         })
     },
     setCover() {
