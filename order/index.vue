@@ -1,58 +1,75 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
-    <div class="text-center no-more" v-if="list == null || list.length === 0">
-      <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/no_icon_1.png`">
-      <div>暂无订单!</div>
-    </div>
-    <mt-loadmore ref="loadmore" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded">
-      <nuxt-link tag="div" :to="`/order/${item.id}`" v-for="item in list" :key="item.id" class="order-item">
-        <el-row class="nav-panel nav-panel-mini order-header">
-          <el-col :span="8">
-            <img :src="`${CDN_STATIC_HOST}/themes/mobile/common/images/deal_h.png`">{{item.id}}
-          </el-col>
-          <el-col :span="16" class="text-right">
-            <i class="el-icon-arrow-right"></i>
-          </el-col>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto" v-for="(list, key) in item.fields" :key="key" v-if="orderTypes[key]">
-          <el-col :span="24" class="order-type">
-            {{orderTypes[key]}}
-          </el-col>
-          <template v-for="field in list">
-            <template v-for="(value, key, i) in field">
-              <el-col :span="24" class="order-content" :key="i">
-                <el-row>
-                  <el-col :span="8">
-                    {{key}}
-                  </el-col>
-                  <el-col :span="16" class="text-right">
-                    {{value}}
-                  </el-col>
-                </el-row>
-              </el-col>
-            </template>
+  <section class="container container-pd">
+    <Card title-text="我的订单" title-icon="fa fa-id-card">
+      <div class="col-percent el-card__edge el-card__edge-bottom el-card__edge-nobody">
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == null}" @click="switchTab()">
+          <el-button type="text" class="full-width">全部</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_PAY}" @click="switchTab(DealStatusMap.NOT_PAY)">
+          <el-button type="text" class="full-width">待支付</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.REFUNDED}" @click="switchTab(DealStatusMap.REFUNDED)">
+          <el-button type="text" class="full-width">已退款</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.COMPLETE}" @click="switchTab(DealStatusMap.COMPLETE)">
+          <el-button type="text" class="full-width">已完成</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.CANCEL}" @click="switchTab(DealStatusMap.CANCEL)">
+          <el-button type="text" class="full-width">已取消</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
+      </div>
+    </Card>
+    <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
+      <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+        <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`" @click.native="toDetail(item.deal.dealId)">
+          <template slot="header-desc">
+            <span :class="`deal-status-${item.deal.dealStatus}`">{{item.deal.dealStatusValue}}</span>
+            <span v-if="item.deal.dealStatus != DealStatusMap.NOT_PAY" :class="`deal-status-${item.deal.dealStatus}`" @click.stop="toDel(item.deal.dealId)">
+              <i class="el-icon-delete"></i>
+            </span>
           </template>
-        </el-row>
-        <el-row class="nav-panel nav-panel-auto">
-          <el-col :span="8">
-            支付状态
-          </el-col>
-          <el-col :span="16" class="text-right">
-            <el-button v-if="item.payStatus == 0" type="warning" size="mini" @click.stop="toPay(item.id)">{{item.payStatusValue}}</el-button>
-            <template v-else>
-              {{item.payStatusValue}}
-            </template>
-          </el-col>
-        </el-row>
-      </nuxt-link>
-    </mt-loadmore>
-  </PageContainer>
+          <OrderList :deal-info="item"></OrderList>
+
+          <el-row v-if="item.deal.dealStatus == DealStatusMap.NOT_PAY" class="el-card__edge el-card__edge-bottom">
+            <el-col :span="12">
+              <el-button type="text" class="full-width" @click.stop="toCancel(item.deal.dealId)">取消</el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button type="text" class="full-width" @click.stop="toPay(item.deal.dealId)">去支付</el-button>
+            </el-col>
+          </el-row>
+          <div v-else-if="item.deal.dealStatus == DealStatusMap.COMPLETE && (item.deal.latestCancelTime > +now.format('x'))" class="el-card__edge el-card__edge-bottom sign-cancel">
+            <div class="sign-cancel-desc">
+              <i aria-hidden="true" class="el-icon-warning"></i>{{item.deal.latestCancelDescr}}
+            </div>
+            <div class="sign-cancel-exec">
+              <el-button type="text" class="full-width">取消</el-button>
+            </div>
+          </div>
+        </Card>
+      </mt-loadmore>
+    </div>
+    <Card v-if="list == null || list.length === 0">
+      <div class="empry-order-list text-center">
+        暂无订单
+      </div>
+    </Card>
+  </section>
 </template>
 
 <script>
 import _ from 'lodash'
+import moment from 'moment'
 import Vue from 'vue'
-import PageContainer from '../vue-features/components/PageContainer'
+import utils from '../../components/utils'
+import popup from '../../components/popup'
+import Card from '../vue-features/components/Card'
+import OrderList from '../vue-features/components/OrderList'
 import { Row, Col, Button } from 'element-ui'
 import { Loadmore } from 'mint-ui'
 import bdStyleMixin from '../vue-features/mixins/body-style'
@@ -63,7 +80,6 @@ Vue.component(Button.name, Button)
 Vue.component(Loadmore.name, Loadmore)
 
 export default {
-  name: 'orders',
   head() {
     return {
       title: '我的订单'
@@ -71,89 +87,204 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    PageContainer
+    Card,
+    OrderList
   },
   mounted() {
-    this.loadBottom()
+    this.$nextTick().then(() => {
+      if (process.browser) {
+        this.mq()
+      }
+      this.loadBottom()
+    })
+  },
+  computed: {
+    wrapperHeight() {
+      if (this.list == null || this.list.length === 0) {
+        return 'auto'
+      }
+      const wrapper = this.$refs['wrapper']
+      return `${document.documentElement.clientHeight -
+        wrapper.getBoundingClientRect().top -
+        window.parseFloat(window.getComputedStyle(wrapper).marginTop) -
+        2}px`
+    }
   },
   methods: {
+    mq() {
+      // 刷新当前时间
+      this.now = moment()
+      if (this.timerSwitch) {
+        setTimeout(this.mq, 1000 * 1)
+      }
+    },
     loadBottom() {
-      this.$http.get('/deal/list.do', {
-        page: this.serverData.page + 1,
-        pageSize: this.pageSize
-      }).then(data => {
-        _.assign(this.serverData, {
-          page: data.page,
-          total: data.total
-        })
-        const oldLength = this.list.length
-        this.list.push.apply(this.list, (data.rows || []).map(item => { // 处理一下字段再给到vm
-          try {
-            item.fields = JSON.parse(item.descr)
-          } catch (e) {
-            console.log(e)
+      if (this.allLoaded) {
+        return
+      }
+      this.$http
+        .get(
+          '/deal/list.do',
+          _.assign(
+            {
+              page: this.serverData.page + 1,
+              pageSize: this.pageSize
+            },
+            this.params
+          )
+        )
+        .then(data => {
+          _.assign(this.serverData, {
+            page: data.page,
+            total: data.total
+          })
+          const oldLength = this.list.length
+          this.list.push.apply(
+            this.list,
+            (data.rows || []).map(item => {
+              // 处理一下字段再给到vm
+              item.deal = item.deal || {}
+              item.commonPay = item.commonPay || {}
+              item.commonSales = item.commonSales || {}
+              return item
+            })
+          ) // 追加
+
+          if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
+            // 没用响应满页或者超过总数
+            this.allLoaded = true
           }
-          delete item.descr
-          return item
-        })) // 追加
 
-        if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) { // 没用响应满页或者超过总数
-          this.allLoaded = true
-        }
-
-        const loadmore = this.$refs['loadmore']
-        loadmore && loadmore.onBottomLoaded()
-      })
+          const loadmore = this.$refs['loadmore']
+          loadmore && loadmore.onBottomLoaded()
+        })
     },
     toPay(id) {
       this.$router.push(`/pay/${id}`)
+    },
+    toDel(id) {
+      // TODO 删除订单
+    },
+    toCancel(id) {
+      popup
+        .confirm('确认取消订单吗？')
+        .then(action => {
+          this.$http
+            .post('/deal/cancel.do', {
+              dealId: id
+            })
+            .then(data => {
+              this.reload()
+            })
+        })
+        .catch(e => {})
+    },
+    switchTab(status) {
+      this.params.dealStatus = status
+    },
+    toDetail(dealId) {
+      this.$router.push(`/order/${dealId}`)
+    },
+    reload() {
+      this.list = []
+      this.allLoaded = false
+      this.serverData = {
+        page: 0,
+        total: 0
+      }
+      this.loadBottom()
+    }
+  },
+  watch: {
+    'params.dealStatus'() {
+      this.reload()
     }
   },
   data() {
     return {
+      now: moment(),
+      timerSwitch: true,
       allLoaded: false,
       list: [],
-      pageSize: 10,
+      pageSize: 4,
+      params: {
+        dealStatus: null
+      },
       serverData: {
         page: 0,
         total: 0
       },
-      orderTypes: {
-        '49': '场地',
-        '50': '服务人员',
-        '55': '商品',
-        '57': '会员服务',
-        '99': '票务',
-        '100': '报名'
-      }
+      // orderTypes: {
+      //   '49': '场地',
+      //   '50': '服务人员',
+      //   '55': '商品',
+      //   '57': '会员服务',
+      //   '99': '票务',
+      //   '100': '报名'
+      // },
+      DealStatusMap: utils.DealStatusMap
     }
+  },
+  destroyed() {
+    this.timerSwitch = false
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.order-header {
-  background-color: #f7f7f7;
-  img {
-    margin: 2px;
+.container {
+  [class^='col-percent-'] {
+    position: relative;
+    .btn-selected-tag {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      width: 100%;
+      background-color: transparent;
+    }
+    &.item-seleted {
+      .btn-selected-tag {
+        background-color: #f26a3e;
+      }
+    }
   }
-}
 
-.order-type {
-  font-size: 16px;
-}
-
-.order-content {
-  font-size: 14px;
-}
-
-.order-item {
-  i {
-    color: #aaa;
+  .empry-order-list {
+    padding: 15px 0;
+    color: #999;
+    font-size: 12px;
   }
-}
 
-.order-item~.order-item {
-  margin-top: 15px;
+  .sign-cancel {
+    .sign-cancel-desc,
+    .sign-cancel-exec {
+      display: inline-block;
+    }
+    .sign-cancel-desc {
+      padding-left: 15px;
+      width: calc(100% - 60px);
+      i {
+        font-size: 16px;
+        vertical-align: middle;
+        color: #f26a3e;
+      }
+    }
+    .sign-cancel-exec {
+      width: 60px;
+      border-left: none !important;
+      .el-button {
+        padding: 0;
+        margin: 10px 0;
+        height: 24px;
+        border-left: 1px solid #f0f0f0;
+      }
+    }
+  }
+
+  .deal-status-1 {
+    color: #f26a3e;
+  }
 }
 </style>
+
+

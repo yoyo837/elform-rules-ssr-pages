@@ -1,52 +1,32 @@
 <template>
-  <PageContainer :nav-header="true" nav-header-back-path="/user/my">
-    <nuxt-link to="/user/changepwd">
-      <el-row class="nav-panel">
-        <el-col :span="20">
-          <span>修改密码</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
-      </el-row>
-    </nuxt-link>
-    <nuxt-link to="/user/profile">
-      <el-row class="nav-panel">
-        <el-col :span="20">
-          <span>个人资料</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
-      </el-row>
-    </nuxt-link>
-    <nuxt-link to="/about">
-      <el-row class="nav-panel nav-panel-mg">
-        <el-col :span="20">
-          <span>关于我们</span>
-        </el-col>
-        <el-col :span="4" class="text-right">
-          <i class="el-icon-arrow-right"></i>
-        </el-col>
-      </el-row>
-    </nuxt-link>
-  </PageContainer>
+  <section class="container container-pd">
+    <Card :mini="true">
+      <ProfileField to="/user/changepwd" :for-nav="true">
+        <i class="fa fa-id-card"></i>
+        <span>修改密码</span>
+      </ProfileField>
+      <ProfileField to="/user/0" :for-nav="true">
+        <i class="fa fa-id-card"></i>
+        <span>个人资料</span>
+      </ProfileField>
+
+    </Card>
+
+    <Card :mini="true">
+      <ProfileField to="/about" :for-nav="true">
+        <i class="fa fa-id-card"></i>
+        <span>关于我们</span>
+      </ProfileField>
+    </Card>
+  </section>
 </template>
 
 <script>
-import Vue from 'vue'
-import { Row, Col } from 'element-ui'
-import { Header, Button } from 'mint-ui'
-import PageContainer from '../vue-features/components/PageContainer'
 import bdStyleMixin from '../vue-features/mixins/body-style'
+import ProfileField from '../vue-features/components/ProfileField'
+import Card from '../vue-features/components/Card'
 
-Vue.component(Row.name, Row)
-Vue.component(Col.name, Col)
-
-Vue.component(Header.name, Header)
-Vue.component(Button.name, Button)
 export default {
-  name: 'settings',
   head() {
     return {
       title: '设置'
@@ -54,15 +34,8 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    PageContainer
+    Card,
+    ProfileField
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.el-row {
-  .el-col {
-    line-height: 40px;
-  }
-}
-</style>

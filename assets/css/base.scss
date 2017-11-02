@@ -1,0 +1,50 @@
+// 全局样式，所有皮肤共用的基础样式，只能放置皮肤无关的样式
+// 元素重置
+* {
+  box-sizing: border-box;
+}
+
+[class^="el-icon-fa"], [class*=" el-icon-fa"] {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome !important;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  top:2px;
+}
+
+// 修饰样式
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-overflow-line($number) {
+  display: -webkit-box;
+  -webkit-line-clamp: $number;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-overflow-line2 {
+  @include text-overflow-line(2)
+}
+
+.text-overflow-line3 {
+  @include text-overflow-line(3)
+}

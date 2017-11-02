@@ -1,29 +1,24 @@
 <template>
-  <section class="container box">
+  <section class="container container-shrink container-portable">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="真实姓名" prop="realName">
-        <el-input v-model="form.realName" placeholder="请输入您的姓名"></el-input>
+        <el-input v-model="form.realName" placeholder="请输入您的姓名" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="手机号" prop="mobile">
-        <el-input v-model="form.mobile" placeholder="请输入您的手机号"></el-input>
+        <el-input v-model="form.mobile" placeholder="请输入您的手机号" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pwd">
-        <el-input v-model="form.pwd" placeholder="请输入密码" type="password"></el-input>
+        <el-input v-model="form.pwd" placeholder="请输入密码" type="password" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="验证码" prop="smsCode">
         <!-- <el-input v-model="form.smsCode" placeholder="请输入验证码"></el-input> -->
         <VerifyComp :type="1" :mobile="form.mobile" v-model="form.smsCode"></VerifyComp>
       </el-form-item>
-      <el-form-item label-width="0px">
-        <el-button type="primary" @click="submitForm('form')" class="full-width">确定</el-button>
-      </el-form-item>
-      <el-form-item label-width="0px">
-        <el-button @click="toLogin" class="full-width">已有账号，直接登陆</el-button>
-      </el-form-item>
     </el-form>
-    <div class="text-right">
-      <nuxt-link to="/user/forgot">找回密码</nuxt-link>
-    </div>
+    <section class="operation">
+      <el-button type="primary" @click="submitForm('form')" class="full-width">确认并登陆</el-button>
+      <el-button @click="toLogin" class="full-width">已有账号，直接登陆</el-button>
+    </section>
   </section>
 </template>
 
@@ -43,7 +38,6 @@ Vue.component(Col.name, Col)
 Vue.component(Input.name, Input)
 
 export default {
-  name: 'register',
   head() {
     return {
       title: '会员注册'

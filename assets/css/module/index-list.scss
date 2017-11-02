@@ -1,0 +1,42 @@
+.mint-indexlist {
+  &.index-list-box {
+    .mint-indexsection + .mint-indexsection {
+      margin-top: 15px;
+    }
+    .mint-indexsection-index {
+      background-color: transparent;
+      color: #999;
+      padding: 0;
+    }
+    .mint-indexlist-content {
+      margin-right: 0 !important;
+    }
+    .mint-indexlist-nav {
+      background-color: transparent;
+      border: none;
+    }
+  }
+}
+
+.index-list-box {
+  .list-member {
+    padding: 15px;
+    .member-avatar {
+      border-radius: 50%;
+      vertical-align: middle;
+      height: 50px;
+      width: 50px;
+    }
+    .member-name,
+    .member-gender {
+      display: inline-block;
+      padding-left: 8px;
+    }
+    .member-name {
+      color: #222;
+    }
+  }
+  .list-member + .list-member {
+    border-top: 1px solid #f0f0f0;
+  }
+}

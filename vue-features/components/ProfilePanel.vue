@@ -1,118 +1,118 @@
 <template>
-  <el-row class="header-panel text-center" :class="classObject" :style="{backgroundColor: color, color: contrast}">
-    <el-col :span="24">
-      <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
-    </el-col>
-    <el-col :span="6" class="text-left" v-if="showSlot">
-      <slot name="left">&nbsp;</slot>
-    </el-col>
-    <el-col :span="12" v-if="showSlot">
-      <slot>&nbsp;</slot>
-    </el-col>
-    <el-col :span="6" class="text-right" v-if="showSlot">
-      <slot name="right">&nbsp;</slot>
-    </el-col>
-  </el-row>
+  <Card class="profile-panel-card" :class="{'profile-panel-protruding':protruding}">
+    <div class="profile-panel text-center">
+      <div class="profile-header">
+        <img :src.sync="imgUrl" class="header-logo" @click="onImgClick">
+      </div>
+      <div class="profile-name" v-if="$slots.default">
+        <slot>&nbsp;</slot>
+      </div>
+      <el-row class="profile-sub">
+        <el-col :span="12">
+          <slot name="left"></slot>
+        </el-col>
+        <el-col :span="12">
+          <slot name="right"></slot>
+        </el-col>
+      </el-row>
+    </div>
+  </Card>
 </template>
 
 <script>
-// import _ from 'lodash'
 import Vue from 'vue'
 import utils from '../../../components/utils'
-import color from '../../../components/color'
 import upload from '../../../components/upload'
+import Card from '../components/Card'
 import { Row, Col } from 'element-ui'
 Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 export default {
-  name: 'profilePanel',
-  mounted() {
-    this.showSlot = Object.keys(this.$slots).length > 0
+  components: {
+    Card
   },
   props: {
     picPath: {
-      type: String,
+      type: [String, Number],
       default: utils.DEFAULT_USER_AVATAR_PIC_PATH
-    },
-    pubAccountId: Number,
-    picType: Number,
-    size: {
-      type: String,
-      default: 'normal'
     },
     type: {
       type: String,
       default: 'user'
-    }
+    },
+    protruding: Boolean // 头像往上突出
   },
   methods: {
     onImgClick() {
       if (this._events.afterUpload) {
-        if (this.pubAccountId && this.picType) {
-          upload.avatarUpload(this.pubAccountId, this.picType).then(data => {
-            this._events.afterUpload.forEach(fn => {
-              fn.call(this, data)
-            })
-            this.timestamp = Date.now()
+        upload.avatarUpload().then(data => {
+          this._events.afterUpload.forEach(fn => {
+            fn.call(this, data)
           })
-        }
+          this.timestamp = Date.now()
+        })
       }
     }
   },
   data() {
     return {
-      imgUrl: this.type === 'team' ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
-      color: ({
-        user: 'rgba(32, 160, 255, 0.75)',
-        team: 'rgba(32, 160, 255, 0.75)'
-        // team: '#1cc2b4'
-      })[this.type],
-      showSlot: true,
+      imgUrl:
+      this.type === 'team'
+        ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
+        : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
       timestamp: null
     }
   },
-  computed: {
-    classObject() {
-      return {
-        [`panel-size-${this.size}`]: true
-      }
-    },
-    contrast() {
-      return color.blackOrWhite(this.color)
-    }
-  },
   watch: {
-    timestamp() {
-      console.log(this.timestamp)
-    },
     picPath(val, oldVal) {
-      this.imgUrl = `${val || utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg?_t=${this.timestamp || ''}`
+      if (this.type === 'team') {
+        if (val == null) {
+          this.imgUrl = utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
+        } else {
+          this.imgUrl = `${utils.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${val}.png` // picPath是专业id
+        }
+        return
+      }
+      this.imgUrl = `${val || `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`}?_t=${this.timestamp || ''}`
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.header-panel {
-  padding: 8px;
-  color: white;
-  .el-col {
-    .header-logo {
-      max-width: 40%;
-      min-width: 100px;
-      min-height: 100px;
-      border-radius: 50%;
-      border: 5px solid rgba(0, 0, 0, 0.1);
+.profile-panel-card {
+  .profile-panel {
+    position: relative;
+    .profile-name {
+      color: #222;
+      font-size: 18px;
+    }
+    .profile-header {
+      .header-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 5px solid white;
+      }
+    }
+    .profile-sub {
+      .el-col {
+        padding: 5px 0;
+        line-height: 30px;
+      }
     }
   }
-}
 
-.header-panel.panel-size-small {
-  .el-col {
-    .header-logo {
-      max-width: 20%;
-      min-width: 50px;
-      min-height: 50px;
+  &.profile-panel-protruding {
+    margin-top: 80px;
+    overflow: visible;
+    .profile-panel {
+      margin-top: 50px;
+      .profile-header {
+        position: absolute;
+        width: 100%;
+        top: -110px;
+      }
     }
   }
 }

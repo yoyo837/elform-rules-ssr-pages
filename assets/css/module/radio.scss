@@ -1,0 +1,16 @@
+.el-radio {
+  margin-right: 15px;
+  padding: 5px 0;
+  .el-radio__input {
+    &.is-checked {
+      .el-radio__inner {
+        border-color: #f26a3e;
+        background: #f26a3e;
+      }
+    }
+  }
+}
+
+.el-radio + .el-radio {
+  margin-left: 0;
+}

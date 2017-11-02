@@ -1,0 +1,102 @@
+.el-card {
+  border: none;
+  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.04);
+  border-radius: 0;
+  font-size: 14px;
+  .el-card__header {
+    border-bottom-color: #f0f0f0;
+    padding: 15px;
+    color: #222;
+    .el-card__header-desc {
+      color: #999;
+      float: right;
+      span {
+        padding: 0 15px;
+        display: inline-block;
+        &:first-child {
+          padding-left: 0;
+        }
+        &:last-child {
+          padding-right: 0;
+        }
+        i {
+          font-size: 18px;
+          vertical-align: middle;
+          margin-top: -3px;
+        }
+      }
+      span + span {
+        border-left: 1px solid #f0f0f0;
+      }
+    }
+  }
+  .el-card__body {
+    padding: 15px;
+    color: #666;
+    position: relative;
+    &:empty {
+      padding: 0;
+    }
+    .el-card__edge {
+      margin: -15px;
+      .el-button {
+        color: #666;
+      }
+      &.el-card__edge-bottom {
+        border-top: 1px solid #f0f0f0;
+        margin-top: 15px; // 模拟此边的padding
+        .el-button {
+          // 等有放左右的按钮再补充样式
+          margin-bottom: inherit;
+          height: 44px;
+        }
+        > div + div {
+          border-left: 1px solid #f0f0f0;
+        }
+        &.el-card__edge-nobody {
+          border-top: none;
+          margin-top: -15px;
+        }
+      }
+      &.el-card__edge-left {
+        border-right: 1px solid #f0f0f0;
+        margin-right: 15px; // 模拟此边的padding
+        &.el-card__edge-nobody {
+          border-right: none;
+          margin-right: -15px;
+        }
+      }
+      &.el-card__edge-right {
+        border-left: 1px solid #f0f0f0;
+        margin-left: 15px; // 模拟此边的padding
+        &.el-card__edge-nobody {
+          border-left: none;
+          margin-left: -15px;
+        }
+      }
+    }
+    .el-card {
+      &.profile-panel-card {
+        box-shadow: none;
+        .el-card__body {
+          padding: 0;
+        }
+      }
+    }
+  }
+  &.el-card-mini {
+    .el-card__body {
+      padding: 0;
+    }
+  }
+  &.el-card-invisible {
+    box-shadow: none;
+    background-color: transparent;
+  }
+}
+
+.el-card + .el-card,
+.el-card + .page-loadmore-wrapper,
+.el-card + .mint-loadmore {
+  margin-top: 15px;
+}
