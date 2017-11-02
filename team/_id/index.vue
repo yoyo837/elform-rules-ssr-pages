@@ -1,7 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card>
-      <ProfilePanel :pic-path="serverData.teamInfo.professionalId" :protruding="false" type="team">
+      <ProfilePanel :pic-path="serverData.teamInfo.professionalId" type="team">
         <template slot="left">团号：{{serverData.teamInfo.id}}</template>
         <!-- <template>{{serverData.teamInfo.teamName || '&nbsp;'}}</template> -->
         <template slot="right">人数：{{serverData.memberCount}}</template>

@@ -1,7 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card title-text="我的团队" title-icon="fa fa-id-card">
-      <ProfilePanel :pic-path="serverData.loginAccountVo.avatar" :protruding="false">
+      <ProfilePanel :pic-path="serverData.loginAccountVo.avatar">
         {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
       </ProfilePanel>
       <div v-if="serverData.teamList && serverData.teamList.length" class="team-list">

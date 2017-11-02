@@ -1,6 +1,6 @@
 <template>
-  <section class="container">
-    <ProfilePanel :pic-path="serverData.picPath" size="small" type="team">
+  <section class="container container-pd">
+    <ProfilePanel :pic-path="serverData.picPath" type="team">
     </ProfilePanel>
     <el-form ref="form" :model="serverData" :rules="rules" label-width="80px" class="ctx-bg">
       <el-form-item label="团队名称" prop="teamName">
@@ -106,7 +106,7 @@ export default {
               professionalIdValue: industryInfo.professional.value
             })
 
-            this.serverData.extFieldList = this.optimizeExtFieldList(resultList[1])
+            this.serverData.extFieldList = resultList[1]
           })
         })
       } else {
@@ -123,7 +123,7 @@ export default {
             return
           }
           _.assign(this.serverData, data.teamInfo)
-          this.serverData.extFieldList = this.optimizeExtFieldList(data.extFieldList)
+          this.serverData.extFieldList = data.extFieldList
 
           data.extFieldList.forEach(field => {
             this.serverData[field.extName] = field.dataValue
@@ -133,22 +133,6 @@ export default {
     }
   },
   methods: {
-    optimizeExtFieldList(list) {
-      return (list || []).filter(item => {
-        const baseReq = item != null && item.dataId && item.extDataType // 过滤非法
-        if (baseReq && item.extDataType === 3) {
-          if (_.isArray(item.dataTypeValue)) {
-            return (
-              item.dataTypeValue.filter(selectItem => {
-                return selectItem.value != null
-              }).length > 0
-            )
-          }
-          return false
-        }
-        return baseReq
-      })
-    },
     async getExtFieldList() {
       const result = await this.$http.get('/team/teamProfessionalExtFieldList.do', {
         professionalId: this.key

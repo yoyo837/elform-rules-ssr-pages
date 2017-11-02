@@ -40,11 +40,7 @@ export default {
       type: String,
       default: 'user'
     },
-    protruding: {
-      // 头像往上突出
-      type: Boolean,
-      default: true
-    }
+    protruding: Boolean // 头像往上突出
   },
   methods: {
     onImgClick() {
@@ -108,14 +104,14 @@ export default {
   }
 
   &.profile-panel-protruding {
-    margin-top: 100px;
+    margin-top: 80px;
     overflow: visible;
     .profile-panel {
       margin-top: 50px;
       .profile-header {
         position: absolute;
         width: 100%;
-        top: -120px;
+        top: -110px;
       }
     }
   }
