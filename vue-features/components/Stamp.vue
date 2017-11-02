@@ -1,5 +1,5 @@
 <template>
-  <div class="stamp">
+  <div class="stamp" :class="{'stamp-disable' : checkState && data.state != 0}">
     <div class="stamp-header">
       <div class="stamp-title text-overflow" :title="data.serviceName">
         {{data.serviceName}}
@@ -14,8 +14,45 @@
       </el-row>
     </div>
     <div class="stamp-body">
-      <div class="text-overflow-line3 stamp-detail" :title="data.dataContent">
-        {{data.dataContent}}
+      <div class="text-overflow-line3 stamp-detail">
+        <template v-for="item in data.pubServiceDataList">
+          <template v-for="subItem in item.pubServiceValue" v-if="subItem.commonCalendar && subItem.commonCalendar.weekDate">
+            <div :key="subItem.serviceDataId">
+              <template v-if="item.serviceObj == 37">
+                场地
+              </template>
+              <template v-else-if="item.serviceObj == 1">
+                人员
+              </template>
+              <template v-else-if="item.serviceObj == 6">
+                商品
+              </template>
+              {{resolveWeekDays(subItem.commonCalendar.weekDate)}}{{subItem.commonCalendar.startTimeValue}}-{{subItem.commonCalendar.endTimeValue}}
+              <template v-if="subItem.serviceType == 1">
+                {{formatMoney(subItem.serviceValue, 1)}} 折
+              </template>
+              <template v-else-if="item.serviceType == 2">
+                {{subItem.serviceValue}}
+                <template v-if="subItem.unit == 1">
+                  次
+                </template>
+                <template v-else-if="subItem.unit == 2">
+                  小时
+                </template>
+              </template>
+              <template v-else-if="item.serviceType == 3">
+                <template v-if="subItem.unit == 1">
+                  每次
+                </template>
+                <template v-else-if="subItem.unit == 2">
+                  每小时
+                </template>
+                {{subItem.serviceValue}} 元
+              </template>
+              优惠
+            </div>
+          </template>
+        </template>
       </div>
       <el-row>
         <el-col :span="18" class="text-overflow highlight">
@@ -41,17 +78,62 @@ export default {
     data: {
       type: Object,
       required: true
-    }
+    },
+    checkState: Boolean
   },
   methods: {
-    resolveHtmlWithDataList() {
-      // (this.data.pubServiceDataList || []).forEach(item => {
+    resolveWeekDays(commonCalendar) {
+      if (commonCalendar == null) {
+        return null
+      }
 
-      // })
+      const html = []
+
+      // 解析连续的天
+      const resolve = weekDays => {
+        let from = 0
+        let end = 0
+        weekDays.some((wd, i) => {
+          if (i === weekDays.length - 1 || +wd + 1 === +weekDays[i + 1]) { // 符合要求
+            end = i
+            return false // 继续找
+          }
+          return true
+        })
+        if (html.length) {
+          html.push(',')
+        }
+        if (end === 0) {
+          html.push(`${this.weekDays[weekDays[0]]}`)
+        } else {
+          html.push(`${this.weekDays[weekDays[from]]}至${this.weekDays[weekDays[end]]}`)
+        }
+        weekDays.splice(0, end + 1)
+        if (weekDays.length) {
+          resolve(weekDays)
+        }
+      }
+
+      resolve(commonCalendar.trim().split(',').filter(wd => {
+        return +wd === parseInt(wd)
+      }))
+
+      return html.join('')
     }
   },
   data() {
     return {
+      weekDays: {
+        '1': '星期一',
+        '2': '星期二',
+        '3': '星期三',
+        '4': '星期四',
+        '5': '星期五',
+        '6': '星期六',
+        '7': '星期日',
+        '8': '法定工作日',
+        '9': '法定节假日'
+      }
     }
   }
 }

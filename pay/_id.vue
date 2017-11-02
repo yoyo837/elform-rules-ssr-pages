@@ -70,7 +70,7 @@
       </section>
     </mt-tab-container-item>
     <mt-tab-container-item id="couponPage">
-      <section class="container container-pd">
+      <section class="container container-pd text-center">
         <Card v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
           <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceAccountId" @click.native="onPubServiceClick(pubService)">
           </Stamp>
