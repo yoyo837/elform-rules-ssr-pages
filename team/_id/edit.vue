@@ -1,48 +1,52 @@
 <template>
   <section class="container container-pd">
-    <ProfilePanel :pic-path="serverData.picPath" type="team">
-    </ProfilePanel>
-    <el-form ref="form" :model="serverData" :rules="rules" label-width="80px" class="ctx-bg">
-      <el-form-item label="团队名称" prop="teamName">
-        <el-input v-model="serverData.teamName" placeholder="请输入团队名称"></el-input>
-      </el-form-item>
-      <el-form-item label="成立时间" prop="teamCreateDate">
-        <DatetimePicker type="date" v-model="serverData.teamCreateDate" :start-date="startDate" :end-date="endDate"></DatetimePicker>
-      </el-form-item>
-      <el-form-item label="联系方式" prop="contact">
-        <el-input v-model="serverData.contact" placeholder="请输入团队联系方式"></el-input>
-      </el-form-item>
-      <el-form-item label="联系地址" prop="address">
-        <el-input v-model="serverData.address" placeholder="请输入团队联系地址"></el-input>
-      </el-form-item>
-      <el-form-item label="所属专业">
-        {{serverData.professionalIdValue}}
-      </el-form-item>
-      <el-form-item label="所属行业">
-        {{serverData.industryIdValue}}
-      </el-form-item>
-      <el-form-item label="团队简介" prop="teamIntro">
-        <el-input type="textarea" v-model="serverData.teamIntro"></el-input>
-      </el-form-item>
-      <template v-for="field in serverData.extFieldList">
-        <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
-          <template v-if="field.extDataType == 0 || field.extDataType == 1 || field.extDataType == 2">
-            <el-input v-model="serverData[field.extName]" :placeholder="field.descr"></el-input>
-          </template>
-          <template v-else-if="field.extDataType == 3">
-            <el-radio-group v-model="serverData[field.extName]">
-              <el-radio v-for="item in field.dataTypeValue" :label="item.value" :key="item.value">{{item.name || item.value}}</el-radio>
-            </el-radio-group>
-          </template>
-          <template v-else-if="field.extDataType == 4">
-            <el-input v-model="serverData[field.extName]" placeholder="选择文件待完善"></el-input>
-          </template>
+    <Card title-text="团队资料" title-icon="fa fa-id-card">
+      <ProfilePanel :pic-path="serverData.professionalId" type="team">
+      </ProfilePanel>
+      <el-form ref="form" :model="serverData" :rules="rules" label-width="80px">
+        <el-form-item label="团队名称" prop="teamName">
+          <el-input v-model="serverData.teamName" placeholder="请输入团队名称"></el-input>
         </el-form-item>
-      </template>
-    </el-form>
-    <div class="fixed-bt">
-      <el-button type="primary" @click="submitForm">保存</el-button>
-    </div>
+        <el-form-item label="成立时间" prop="teamCreateDate">
+          <DatetimePicker type="date" v-model="serverData.teamCreateDate" :start-date="startDate" :end-date="endDate"></DatetimePicker>
+        </el-form-item>
+        <el-form-item label="联系方式" prop="contact">
+          <el-input v-model="serverData.contact" placeholder="请输入团队联系方式"></el-input>
+        </el-form-item>
+        <el-form-item label="联系地址" prop="address">
+          <el-input v-model="serverData.address" placeholder="请输入团队联系地址"></el-input>
+        </el-form-item>
+        <el-form-item label="所属专业">
+          <el-input v-model="serverData.professionalIdValue" readonly></el-input>
+        </el-form-item>
+        <el-form-item label="所属行业">
+          <el-input v-model="serverData.industryIdValue" readonly></el-input>
+        </el-form-item>
+        <template v-for="field in serverData.extFieldList">
+          <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
+            <template v-if="field.extDataType == 3">
+              <el-radio-group v-model="serverData[field.extName]">
+                <el-radio v-for="item in field.dataTypeValue" :label="item.value" :key="item.value">{{item.name || item.value}}</el-radio>
+              </el-radio-group>
+            </template>
+            <template v-else-if="field.extDataType == 4">
+              <el-input v-model="serverData[field.extName]" placeholder="选择文件待完善"></el-input>
+            </template>
+            <template v-else>
+              <el-input v-model="serverData[field.extName]" :placeholder="field.descr"></el-input>
+            </template>
+          </el-form-item>
+        </template>
+        <el-form-item label="团队简介" prop="teamIntro">
+          <el-input type="textarea" :rows="4" v-model="serverData.teamIntro"></el-input>
+        </el-form-item>
+      </el-form>
+    </Card>
+
+    <section class="operation">
+      <el-button v-if="serverData.roleIsTeamAdmin" type="primary" @click="submitForm" class="full-width shadow-button">保存修改</el-button>
+      <el-button v-if="serverData.isCreateNew" type="primary" @click="submitForm" class="full-width shadow-button">创建</el-button>
+    </section>
   </section>
 </template>
 
@@ -52,8 +56,9 @@ import popop from '../../../components/popup'
 import moment from 'moment'
 import Vue from 'vue'
 import { Form, FormItem, Button, Input, RadioGroup, Radio } from 'element-ui'
-import bdStyleMixin, { DefaultConfig } from '../../vue-features/mixins/body-style'
+import bdStyleMixin from '../../vue-features/mixins/body-style'
 import ProfilePanel from '../../vue-features/components/ProfilePanel'
+import Card from '../../vue-features/components/Card'
 import DatetimePicker from '../../vue-features/components/DatetimePicker'
 
 Vue.component(Form.name, Form)
@@ -75,7 +80,8 @@ export default {
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel,
-    DatetimePicker
+    DatetimePicker,
+    Card
   },
   mounted() {
     if (this.teamid === 0) {
@@ -89,6 +95,7 @@ export default {
             })
             return
           }
+          this.serverData.isCreateNew = true
           Promise.all([
             this.$http.get('/team/getIndustryInfo.do', {
               professionalId: this.key
@@ -124,7 +131,9 @@ export default {
         (data.extFieldList || []).forEach(field => {
           data.teamInfo[field.extName] = field.dataValue
         })
-        _.assign(this.serverData, data.teamInfo)
+        _.assign(this.serverData, data.teamInfo, {
+          roleIsTeamAdmin: data.roleIsTeamAdmin
+        })
       })
     }
   },
@@ -172,27 +181,23 @@ export default {
   },
   data() {
     return {
-      startDate: moment()
-        .subtract(100, 'years')
-        .toDate(),
+      startDate: moment().subtract(100, 'years').toDate(),
       endDate: moment().toDate(),
       rules: {
-        teamName: [
-          {
-            required: true,
-            message: '请填写团队名称',
-            trigger: 'blur'
-          }
-        ],
-        contact: [
-          {
-            required: true,
-            message: '请填写联系方式',
-            trigger: 'blur'
-          }
-        ]
+        teamName: [{
+          required: true,
+          message: '请填写团队名称',
+          trigger: 'blur'
+        }],
+        contact: [{
+          required: true,
+          message: '请填写联系方式',
+          trigger: 'blur'
+        }]
       },
       serverData: {
+        roleIsTeamAdmin: false,
+
         industryId: null, // 行业
         industryIdValue: null,
         professionalId: null, // 专业
@@ -201,15 +206,8 @@ export default {
         extFieldList: []
       },
       teamid: +this.$route.params['id'],
-      key: this.$route.query['key'],
-      bodyClass: `${DefaultConfig.bodyClass} bd-pt-team-edit`
+      key: this.$route.query['key']
     }
   }
 }
 </script>
-
-<style lang="scss">
-body.bd-pt-team-edit {
-  padding-bottom: 50px;
-}
-</style>
