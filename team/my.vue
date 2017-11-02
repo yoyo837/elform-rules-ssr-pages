@@ -5,17 +5,10 @@
         {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
       </ProfilePanel>
       <div v-if="serverData.teamList && serverData.teamList.length" class="team-list">
-        <el-row class="nav-menu" v-for="item in serverData.teamList" :key="item.id">
-          <nuxt-link :to="`/team/${item.id}`">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.professionalId}.png`">
-              <span>{{item.teamName}}</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
+        <ProfileField v-for="item in serverData.teamList" :key="item.id" :to="`/team/${item.id}`" :for-nav="true">
+          <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.professionalId}.png`">
+          <span>{{item.teamName}}</span>
+        </ProfileField>
       </div>
       <div v-else class="team-list empty-list text-center">
         暂无信息
@@ -45,6 +38,7 @@ import utils from '../../components/utils'
 import { Row, Col, Button } from 'element-ui'
 import bdStyleMixin from '../vue-features/mixins/body-style'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
+import ProfileField from '../vue-features/components/ProfileField'
 import Card from '../vue-features/components/Card'
 
 Vue.component(Row.name, Row)
@@ -60,7 +54,8 @@ export default {
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel,
-    Card
+    Card,
+    ProfileField
   },
   mounted() {
     this.$http.get('/team/myTeamList.do').then(data => {

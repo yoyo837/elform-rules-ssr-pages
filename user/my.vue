@@ -20,72 +20,30 @@
       </ProfilePanel>
 
       <Card :mini="true">
-        <el-row class="nav-menu" title="我的账户">
-          <nuxt-link to="/user/account">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <i class="fa fa-id-card"></i>
-              <span>我的账户</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
-        <el-row class="nav-menu" title="我的订单">
-          <nuxt-link to="/order">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <i class="fa fa-id-card"></i>
-              <span>我的订单</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
-        <el-row class="nav-menu" title="我的课程">
-          <nuxt-link to="#">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <i class="fa fa-id-card"></i>
-              <span>我的课程</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
-        <el-row class="nav-menu" title="我的团队">
-          <nuxt-link to="/team/my">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <i class="fa fa-id-card"></i>
-              <span>我的团队</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
-        <el-row class="nav-menu" title="我的活动">
-          <nuxt-link to="/event">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <i class="fa fa-id-card"></i>
-              <span>我的活动</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
-        <el-row class="nav-menu" title="设置">
-          <nuxt-link to="/user/settings">
-            <el-col :span="20" class="nav-menu-col nav-menu-title text-overflow">
-              <i class="fa fa-id-card"></i>
-              <span>设置</span>
-            </el-col>
-            <el-col :span="4" class="nav-menu-col text-right">
-              <i class="el-icon-arrow-right" aria-hidden="true"></i>
-            </el-col>
-          </nuxt-link>
-        </el-row>
+        <ProfileField to="/user/account" :for-nav="true">
+          <i class="fa fa-id-card"></i>
+          <span>我的账户</span>
+        </ProfileField>
+        <ProfileField to="/order" :for-nav="true">
+          <i class="fa fa-id-card"></i>
+          <span>我的订单</span>
+        </ProfileField>
+        <ProfileField to="#" :for-nav="true">
+          <i class="fa fa-id-card"></i>
+          <span>我的课程</span>
+        </ProfileField>
+        <ProfileField to="/team/my" :for-nav="true">
+          <i class="fa fa-id-card"></i>
+          <span>我的团队</span>
+        </ProfileField>
+        <ProfileField to="/event" :for-nav="true">
+          <i class="fa fa-id-card"></i>
+          <span>我的活动</span>
+        </ProfileField>
+        <ProfileField to="/user/settings" :for-nav="true">
+          <i class="fa fa-id-card"></i>
+          <span>设置</span>
+        </ProfileField>
       </Card>
 
       <section class="operation">
@@ -98,12 +56,12 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
-import { Row, Col, Button } from 'element-ui'
+import { Button } from 'element-ui'
 import bdStyleMixin from '../vue-features/mixins/body-style'
 import ProfilePanel from '../vue-features/components/ProfilePanel'
+import ProfileField from '../vue-features/components/ProfileField'
 import Card from '../vue-features/components/Card'
-Vue.component(Row.name, Row)
-Vue.component(Col.name, Col)
+
 Vue.component(Button.name, Button)
 
 export default {
@@ -115,7 +73,8 @@ export default {
   mixins: [bdStyleMixin],
   components: {
     ProfilePanel,
-    Card
+    Card,
+    ProfileField
   },
   mounted() {
     this.$http.get('/pubUser/my.do').then(data => {

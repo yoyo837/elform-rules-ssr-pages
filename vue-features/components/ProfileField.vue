@@ -1,12 +1,12 @@
 <template>
-  <el-row class="nav-menu">
-    <nuxt-link :to="linkTo || 'javascript:;'">
-      <el-col :span="forNave ? 20 : 8" class="nav-menu-col nav-menu-title text-overflow">
+  <el-row class="nav-menu" :class="{'nav-menu-field' : !forNav}">
+    <nuxt-link :to="to || 'javascript:;'">
+      <el-col :span="forNav ? 20 : 8" class="nav-menu-col nav-menu-title text-overflow">
         <slot></slot>
       </el-col>
-      <el-col :span="forNave ? 4 : 16" class="nav-menu-col text-right">
+      <el-col :span="forNav ? 4 : 16" class="nav-menu-col text-right">
         <slot name="value">
-          <template v-if="forNave">
+          <template v-if="forNav">
             <i class="el-icon-arrow-right" aria-hidden="true"></i>
           </template>
         </slot>
@@ -24,15 +24,15 @@ Vue.component(Col.name, Col)
 
 export default {
   props: {
-    linkTo: String,
-    forNave: Boolean
+    to: String,
+    forNav: Boolean
   }
 }
 </script>
 
 
 <style lang="scss" scoped>
-.nav-menu {
+.nav-menu-field {
   .nav-menu-col {
     &.nav-menu-title {
       color: #999;
