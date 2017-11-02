@@ -28,8 +28,8 @@
           <el-input v-model="serverData.userInfo.idcard"></el-input>
         </el-form-item>
         <!-- <div class="professional">
-                      {{serverData.userProfessionalInfo.professionalName}}
-                    </div> -->
+                        {{serverData.userProfessionalInfo.professionalName}}
+                      </div> -->
         <el-form-item label="专业类型" v-if="serverData.userProfessionalInfo.professionalId">
           <el-input v-model="serverData.userProfessionalInfo.professionalName" readonly></el-input>
         </el-form-item>
@@ -167,7 +167,7 @@ export default {
           }
           this.mergeParams(params)
           this.$http.postJSON('/pubUser/saveUserInfo.do', params).then(() => {
-            this.$router.push('/user/my')
+            this.$router.go(-1)
           })
         }
         return false
