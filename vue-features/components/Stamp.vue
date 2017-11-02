@@ -6,10 +6,10 @@
       </div>
       <el-row>
         <el-col :span="18" class="text-overflow">
-          简介
+          {{data.descr}}
         </el-col>
         <el-col :span="6" class="text-overflow text-right">
-          券类型
+          {{data.serviceTag}}
         </el-col>
       </el-row>
     </div>

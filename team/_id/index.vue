@@ -105,70 +105,55 @@ export default {
     ProfileField
   },
   mounted() {
-    this.$http
-      .get('/team/teamInfo.do', {
-        teamId: this.teamid
-      })
-      .then(data => {
-        data = data || {}
-        data.teamInfo = data.teamInfo || {}
+    this.$http.get('/team/teamInfo.do', {
+      teamId: this.teamid
+    }).then(data => {
+      data = data || {}
+      data.teamInfo = data.teamInfo || {}
 
-        // data.extFieldList = (data.extFieldList || []).map(field => {
+      // data.extFieldList = (data.extFieldList || []).map(field => {
 
-        // })
-        _.assign(this.serverData, data)
-        this.$nextTick().then(() => {
-          this.$wxShare({
-            title: `团队:${this.serverData.teamInfo.teamName || ''}`,
-            link: `http://${location.host}/team/${this.serverData.teamInfo.id}/share2join`,
-            img: `http:${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
-              .professionalId}.png`,
-            desc: '快来加入我的团队吧:)'
-          })
+      // })
+      _.assign(this.serverData, data)
+      this.$nextTick().then(() => {
+        this.$wxShare({
+          title: `团队:${this.serverData.teamInfo.teamName || ''}`,
+          link: `http://${location.host}/team/${this.serverData.teamInfo.id}/share2join/${this.serverData.pubAccountId}`,
+          img: `http:${this.CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${this.serverData.teamInfo
+            .professionalId}.png`,
+          desc: '快来加入我的团队吧:)'
         })
       })
-      .catch(e => {
-        this.$router.replace('/team/my')
-      })
+    }).catch(e => {
+      this.$router.replace('/team/my')
+    })
   },
   methods: {
     toJoin() {
-      this.$http
-        .post('/team/joinTeam.do', {
-          teamId: this.teamid
-        })
-        .then(data => {
-          this.$router.push('/team/my')
-        })
+      this.$http.post('/team/joinTeam.do', {
+        teamId: this.teamid
+      }).then(data => {
+        this.$router.push('/team/my')
+      })
     },
     toQuit() {
-      popup
-        .confirm('确认退出该团队吗？')
-        .then(action => {
-          this.$http
-            .post('/team/delTeamMember.do', {
-              teamId: this.teamid
-              // memberIds 不给表示自己退出
-            })
-            .then(data => {
-              this.$router.push('/team/my')
-            })
+      popup.confirm('确认退出该团队吗？').then(action => {
+        this.$http.post('/team/delTeamMember.do', {
+          teamId: this.teamid
+          // memberIds 不给表示自己退出
+        }).then(data => {
+          this.$router.push('/team/my')
         })
-        .catch(e => { })
+      })
     },
     toDisband() {
-      popup
-        .confirm('确认解散该团队吗？')
-        .then(action => {
-          this.$http
-            .post('/team/disbandTeam.do', {
-              teamId: this.teamid
-            })
-            .then(data => {
-              this.$router.push('/team/my')
-            })
+      popup.confirm('确认解散该团队吗？').then(action => {
+        this.$http.post('/team/disbandTeam.do', {
+          teamId: this.teamid
+        }).then(data => {
+          this.$router.push('/team/my')
         })
-        .catch(e => { })
+      })
     },
     toEdit() {
       this.$router.push(`/team/${this.teamid}/edit`)
@@ -190,6 +175,7 @@ export default {
         teamInfo: {},
         memberList: [],
         memberCount: 0,
+        pubAccountId: null,
         extFieldList: [],
         roleIsTeamMember: false,
         roleIsTeamAdmin: false
