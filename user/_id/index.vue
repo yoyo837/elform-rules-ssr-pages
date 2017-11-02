@@ -120,19 +120,14 @@ export default {
   },
   methods: {
     delMemberFromTeam() {
-      popup
-        .confirm('确认从团队删除该成员吗？')
-        .then(action => {
-          this.$http
-            .post('/team/delTeamMember.do', {
-              teamId: this.teamid,
-              memberIds: this.pubAccountId
-            })
-            .then(data => {
-              this.$router.go(-1)
-            })
+      popup.confirm('确认从团队删除该成员吗？').then(action => {
+        this.$http.post('/team/delTeamMember.do', {
+          teamId: this.teamid,
+          memberIds: this.pubAccountId
+        }).then(data => {
+          this.$router.go(-1)
         })
-        .catch(e => { })
+      })
     },
     mergeParams(params) {
       params = params || {}

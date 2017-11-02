@@ -4,72 +4,54 @@
       <ProfilePanel :pic-path="serverData.avatar" :protruding="false" @afterUpload="afterUpload">
         <!-- {{serverData.realName}}/{{serverData.mobile}} -->
       </ProfilePanel>
-      <el-form ref="form" :model="serverData" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="serverData.userInfo" :rules="rules" label-width="80px">
         <el-form-item label="姓名" prop="realName">
-          <el-input v-if="serverData.canEdit" v-model="serverData.realName" placeholder="请输入姓名"></el-input>
-          <template v-else>
-            {{serverData.realName}}
-          </template>
+          <el-input v-model="serverData.userInfo.realName" placeholder="请输入姓名"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="gender">
-          <el-radio-group v-if="serverData.canEdit" v-model="serverData.gender">
+          <el-radio-group v-model="serverData.userInfo.gender">
             <el-radio :label="1">男</el-radio>
             <el-radio :label="2">女</el-radio>
           </el-radio-group>
-          <template v-else-if="serverData.gender">
-            {{serverData.gender == 1 ? '男' : '女'}}
-          </template>
         </el-form-item>
         <el-form-item label="手机" prop="mobile" required>
-          <template v-if="serverData.canEdit">
-            <el-button type="text" class="btn-right" @click="changeMbl">更改</el-button>
-            <el-input v-model="serverData.mobile" :readonly="true"></el-input>
-          </template>
-          <template v-else>
-            {{serverData.mobile}}
-          </template>
+          <el-button type="text" class="btn-right" @click="changeMbl">更改</el-button>
+          <el-input v-model="serverData.userInfo.mobile" :readonly="true"></el-input>
         </el-form-item>
         <el-form-item label="生日" prop="birthday">
-          <DatetimePicker type="date" v-model="serverData.birthday" :start-date="startDate" :end-date="endDate" :can-edit="serverData.canEdit"></DatetimePicker>
+          <DatetimePicker type="date" v-model="serverData.userInfo.birthday" :start-date="startDate" :end-date="endDate"></DatetimePicker>
         </el-form-item>
         <el-form-item label="证件类型" prop="idcardType">
-          <Picker ref="picker" :slots="certificates" v-model="serverData.idcardType" :can-edit="serverData.canEdit"></Picker>
+          <Picker ref="picker" :slots="certificates" v-model="serverData.userInfo.idcardType"></Picker>
         </el-form-item>
         <el-form-item label="证件号码" prop="idcard">
-          <el-input v-if="serverData.canEdit" v-model="serverData.idcard"></el-input>
-          <template v-else>
-            {{serverData.idcard}}
-          </template>
+          <el-input v-model="serverData.userInfo.idcard"></el-input>
         </el-form-item>
-        <template v-if="serverData.userProfessionalInfo.extFieldList.length">
-          <!-- <div class="professional">
-            {{serverData.userProfessionalInfo.professionalName}}
-          </div> -->
-          <template v-for="field in serverData.userProfessionalInfo.extFieldList">
-            <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
-              <template v-if="serverData.canEdit">
-                <template v-if="field.extDataType == 0 || field.extDataType == 1 || field.extDataType == 2">
-                  <el-input v-model="serverData[field.extName]" :placeholder="field.descr"></el-input>
-                </template>
-                <template v-else-if="field.extDataType == 3">
-                  <el-radio-group v-model="serverData[field.extName]">
-                    <el-radio v-for="item in field.dataTypeValue" :label="item.value" :key="item.value">{{item.name || item.value}}</el-radio>
-                  </el-radio-group>
-                </template>
-                <template v-else-if="field.extDataType == 4">
-                  <el-input v-model="serverData[field.extName]" placeholder="选择文件待完善"></el-input>
-                </template>
-              </template>
-              <template v-else>
-                {{field.dataValue}}
-              </template>
-            </el-form-item>
-          </template>
+        <!-- <div class="professional">
+                      {{serverData.userProfessionalInfo.professionalName}}
+                    </div> -->
+        <el-form-item label="专业类型" v-if="serverData.userProfessionalInfo.professionalId">
+          <el-input v-model="serverData.userProfessionalInfo.professionalName" readonly></el-input>
+        </el-form-item>
+        <template v-for="field in serverData.userProfessionalInfo.extFieldList">
+          <el-form-item :label="field.extShowName" :key="field.dataId" :prop="field.extName" v-show="field.extDataType > 0" :rules="[{ required: field.isRequired, message: `${field.extDataType == 3 || field.extDataType == 4 ? '请选择' : '请填写'}${field.extShowName}`, trigger: 'blur'}]">
+            <template v-if="field.extDataType == 3">
+              <el-radio-group v-model="serverData.userInfo[field.extName]">
+                <el-radio v-for="item in field.dataTypeValue" :label="item.value" :key="item.value">{{item.name || item.value}}</el-radio>
+              </el-radio-group>
+            </template>
+            <template v-else-if="field.extDataType == 4">
+              <el-input v-model="serverData.userInfo[field.extName]" placeholder="选择文件待完善"></el-input>
+            </template>
+            <template v-else>
+              <el-input v-model="serverData.userInfo[field.extName]" :placeholder="field.descr"></el-input>
+            </template>
+          </el-form-item>
         </template>
       </el-form>
     </Card>
 
-    <section class="operation" v-if="serverData.canEdit">
+    <section class="operation" v-if="serverData.userInfo.canEdit">
       <el-button type="primary" @click="submitForm" class="full-width shadow-button">保存修改</el-button>
     </section>
   </section>
@@ -95,20 +77,18 @@ Vue.component(Radio.name, Radio)
 
 // defaultIndex静态数据不起作用，组件bug
 // defaultIndex: 2,
-const staticSlotList = [{
-  values: [{
-    key: 0,
-    label: '身份证'
-  }, {
-    key: 1,
-    label: '护照'
-  }, {
-    key: 2,
-    label: '驾驶证'
-  }, {
-    key: 3,
-    label: '其他'
-  }]
+const idCardTypes = [{
+  key: 0,
+  label: '身份证'
+}, {
+  key: 1,
+  label: '护照'
+}, {
+  key: 2,
+  label: '驾驶证'
+}, {
+  key: 3,
+  label: '其他'
 }]
 
 export default {
@@ -130,20 +110,19 @@ export default {
   mounted() {
     this.$http.get('/pubUser/userInfo.do', this.mergeParams()).then(data => {
       data = data || {}
+      data.userInfo = data.userInfo || {}
       data.userProfessionalInfo = data.userProfessionalInfo || {}
-      data.userProfessionalInfo.extFieldList = data.userProfessionalInfo.extFieldList || []
-      const extProps = {}
-      data.userProfessionalInfo.extFieldList.forEach(field => {
-        extProps[field.extName] = field.dataValue
-      })
-      _.assign(
-        this.serverData,
-        data.userInfo,
-        {
-          userProfessionalInfo: data.userProfessionalInfo
-        },
-        extProps
-      )
+
+      if (data.userInfo.canEdit) {
+        if (data.userProfessionalInfo.extFieldList) {
+          data.userProfessionalInfo.extFieldList.forEach(item => {
+            data.userInfo[item.extName] = item.dataValue
+          })
+        }
+        _.assign(this.serverData, data)
+      } else {
+        this.$router.go(-1)
+      }
     })
   },
   methods: {
@@ -171,18 +150,18 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           const params = {
-            realName: this.serverData.realName,
-            gender: this.serverData.gender,
-            birthday: this.serverData.birthday,
-            idcardType: this.serverData.idcardType,
-            idcard: this.serverData.idcard,
-            extFields: this.serverData.userProfessionalInfo.extFieldList.map(field => {
+            realName: this.serverData.userInfo.realName,
+            gender: this.serverData.userInfo.gender,
+            birthday: this.serverData.userInfo.birthday,
+            idcardType: this.serverData.userInfo.idcardType,
+            idcard: this.serverData.userInfo.idcard,
+            extFields: (this.serverData.userProfessionalInfo.extFieldList || []).map(field => {
               return {
                 id: field.id,
                 dataId: field.dataId,
                 dataType: field.extDataType,
                 name: field.extName,
-                value: this.serverData[field.extName]
+                value: this.serverData.userInfo[field.extName]
               }
             })
           }
@@ -197,11 +176,9 @@ export default {
   },
   data() {
     return {
-      startDate: moment()
-        .subtract(100, 'years')
-        .toDate(),
+      startDate: moment().subtract(100, 'years').toDate(),
       endDate: moment().toDate(),
-      certificates: staticSlotList,
+      certificates: [{ values: idCardTypes }],
       rules: {
         realName: [{
           required: true,
@@ -228,14 +205,7 @@ export default {
         }]
       },
       serverData: {
-        id: null,
-        canEdit: false,
-        realName: null,
-        mobile: null,
-        gender: 0,
-        idcard: null,
-        birthday: null,
-        avatar: null,
+        userInfo: {},
         userProfessionalInfo: {
           extFieldList: [],
           professionalId: null,
