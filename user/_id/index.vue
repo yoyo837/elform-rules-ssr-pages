@@ -5,32 +5,32 @@
         {{serverData.userInfo.realName}}/{{serverData.userInfo.mobile}}
       </ProfilePanel>
       <ProfileField>
-        <template>性别</template>
+        性别：
         <template slot="value">{{genderText}}</template>
       </ProfileField>
       <ProfileField>
-        <template>手机</template>
+        手机：
         <template slot="value">{{serverData.userInfo.mobile}}</template>
       </ProfileField>
       <ProfileField>
-        <template>生日</template>
+        生日：
         <template slot="value">{{formatDate(serverData.userInfo.birthday)}}</template>
       </ProfileField>
       <ProfileField>
-        <template>证件类型</template>
+        证件类型：
         <template slot="value">{{idCardTypeText}}</template>
       </ProfileField>
       <ProfileField>
-        <template>证件号码</template>
+        证件号码：
         <template slot="value">{{serverData.userInfo.idcard}}</template>
       </ProfileField>
       <template v-if="serverData.userProfessionalInfo">
         <ProfileField v-if="serverData.userProfessionalInfo.professionalId">
-          <template>专业类型</template>
+          专业类型：
           <template slot="value">{{serverData.userProfessionalInfo.professionalName}}</template>
         </ProfileField>
         <ProfileField v-for="field in serverData.userProfessionalInfo.extFieldList" :key="field.dataId">
-          <template>{{field.extShowName}}</template>
+          {{field.extShowName}}：
           <template slot="value">{{field.dataShowValue}}</template>
         </ProfileField>
       </template>

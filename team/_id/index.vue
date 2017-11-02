@@ -10,40 +10,40 @@
         <el-button type="primary" size="mini" class="el-button--ellipse member-list-btn">成员列表</el-button>
       </nuxt-link>
       <ProfileField>
-        <template>创建人</template>
+        创建人：
         <template slot="value">{{serverData.teamInfo.createRealName}}</template>
       </ProfileField>
       <ProfileField>
-        <template>团队名称</template>
+        团队名称：
         <template slot="value">{{serverData.teamInfo.teamName}}</template>
       </ProfileField>
       <ProfileField>
-        <template>成立时间</template>
+        成立时间：
         <template slot="value">{{serverData.teamInfo.teamCreateDateValue}}</template>
       </ProfileField>
       <ProfileField>
-        <template>所属分类</template>
+        所属分类：
         <template slot="value">{{serverData.teamInfo.professionalIdValue}}</template>
       </ProfileField>
       <ProfileField>
-        <template>联系方式</template>
+        联系方式：
         <template slot="value">{{serverData.teamInfo.contact}}</template>
       </ProfileField>
       <ProfileField>
-        <template>选择地区</template>
+        选择地区：
         <template slot="value"></template>
       </ProfileField>
       <ProfileField>
-        <template>详细地址</template>
+        详细地址：
         <template slot="value">{{serverData.teamInfo.address}}</template>
       </ProfileField>
       <ProfileField>
-        <template>所属行业</template>
+        所属行业：
         <template slot="value">{{serverData.teamInfo.industryIdValue}}</template>
       </ProfileField>
 
       <ProfileField v-for="field in serverData.extFieldList" :key="field.dataId">
-        <template>{{field.extShowName}}</template>
+        {{field.extShowName}}：
         <template slot="value">{{field.dataShowValue}}</template>
       </ProfileField>
     </Card>
