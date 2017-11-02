@@ -72,7 +72,7 @@
     <mt-tab-container-item id="couponPage">
       <section class="container container-pd text-center">
         <Card v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
-          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceAccountId" @click.native="onPubServiceClick(pubService)">
+          <Stamp v-for="pubService in serverData.pubServiceAccountList" :data="pubService" :key="pubService.pubServiceAccountId" @click.native="onPubServiceClick(pubService)" :checkState="true">
           </Stamp>
         </Card>
         <Card v-else>
@@ -220,13 +220,15 @@ export default {
       window.history.pushState({ activePage: this.activePage }, null, `${prefix}${this.activePage}`)
     },
     onPubServiceClick(pubService) {
-      const pubServiceAccountId = pubService.pubServiceAccountId
-      if (this.form.pubServiceAccountId === pubServiceAccountId) {
-        this.form.pubServiceAccountId = null
-      } else {
-        this.form.pubServiceAccountId = pubServiceAccountId
+      if (pubService.state === 0) {
+        const pubServiceAccountId = pubService.pubServiceAccountId
+        if (this.form.pubServiceAccountId === pubServiceAccountId) {
+          this.form.pubServiceAccountId = null
+        } else {
+          this.form.pubServiceAccountId = pubServiceAccountId
+        }
+        this.toSwitchPayPage()
       }
-      this.toSwitchPayPage()
     },
     async initWXCode() {
       if (this.wxCode) {

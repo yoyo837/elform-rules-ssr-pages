@@ -27,7 +27,7 @@
               <template v-else-if="item.serviceObj == 6">
                 商品
               </template>
-              {{resolveWeekDays(subItem.commonCalendar.weekDate)}}{{subItem.commonCalendar.startTimeValue}}-{{subItem.commonCalendar.endTimeValue}}
+              {{resolveWeekDays(subItem.commonCalendar.weekDate)}} {{subItem.commonCalendar.startTimeValue}}-{{subItem.commonCalendar.endTimeValue}}
               <template v-if="subItem.serviceType == 1">
                 {{formatMoney(subItem.serviceValue, 1)}} 折
               </template>
@@ -56,7 +56,13 @@
       </div>
       <el-row>
         <el-col :span="18" class="text-overflow highlight">
-          有效期{{formatDate(data.startDate)}}至{{formatDate(data.endDate)}}
+          有效期
+          <template v-if="data.startDate">
+            {{formatDate(data.startDate)}}至{{formatDate(data.endDate)}}
+          </template>
+          <template>
+            不限
+          </template>
         </el-col>
         <el-col :span="6" class="text-overflow highlight text-right">
           ￥{{formatMoney(data.serviceAmount)}}
@@ -196,6 +202,22 @@ export default {
       .el-col {
         padding-top: 5px;
       }
+    }
+  }
+  &.stamp-disable {
+    background: #d8d8d8;
+    background: radial-gradient(transparent 0, transparent 5px, #d8d8d8 0);
+    background-size: 15px 15px;
+    background-position: 3px 8px;
+    .stamp-header {
+      background-color: #d8d8d8;
+    }
+    .stamp-body {
+      color: #999;
+      border-color: rgba(red(#d8d8d8), green(#d8d8d8), blue(#d8d8d8), 0.5);
+    }
+    .highlight {
+      color: #999;
     }
   }
 }
