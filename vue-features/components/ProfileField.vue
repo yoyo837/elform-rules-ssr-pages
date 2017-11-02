@@ -1,6 +1,6 @@
 <template>
   <el-row class="nav-menu" :class="{'nav-menu-field' : !forNav}">
-    <nuxt-link :to="to || 'javascript:;'">
+    <nuxt-link :to="to || ''">
       <el-col :span="forNav ? 20 : 8" class="nav-menu-col nav-menu-title text-overflow">
         <slot></slot>
       </el-col>

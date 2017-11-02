@@ -28,7 +28,7 @@
           <i class="fa fa-id-card"></i>
           <span>我的订单</span>
         </ProfileField>
-        <ProfileField to="#" :for-nav="true">
+        <ProfileField :for-nav="true">
           <i class="fa fa-id-card"></i>
           <span>我的课程</span>
         </ProfileField>
