@@ -73,7 +73,7 @@ export default {
       if (this.serverData.pageTag === 'needAddInfo') {
         popup.alert('信息不足，需要补齐信息才能加入该团队! 跳转中...', {
           callback: () => {
-            this.$router.push(`/team/0/edit?teamid=${this.teamid}&key=${this.serverData.teamInfo.professionalId}`)
+            this.$router.push(`/user/0/edit?teamid=${this.teamid}&key=${this.serverData.teamInfo.professionalId}`)
           }
         })
         return
