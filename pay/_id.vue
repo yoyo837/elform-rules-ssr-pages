@@ -28,7 +28,7 @@
           <el-row v-if="amountAvail">
             <el-col :span="20">
               <img :src="`${CDN_STATIC_HOST}/${payModeIcons[5]}`"> 会员账户支付
-              <span class="balance-desc">(余额{{formatMoney((this.serverData.pubAccount || {}).amount || 0)}}元)</span>
+              <span class="balance-desc">(余额{{formatMoney(amount)}}元)</span>
             </el-col>
             <el-col :span="4" class="text-right">
               <el-radio class="radio" v-model="form.payMeansId" :label="5" :disabled="!(canPay && canUseBalance)">&nbsp;</el-radio>
@@ -412,8 +412,11 @@ export default {
     }
   },
   computed: {
+    amount() {
+      return (this.serverData.pubAccount || {}).amount
+    },
     amountAvail() {
-      return (this.serverData.pubAccount || {}).amount > 0
+      return this.amount > 0
     },
     canUseBalance() {
       return this.amount >= this.totalPrice
