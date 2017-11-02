@@ -33,41 +33,33 @@
           </template>
           <template v-if="dealPlatform.isFight">
             <div class="item-title">
-              选择球队
+              约战
             </div>
             <div class="item-content">
-              <el-row>
-                <el-col :span="14">
-                  <el-form-item prop="sportTeamId">
-                    <el-select v-model="dealPlatform.sportTeamId" placeholder="请选择" style="width: 100%;">
-                      <el-option v-for="team in serverData.sportTeamList" :key="team.sportTeamId" :label="team.sportName" :value="team.sportTeamId"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="4" class="text-center">
-                  <el-button type="primary" size="small" @click="addNewTeam(dealPlatform)">
-                    <i class="el-icon-plus"></i>
-                  </el-button>
-                </el-col>
-                <el-col :span="6">队服颜色</el-col>
-                <el-col :span="18">
-                  <el-form-item prop="sportTeamColor">
-                    <ColorSelect :data="serverData.ballColorList" v-model="dealPlatform.sportTeamColor"></ColorSelect>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">联系方式</el-col>
-                <el-col :span="18">
-                  <el-form-item prop="fightMobile">
-                    <el-input v-model="dealPlatform.fightMobile" placeholder="请输入团队联系方式"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="6">约战备注</el-col>
-                <el-col :span="18">
-                  <el-form-item prop="fightDeclaration">
-                    <el-input v-model="dealPlatform.fightDeclaration" placeholder="请输入团队约战"></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
+              <el-form-item prop="sportTeamId">
+                <el-select v-model="dealPlatform.sportTeamId" placeholder="请选择团队">
+                  <el-option v-for="team in serverData.sportTeamList" :key="team.sportTeamId" :label="team.sportName" :value="team.sportTeamId"></el-option>
+                  <el-option :value="0" class="team-addnew text-center">
+                    <el-button size="mini" type="primary" @click.stop="addNewTeam(dealPlatform)">
+                      <i class="el-icon-plus" aria-hidden="true"></i>
+                    </el-button>
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item prop="sportTeamColor">
+                <!-- <ColorSelect :data="serverData.ballColorList" v-model="dealPlatform.sportTeamColor"></ColorSelect> -->
+                <el-select v-model="dealPlatform.sportTeamColor" placeholder="请选择队服颜色">
+                  <el-option v-for="colorItem in serverData.ballColorList" :key="colorItem.key" :label="colorItem.title" :value="colorItem.key">
+                    <mt-badge size="small" :color="colorItem.rgb" :style="{color:blackOrWhite(colorItem.rgb)}">{{colorItem.title}}</mt-badge>
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item prop="fightMobile">
+                <el-input v-model="dealPlatform.fightMobile" placeholder="请输入团队联系方式"></el-input>
+              </el-form-item>
+              <el-form-item prop="fightDeclaration">
+                <el-input v-model="dealPlatform.fightDeclaration" placeholder="请输入团队约战"></el-input>
+              </el-form-item>
             </div>
           </template>
         </div>
@@ -95,6 +87,7 @@ import _ from 'lodash'
 import Vue from 'vue'
 import math from '../../../components/math'
 import popup from '../../../components/popup'
+import color from '../../../components/color'
 import { Row, Col, Select, Option, Form, FormItem, Input, Button } from 'element-ui'
 import { Badge } from 'mint-ui'
 import bdStyleMixin, { DefaultConfig } from '../../vue-features/mixins/body-style'
@@ -139,6 +132,7 @@ export default {
       })
   },
   methods: {
+    blackOrWhite: color.blackOrWhite,
     getUserList(dealPlatform, typeId) {
       if (dealPlatform == null || dealPlatform.sportPlatformUserList == null || typeId == null) {
         return null
@@ -155,8 +149,8 @@ export default {
       }
       currentUser.isSelected = !currentUser.isSelected // 设置选中
       // 除了当前场地的此人的其他场地所有人员要检查冲突
-      this.serverData.dealPlatformList.forEach(function(platform) {
-        platform.sportPlatformUserList.forEach(function(user) {
+      this.serverData.dealPlatformList.forEach(function (platform) {
+        platform.sportPlatformUserList.forEach(function (user) {
           if (user === currentUser || !user.isChoice) {
             // 排除掉自己和不能操作的
             return
@@ -207,78 +201,71 @@ export default {
         )
       })
 
-      Promise.all(all)
-        .then(data => {
-          this.$http
-            .postJSON('/deal/save.do', {
-              dealPlatformList: this.platformCache.map(platform => {
-                const temp = this.serverData.dealPlatformList.find(p => {
-                  return platform.platformId === p.platformId
-                })
-                platform.sportTeamId = temp.sportTeamId
-                platform.sportTeamColor = temp.sportTeamColor
-                platform.fightDeclaration = temp.fightDeclaration
-                platform.fightMobile = temp.fightMobile
-                return platform
-              }),
-              dealServiceUserList: (() => {
-                const list = []
-                this.serverData.dealPlatformList.forEach(function(platform) {
-                  platform.sportPlatformUserList.forEach(function(user) {
-                    if (user.isSelected) {
-                      list.push({
-                        careerId: user.careerId,
-                        platformId: platform.platformId,
-                        platformUserId: user.platformUserId,
-                        endtime: platform.endTime,
-                        startTime: platform.startTime,
-                        orderdate: platform.orderDate,
-                        salesId: platform.salesId
-                      })
-                    }
+      Promise.all(all).then(data => {
+        this.$http.postJSON('/deal/save.do', {
+          dealPlatformList: this.platformCache.map(platform => {
+            const temp = this.serverData.dealPlatformList.find(p => {
+              return platform.platformId === p.platformId
+            })
+            platform.sportTeamId = temp.sportTeamId
+            platform.sportTeamColor = temp.sportTeamColor
+            platform.fightDeclaration = temp.fightDeclaration
+            platform.fightMobile = temp.fightMobile
+            return platform
+          }),
+          dealServiceUserList: (() => {
+            const list = []
+            this.serverData.dealPlatformList.forEach(function (platform) {
+              platform.sportPlatformUserList.forEach(function (user) {
+                if (user.isSelected) {
+                  list.push({
+                    careerId: user.careerId,
+                    platformId: platform.platformId,
+                    platformUserId: user.platformUserId,
+                    endtime: platform.endTime,
+                    startTime: platform.startTime,
+                    orderdate: platform.orderDate,
+                    salesId: platform.salesId
                   })
-                })
-                return list
-              })()
-            })
-            .then(data => {
-              this.$router.push(`/pay/${data}`)
-            })
-        })
-        .catch(e => {
-          popup.alert('请完善表单项后再试')
-        })
-    },
-    addNewTeam(dealPlatform) {
-      popup
-        .prompt('请填写团队名称')
-        .then(result => {
-          const teamName = result.value || ''
-          if (
-            (this.serverData.sportTeamList || []).some(team => {
-              return team.sportName === teamName
-            })
-          ) {
-            popup.alert('已存在此名称的团队，请更换名称再试')
-            return
-          }
-          this.$http
-            .post('/sportPlatformTeam/add.do', {
-              teamName,
-              professionalId: dealPlatform.professionalId
-            })
-            .then(data => {
-              data = data || {}
-              popup.alert('创建成功')
-              this.serverData.sportTeamList = this.serverData.sportTeamList || []
-              this.serverData.sportTeamList.push({
-                professionalId: data.professionalId,
-                sportName: data.name,
-                sportTeamId: data.id
+                }
               })
             })
+            return list
+          })()
+        }).then(data => {
+          this.$router.push(`/pay/${data}`)
         })
-        .catch(x => {})
+      }).catch(e => {
+        popup.alert('请完善表单项后再试')
+      })
+    },
+    addNewTeam(dealPlatform) {
+      popup.prompt('请填写团队名称').then(result => {
+        const teamName = result.value || ''
+        if (teamName.length === 0) {
+          popup.alert('请填写团队名称')
+          return
+        }
+        if ((this.serverData.sportTeamList || []).some(team => {
+          return team.sportName === teamName
+        })) {
+          popup.alert('已存在此名称的团队，请更换名称再试')
+          return
+        }
+        this.$http.post('/sportPlatformTeam/add.do', {
+          teamName,
+          professionalId: dealPlatform.professionalId
+        }).then(data => {
+          data = data || {}
+          popup.alert('创建成功')
+          this.serverData.sportTeamList = this.serverData.sportTeamList || []
+          this.serverData.sportTeamList.push({
+            professionalId: data.professionalId,
+            sportName: data.name,
+            sportTeamId: data.id
+          })
+        })
+      })
     }
   },
   computed: {
@@ -289,8 +276,8 @@ export default {
     },
     totalPrice() {
       let price = this.platformTotalPrice
-      this.serverData.dealPlatformList.forEach(function(platform) {
-        platform.sportPlatformUserList.forEach(function(user) {
+      this.serverData.dealPlatformList.forEach(function (platform) {
+        platform.sportPlatformUserList.forEach(function (user) {
           if (user.isSelected) {
             price = math.add(price, user.servicePrice || 0)
           }
@@ -347,6 +334,15 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.team-addnew {
+  .el-button {
+    padding: 0 3.5px;
+    font-size: 14px;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .container {
