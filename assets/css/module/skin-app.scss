@@ -193,3 +193,15 @@ a {
 @import './nav-menu.scss';
 @import './index-list.scss';
 @import './step.scss';
+
+@media (min-width:768px) {
+  .has-fixed-nav-header {
+    padding-top: 0;
+  }
+  #app {
+    margin-top: 0;
+    header {
+      display: none;
+    }
+  }
+}

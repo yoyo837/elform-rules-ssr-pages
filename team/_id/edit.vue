@@ -110,26 +110,22 @@ export default {
           })
         })
       } else {
-        this.$router.push('/team/my')
+        this.$router.go(-1)
       }
     } else {
-      this.$http
-        .get('/team/teamEditInfo.do', {
-          teamId: this.teamid
-        })
-        .then(data => {
-          if (!data.roleIsTeamAdmin) {
-            this.$router.replace('/team/my')
-            return
-          }
-          _.assign(this.serverData, data.teamInfo)
-          this.serverData.extFieldList = data.extFieldList
+      this.$http.get('/team/teamEditInfo.do', {
+        teamId: this.teamid
+      }).then(data => {
+        if (!data.roleIsTeamAdmin) {
+          this.$router.go(-1)
+          return
+        }
 
-          data.extFieldList.forEach(field => {
-            this.serverData[field.extName] = field.dataValue
-          })
+        (data.extFieldList || []).forEach(field => {
+          data.teamInfo[field.extName] = field.dataValue
         })
-      // serverData.canEdit  如果没权限直接跳走
+        _.assign(this.serverData, data.teamInfo)
+      })
     }
   },
   methods: {
@@ -197,7 +193,6 @@ export default {
         ]
       },
       serverData: {
-        canEdit: true,
         industryId: null, // 行业
         industryIdValue: null,
         professionalId: null, // 专业
