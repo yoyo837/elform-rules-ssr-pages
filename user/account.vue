@@ -33,7 +33,7 @@
 
     <Card title-text="我的优惠" title-icon="fa fa-id-card">
       <div class="account-card-content">
-        <div v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length">
+        <div v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length" class="text-center">
           <Stamp v-for="item in serverData.pubServiceAccountList" :key="item.pubServiceId" :data="item">
           </Stamp>
         </div>

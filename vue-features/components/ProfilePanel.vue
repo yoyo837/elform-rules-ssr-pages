@@ -57,9 +57,9 @@ export default {
   data() {
     return {
       imgUrl:
-        this.type === 'team'
-          ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
-          : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
+      this.type === 'team'
+        ? utils.DEFAULT_TEAM_AVATAR_PIC_FULLPATH
+        : `${utils.DEFAULT_USER_AVATAR_PIC_PATH}100X100.jpg`,
       timestamp: null
     }
   },

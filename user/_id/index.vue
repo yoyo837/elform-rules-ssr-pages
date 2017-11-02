@@ -174,10 +174,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.profile-panel-card {
-  border-bottom: 1px solid #f0f0f0;
-}
-</style>
-
 

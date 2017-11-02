@@ -22,7 +22,7 @@
           有效期{{formatDate(data.startDate)}}至{{formatDate(data.endDate)}}
         </el-col>
         <el-col :span="6" class="text-overflow highlight text-right">
-          ￥{{data.serviceAmount}}
+          ￥{{formatMoney(data.serviceAmount)}}
         </el-col>
       </el-row>
     </div>
@@ -42,6 +42,17 @@ export default {
       type: Object,
       required: true
     }
+  },
+  methods: {
+    resolveHtmlWithDataList() {
+      // (this.data.pubServiceDataList || []).forEach(item => {
+
+      // })
+    }
+  },
+  data() {
+    return {
+    }
   }
 }
 </script>
@@ -59,6 +70,7 @@ export default {
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  text-align: left;
   background: #4cd0d3;
   background: radial-gradient(transparent 0, transparent 5px, #4cd0d3 0);
   background-size: 15px 15px;

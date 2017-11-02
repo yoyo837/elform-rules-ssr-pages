@@ -204,10 +204,6 @@ export default {
 
 
 <style lang="scss" scoped>
-.profile-panel-card {
-  border-bottom: 1px solid #f0f0f0;
-}
-
 .member-list-btn {
   position: absolute;
   right: 15px;
