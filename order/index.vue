@@ -29,7 +29,7 @@
         <Card v-for="item in list" :key="item.deal.dealId" :title-text="`订单号：${item.deal.dealId}`" @click.native="toDetail(item.deal.dealId)">
           <template slot="header-desc">
             <span :class="`deal-status-${item.deal.dealStatus}`">{{item.deal.dealStatusValue}}</span>
-            <span v-if="item.deal.dealStatus != DealStatusMap.NOT_PAY" :class="`deal-status-${item.deal.dealStatus}`" @click.stop="toDel(item.deal.dealId)">
+            <span v-if="item.deal.dealStatus == DealStatusMap.CANCEL" :class="`deal-status-${item.deal.dealStatus}`" @click.stop="toDel(item.deal.dealId)">
               <i class="icon-pt-del"></i>
             </span>
           </template>
@@ -122,62 +122,55 @@ export default {
       if (this.allLoaded) {
         return
       }
-      this.$http
-        .get(
-          '/deal/list.do',
-          _.assign(
-            {
-              page: this.serverData.page + 1,
-              pageSize: this.pageSize
-            },
-            this.params
-          )
-        )
-        .then(data => {
-          _.assign(this.serverData, {
-            page: data.page,
-            total: data.total
-          })
-          const oldLength = this.list.length
-          this.list.push.apply(
-            this.list,
-            (data.rows || []).map(item => {
-              // 处理一下字段再给到vm
-              item.deal = item.deal || {}
-              item.commonPay = item.commonPay || {}
-              item.commonSales = item.commonSales || {}
-              return item
-            })
-          ) // 追加
-
-          if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
-            // 没用响应满页或者超过总数
-            this.allLoaded = true
-          }
-
-          const loadmore = this.$refs['loadmore']
-          loadmore && loadmore.onBottomLoaded()
+      this.$http.get('/deal/list.do', _.assign({
+        page: this.serverData.page + 1,
+        pageSize: this.pageSize
+      }, this.params)).then(data => {
+        _.assign(this.serverData, {
+          page: data.page,
+          total: data.total
         })
+        const oldLength = this.list.length
+        this.list.push.apply(
+          this.list,
+          (data.rows || []).map(item => {
+            // 处理一下字段再给到vm
+            item.deal = item.deal || {}
+            item.commonPay = item.commonPay || {}
+            item.commonSales = item.commonSales || {}
+            return item
+          })
+        ) // 追加
+
+        if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
+          // 没用响应满页或者超过总数
+          this.allLoaded = true
+        }
+
+        const loadmore = this.$refs['loadmore']
+        loadmore && loadmore.onBottomLoaded()
+      })
     },
     toPay(id) {
       this.$router.push(`/pay/${id}`)
     },
     toDel(id) {
-      // TODO 删除订单
+      popup.confirm('确认删除订单吗？').then(action => {
+        this.$http.post('/deal/delete.do', {
+          dealId: id
+        }).then(data => {
+          this.reload()
+        })
+      })
     },
     toCancel(id) {
-      popup
-        .confirm('确认取消订单吗？')
-        .then(action => {
-          this.$http
-            .post('/deal/cancel.do', {
-              dealId: id
-            })
-            .then(data => {
-              this.reload()
-            })
+      popup.confirm('确认取消订单吗？').then(action => {
+        this.$http.post('/deal/cancel.do', {
+          dealId: id
+        }).then(data => {
+          this.reload()
         })
-        .catch(e => {})
+      })
     },
     switchTab(status) {
       this.params.dealStatus = status
