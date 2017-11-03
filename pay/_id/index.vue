@@ -78,7 +78,7 @@
                   <span>{{formatMoney(totalPrice, 0)}}分</span>
                 </el-button>
               </template>
-              <template>
+              <template v-else>
                 <el-button type="text" class="full-width">
                   实付款：￥
                   <span>{{formatMoney(totalPrice)}}</span>
@@ -189,7 +189,7 @@ export default {
         }
         this.form.payMeansId = this.canUseBalance && !this.userFee ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
 
-        if (this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
+        if (this.payMode === 5 && this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
           // 没有服务之前价格为0
           this.toPay()
           return

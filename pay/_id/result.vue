@@ -24,7 +24,15 @@
               - ￥{{discountAmount}}
             </el-col>
           </el-row>
-          <el-row>
+          <el-row v-if="serverData.dealInfo.commonPay.payPointsTotal">
+            <el-col :span="18">
+              积分支付：
+            </el-col>
+            <el-col :span="6" class="text-right">
+              {{serverData.dealInfo.commonPay.payPointsTotal || 0}}分
+            </el-col>
+          </el-row>
+          <el-row v-else>
             <el-col :span="18">
               实付款：
             </el-col>
@@ -127,6 +135,9 @@ export default {
       return this.serverData.dealInfo.dealTicketList && this.serverData.dealInfo.dealTicketList.length > 0
     },
     discountAmount() {
+      if (this.serverData.dealInfo.commonPay.payPointsTotal > 0) {
+        return 0
+      }
       return math.sub(this.serverData.dealInfo.commonPay.payFeeTotal || 0, this.serverData.dealInfo.commonPay.payFeePaid || 0)
     }
   },

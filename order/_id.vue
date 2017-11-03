@@ -26,7 +26,15 @@
           - ￥{{discountAmount}}
         </el-col>
       </el-row>
-      <el-row>
+      <el-row v-if="serverData.commonPay.payPointsTotal">
+        <el-col :span="18">
+          积分支付：
+        </el-col>
+        <el-col :span="6" class="text-right">
+          {{serverData.commonPay.payPointsTotal || 0}}分
+        </el-col>
+      </el-row>
+      <el-row v-else>
         <el-col :span="18">
           实付款：
         </el-col>
@@ -46,8 +54,8 @@
         </template>
       </div>
       <!-- <div class="order-status-field">
-              完成时间：
-            </div> -->
+                完成时间：
+              </div> -->
       <div class="ticket-matrix-item text-center" v-for="dealTicket in serverData.dealTicketList" :key="dealTicket.dealTicketId">
         <div class="ticket-desc">
           验证码：
@@ -82,11 +90,11 @@
     <Card v-if="serverData.deal.remark" :invisible="true" class="terms-conditions">
       <div>使用须知</div>
       <!-- <ul>
-              <li>serverData.deal.remark</li>
-              <li>sdfdsf</li>
-              <li>sdfdsf</li>
-              <li>sdfdsf</li>
-            </ul> -->
+                <li>serverData.deal.remark</li>
+                <li>sdfdsf</li>
+                <li>sdfdsf</li>
+                <li>sdfdsf</li>
+              </ul> -->
       <div>
         {{serverData.deal.remark}}
       </div>
@@ -156,6 +164,9 @@ export default {
   },
   computed: {
     discountAmount() {
+      if (this.serverData.commonPay.payPointsTotal > 0) {
+        return 0
+      }
       return math.sub(this.serverData.commonPay.payFeeTotal || 0, this.serverData.commonPay.payFeePaid || 0)
     }
   },
@@ -172,7 +183,7 @@ export default {
               this.$router.push('/order')
             })
         })
-        .catch(e => {})
+        .catch(e => { })
     },
     toPay() {
       this.$router.push(`/pay/${this.dealId}`)
