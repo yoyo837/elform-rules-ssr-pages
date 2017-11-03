@@ -319,9 +319,21 @@ export default {
     }
     &:first-child {
       padding-top: 0;
+      .member-content {
+        padding-top: 0;
+      }
     }
     &:last-child {
       padding-bottom: 0;
+      .member-content {
+        padding-bottom: 0;
+      }
+    }
+    &:first-child,
+    &:last-child {
+      .member-content {
+        height: 65px;
+      }
     }
   }
 }
