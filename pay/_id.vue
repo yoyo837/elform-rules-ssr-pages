@@ -24,7 +24,7 @@
           </el-row>
         </Card>
 
-        <Card title-text="优惠信息" class="coupon-info">
+        <Card title-text="优惠信息" class="coupon-info" v-if="!userFee">
           <template slot="header-desc">
             <span class="select-coupon text-overflow" :title="couponText" @click="toSwitchCouponPage">
               {{couponText}}
@@ -72,10 +72,18 @@
         <section class="fixed-bt">
           <el-row>
             <el-col :span="12" class="amount-wrapper">
-              <el-button type="text" class="full-width">
-                实付款：￥
-                <span>{{formatMoney(totalPrice)}}</span>
-              </el-button>
+              <template v-if="userFee">
+                <el-button type="text" class="full-width">
+                  积分支付：
+                  <span>{{formatMoney(totalPrice, 0)}}分</span>
+                </el-button>
+              </template>
+              <template>
+                <el-button type="text" class="full-width">
+                  实付款：￥
+                  <span>{{formatMoney(totalPrice)}}</span>
+                </el-button>
+              </template>
             </el-col>
             <el-col :span="12" class="pay-wrapper">
               <el-button type="text" class="primary-button full-width" @click="toPay">确认支付</el-button>
@@ -177,7 +185,7 @@ export default {
       this.form.pubServiceAccountId = this.serverData.pubServiceAccountId // 默认会员服务id
 
       this.$nextTick().then(() => {
-        this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
+        this.form.payMeansId = this.canUseBalance && !this.userFee ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
 
         if (this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
           // 没有服务之前价格为0
@@ -278,7 +286,7 @@ export default {
       })
     },
     toPay() {
-      if (this.payMode === 5 || this.totalPrice <= 0) {
+      if (this.payMode === 5 || this.payMode === 8 || this.totalPrice <= 0) {
         // 账户支付
         this.$http.post('/pay/pubAccountPay.do', {
           dealId: this.dealId,
@@ -418,10 +426,10 @@ export default {
       return (this.serverData.pubAccount || {}).amount
     },
     amountAvail() {
-      return this.amount > 0
+      return !this.userFee && this.amount > 0
     },
     canUseBalance() {
-      return this.amount >= this.totalPrice
+      return !this.userFee && this.amount >= this.totalPrice
     },
     payMode() {
       return (
@@ -430,6 +438,9 @@ export default {
         }) || {}
         ).payMode || this.form.payMeansId
       )
+    },
+    userFee() {
+      return this.serverData.dealFeePrice > 0
     },
     usePubService() {
       return this.couponPrice > 0 || this.deductionPrice > 0
