@@ -45,7 +45,9 @@
       <el-checkbox-group v-model="selectIds" :min="1" :max="selectSingle ? 1 : undefined">
         <el-row v-for="member in serverData.memberList" :key="member.pubAccountId">
           <el-col :span="9" class="text-overflow">
-            <i class="fa fa-id-card" aria-hidden="true"></i>{{member.realName}}</el-col>
+            <i v-if="member.gender == 1" class="icon-pt-male" aria-hidden="true"></i>
+            <i v-else-if="member.gender == 2" class="icon-pt-female" aria-hidden="true"></i>
+            {{member.realName}}</el-col>
           <el-col :span="5" class="text-overflow">({{member.age}}岁)</el-col>
           <el-col :span="8" class="text-overflow">/{{member.mobile}}</el-col>
           <el-col :span="2">

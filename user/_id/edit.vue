@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="个人资料" title-icon="fa fa-id-card">
+    <Card title-text="个人资料" title-icon="icon-pt-profile">
       <ProfilePanel :pic-path="serverData.avatar" @afterUpload="afterUpload">
         <!-- {{serverData.realName}}/{{serverData.mobile}} -->
       </ProfilePanel>

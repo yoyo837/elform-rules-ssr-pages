@@ -1,7 +1,7 @@
 <template>
   <section class="container text-center">
     <div class="icon-box">
-      <i class="fa fa-info-circle" aria-hidden="true"></i>
+      <i class="icon-pt-warn" aria-hidden="true"></i>
     </div>
     请在微信中使用该功能
   </section>
@@ -17,7 +17,7 @@ export default {
 .container {
   .icon-box {
     font-size: 50px;
-    color: #2196F3;
+    color: #f26a3e;
     padding: 20px 0;
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="团队资料" title-icon="fa fa-id-card">
+    <Card title-text="团队资料" title-icon="icon-pt-team">
       <ProfilePanel :pic-path="serverData.professionalId" type="team">
       </ProfilePanel>
       <el-form ref="form" :model="serverData" :rules="rules" label-width="80px">
