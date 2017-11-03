@@ -2,7 +2,7 @@
   <mt-tab-container v-model="activePage">
     <mt-tab-container-item id="payPage">
       <section class="container container-pd">
-        <Card class="timeout-tips">
+        <Card class="timeout-tips" v-if="canMqPayTimeout">
           <i class="el-icon-warning" aria-hidden="true"></i>
           <div class="tips-text">
             <div>订单已提交，请在{{waitTimeText}}内完成支付!</div>
@@ -167,7 +167,6 @@ export default {
       dealId: this.dealId
     }).then(data => {
       if (process.browser) {
-        this.mq()
         window.addEventListener('popstate', this.onPopstate)
       }
       data = data || {}
@@ -185,6 +184,9 @@ export default {
       this.form.pubServiceAccountId = this.serverData.pubServiceAccountId // 默认会员服务id
 
       this.$nextTick().then(() => {
+        if (process.browser && this.canMqPayTimeout) {
+          this.mq()
+        }
         this.form.payMeansId = this.canUseBalance && !this.userFee ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
 
         if (this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
@@ -422,6 +424,9 @@ export default {
     }
   },
   computed: {
+    canMqPayTimeout() {
+      return this.serverData.payExpireTime >= 0
+    },
     amount() {
       return (this.serverData.pubAccount || {}).amount
     },
@@ -511,7 +516,7 @@ export default {
       }
     },
     now() {
-      if (this.serverData.payExpireTime) {
+      if (this.canMqPayTimeout) {
         const time = +this.now.format('x')
         if (this.timerSwitch && this.serverData.payExpireTime <= time) {
           this.timerSwitch = false
@@ -568,7 +573,7 @@ export default {
       serverData: {
         pubServiceAccountList: [],
         payWaitTime: 0,
-        payExpireTime: 0,
+        payExpireTime: -1,
         pubAccount: {},
         dealFeePrice: 0, // 如果大于0则只有积分支付
         dealTotalPrice: 0, // 实收总价
