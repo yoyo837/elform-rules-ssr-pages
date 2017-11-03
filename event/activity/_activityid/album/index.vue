@@ -52,8 +52,8 @@
             <el-button type="text" class="full-width" @click="toDel">删除</el-button>
           </el-col>
           <!-- <el-col :span="6">
-              <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
-            </el-col> -->
+                                <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
+                              </el-col> -->
           <el-col :span="8">
             <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
           </el-col>
@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import _ from 'lodash'
 import Vue from 'vue'
 import utils from '../../../../../components/utils'
@@ -91,6 +92,9 @@ export default {
   mixins: [bdStyleMixin],
   mounted() {
     this.loadBottom()
+    if (process.browser) {
+      this.mq()
+    }
   },
   components: {
     Card
@@ -131,9 +135,20 @@ export default {
         wrapper.getBoundingClientRect().top -
         window.parseFloat(window.getComputedStyle(wrapper).marginTop) -
         2}px`
+    },
+    isReadOnly() {
+      // const time = +this.now.format('x')
+      return false
     }
   },
   methods: {
+    mq() {
+      // 刷新当前时间
+      this.now = moment()
+      if (this.timerSwitch) {
+        setTimeout(this.mq, 1000 * 1)
+      }
+    },
     toEditPic() {
       this.editMode = true
     },
@@ -189,24 +204,20 @@ export default {
       utils.enableBodyScroll()
     },
     toDel() {
-      this.$http
-        .postJSON('/pubActivity/deletePic.do', {
-          pubActivityId: this.pubActivityId,
-          fileKeys: [this.previewPic.fileKey]
-        })
-        .then(data => {
-          this.exitPreview()
-          this.reload()
-        })
+      this.$http.postJSON('/pubActivity/deletePic.do', {
+        pubActivityId: this.pubActivityId,
+        fileKeys: [this.previewPic.fileKey]
+      }).then(data => {
+        this.exitPreview()
+        this.reload()
+      })
     },
     setCover() {
-      this.$http
-        .post('/commonFile/updateConver.do', {
-          fileKey: this.previewPic.fileKey
-        })
-        .then(data => {
-          popup.alert('设置成功')
-        })
+      this.$http.post('/commonFile/updateConver.do', {
+        fileKey: this.previewPic.fileKey
+      }).then(data => {
+        popup.alert('设置成功')
+      })
     },
     toUpload() {
       this.$router.push(`/event/activity/${this.pubActivityId}/album/upload`)
@@ -215,37 +226,35 @@ export default {
       if (this.allLoaded) {
         return
       }
-      this.$http
-        .get('/pubActivity/queryPicList.do', {
-          page: this.serverData.page + 1,
-          pageSize: this.pageSize,
-          pubActivityId: this.pubActivityId
+      this.$http.get('/pubActivity/queryPicList.do', {
+        page: this.serverData.page + 1,
+        pageSize: this.pageSize,
+        pubActivityId: this.pubActivityId
+      }).then(data => {
+        _.assign(this.serverData, {
+          page: data.page,
+          total: data.total
         })
-        .then(data => {
-          _.assign(this.serverData, {
-            page: data.page,
-            total: data.total
+        const oldLength = this.list.length
+        this.list.push.apply(
+          this.list,
+          (data.rows || []).map(item => {
+            // 处理一下字段再给到vm
+            item.deal = item.deal || {}
+            item.commonPay = item.commonPay || {}
+            item.commonSales = item.commonSales || {}
+            return item
           })
-          const oldLength = this.list.length
-          this.list.push.apply(
-            this.list,
-            (data.rows || []).map(item => {
-              // 处理一下字段再给到vm
-              item.deal = item.deal || {}
-              item.commonPay = item.commonPay || {}
-              item.commonSales = item.commonSales || {}
-              return item
-            })
-          ) // 追加
+        ) // 追加
 
-          if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
-            // 没用响应满页或者超过总数
-            this.allLoaded = true
-          }
+        if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
+          // 没用响应满页或者超过总数
+          this.allLoaded = true
+        }
 
-          const loadmore = this.$refs['loadmore']
-          loadmore && loadmore.onBottomLoaded()
-        })
+        const loadmore = this.$refs['loadmore']
+        loadmore && loadmore.onBottomLoaded()
+      })
     },
     reload() {
       this.list = []
@@ -262,6 +271,8 @@ export default {
       rotate: 0
     }
     return {
+      now: moment(),
+      timerSwitch: true,
       previewPic: null,
       editMode: false,
       editData: _.cloneDeep(defaultEditData),
@@ -275,6 +286,9 @@ export default {
       },
       pubActivityId: this.$route.params['activityid']
     }
+  },
+  destroyed() {
+    this.timerSwitch = false
   }
 }
 </script>

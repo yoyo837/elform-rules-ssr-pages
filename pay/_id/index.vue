@@ -294,7 +294,7 @@ export default {
           dealId: this.dealId,
           pubServiceAccountId: this.form.pubServiceAccountId
         }).then(data => {
-          this.$router.push(`/pay/result/${this.dealId}`)
+          this.$router.push(`/pay/${this.dealId}/result`)
         })
         return
       }
@@ -335,7 +335,7 @@ export default {
                       paySign: data.paySign, // 支付签名
                       success: res => {
                         // console.log(res)
-                        this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
+                        this.$router.push(`/pay/${this.dealId}/result`) // 支付成功后的回调函数
                       }
                     })
                   })
@@ -356,7 +356,7 @@ export default {
             dealId: this.dealId,
             pubServiceAccountId: this.form.pubServiceAccountId,
             payMeansId: this.form.payMeansId,
-            returnUrl: `/pay/result/${this.dealId}`
+            returnUrl: `/pay/${this.dealId}/result`
           }).then(data => {
             data = data || {}
             _.assign(this.alipayForm, {
