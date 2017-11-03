@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <template v-if="paySuccess">
+    <template v-if="serverData.paySuccess">
       <Card class="card-status text-center">
         <i class="el-icon-circle-check" aria-hidden="true"></i>
         你已成功支付！
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import Vue from 'vue'
 import popup from '../../../components/popup'
 import { Row, Col, Button } from 'element-ui'
@@ -58,16 +59,19 @@ export default {
     Card
   },
   mounted() {
-    this.$http.get('/pay/isPay.do', {
+    this.$http.get('/pay/payResult.do', {
       dealId: this.dealId
-    }).then(paid => {
-      this.paySuccess = true
-      if (paid) {
-        popup.alert('支付成功，正在跳转', {
-          callback: () => {
-            // this.$router.replace(`/order/${this.dealId}?out_trade_no=${this.dealId}`)
-          }
-        })
+    }).then(data => {
+      data = data || {}
+
+      _.assign(this.serverData, data)
+
+      if (this.serverData.paySuccess) {
+        // popup.alert('支付成功，正在跳转', {
+        //   callback: () => {
+        //     // this.$router.replace(`/order/${this.dealId}?out_trade_no=${this.dealId}`)
+        //   }
+        // })
       } else {
         popup.alert('订单未成功支付，跳转到支付页面', {
           callback: () => {
@@ -88,9 +92,9 @@ export default {
   data() {
     return {
       title: '确认支付结果...',
-      paySuccess: false,
       serverData: {
-
+        dealInfo: {},
+        paySuccess: false
       },
       paid: false,
       dealId: this.$route.params['id']
