@@ -19,8 +19,8 @@
         </span>
       </template>
       <template v-for="member in group.dealSignupGroupList">
-        <nuxt-link :key="member.pubAccountId" :to="`/user/${member.pubAccountId}?teamid=${serverData.teamId}`">
-          <div class="list-member">
+        <div class="list-member" :key="member.pubAccountId">
+          <nuxt-link :to="`/user/${member.pubAccountId}?teamid=${serverData.teamId}`">
             <img :src="`${member.avatar}`" class="member-avatar">
             <div class="member-content">
               <div class="member-desc text-overflow">
@@ -36,8 +36,8 @@
                 <el-button type="text" @click.stop="updateGroupProps(member, group,'del')">删除</el-button>
               </div>
             </div>
-          </div>
-        </nuxt-link>
+          </nuxt-link>
+        </div>
       </template>
     </Card>
 
@@ -274,15 +274,18 @@ export default {
 
 .index-list-box {
   .list-member {
-    padding: 0;
+    padding-left: 0;
+    padding-right: 0;
     position: relative;
     .member-content {
       position: absolute;
       top: 0;
       left: 0;
-      height: 50px;
+      height: 80px;
       width: 100%;
       padding-left: 50px;
+      padding-top: 15px;
+      padding-bottom: 15px;
       .member-desc,
       .member-operation {
         display: inline-block;
@@ -313,6 +316,12 @@ export default {
           border-left: 1px solid #f0f0f0;
         }
       }
+    }
+    &:first-child {
+      padding-top: 0;
+    }
+    &:last-child {
+      padding-bottom: 0;
     }
   }
 }
