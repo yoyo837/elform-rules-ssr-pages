@@ -7,12 +7,12 @@
       </div>
       <div class="attendee-desc">
         团号：{{serverData.teamId}} 人数：{{serverData.dealSignupUserTotal}}
-        <el-button v-if="serverData.dealSignupAdmin" type="text" class="update-list-btn" @click="updateDealSignupTeamInfo">更新团队</el-button>
+        <el-button v-if="serverData.dealSignupCanEdit" type="text" class="update-list-btn" @click="updateDealSignupTeamInfo">更新团队</el-button>
       </div>
     </Card>
 
     <Card v-for="group in serverData.dealSignupGroupInfoList" :key="group.groupId" :title-text="group.groupName" class="index-list-box">
-      <template v-if="serverData.dealSignupAdmin" slot="header-desc">
+      <template v-if="serverData.dealSignupCanEdit" slot="header-desc">
         <span @click="addDealSignupGroupMember(group)">
           <i class="el-icon-plus" aria-hidden="true"></i>
           添加成员
@@ -29,7 +29,7 @@
                   <i class="fa fa-id-card" aria-hidden="true"></i>
                 </div>
               </div>
-              <div v-if="serverData.dealSignupAdmin" class="member-operation">
+              <div v-if="serverData.dealSignupCanEdit" class="member-operation">
                 <el-button type="text" @click.stop="updateGroupProps(member, group,'update')">更新</el-button>
                 <el-button type="text" @click.stop="replaceDealSignupGroupMember(member, group)">换人</el-button>
                 <el-button type="text" @click.stop="updateGroupProps(member, group,'del')">删除</el-button>
@@ -232,7 +232,7 @@ export default {
       oldMember: null, // for replace
       memberGroup: null, // for replace/add
       serverData: {
-        dealSignupAdmin: false,
+        dealSignupCanEdit: false,
         dealSignupName: null,
         dealSignupUserTotal: 0,
         teamId: null,
