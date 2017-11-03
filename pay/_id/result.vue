@@ -5,6 +5,35 @@
         <i class="el-icon-circle-check" aria-hidden="true"></i>
         你已成功支付！
       </Card>
+      <Card>
+        <OrderList :deal-info="serverData.dealInfo" size="large"></OrderList>
+        <div class="amount-list">
+          <el-row>
+            <el-col :span="18">
+              订单合计：
+            </el-col>
+            <el-col :span="6" class="text-right">
+              ￥{{serverData.dealInfo.commonPay.payFeeTotal || 0}}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="18">
+              优惠：
+            </el-col>
+            <el-col :span="6" class="text-right">
+              - ￥{{discountAmount}}
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="18">
+              实付款：
+            </el-col>
+            <el-col :span="6" class="text-right">
+              ￥{{serverData.dealInfo.commonPay.payFeePaid || 0}}
+            </el-col>
+          </el-row>
+        </div>
+      </Card>
 
       <section class="operation">
         <el-row :gutter="5">
@@ -13,15 +42,18 @@
               <el-button type="primary" class="full-width shadow-button">查看订单</el-button>
             </nuxt-link>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="(hasPlatform || hasTicket) ? 12 : 24">
             <nuxt-link to="/">
               <el-button class="el-button--white full-width shadow-button">回到首页</el-button>
             </nuxt-link>
           </el-col>
-          <el-col :span="12">
-            <!-- <nuxt-link to="/booking/schedule/100938"> -->
-            <el-button class="el-button--white full-width shadow-button">继续订场</el-button>
-            <!-- </nuxt-link> -->
+          <el-col :span="12" v-if="hasPlatform || hasTicket">
+            <nuxt-link v-if="hasPlatform" :to="`/booking/schedule/${serverData.dealInfo.dealPlatformList[0].salesId}`">
+              <el-button class="el-button--white full-width shadow-button">继续订场</el-button>
+            </nuxt-link>
+            <nuxt-link v-else-if="hasTicket" :to="`/ticket/${serverData.dealInfo.dealTicketList[0].dataId}`">
+              <el-button class="el-button--white full-width shadow-button">继续购票</el-button>
+            </nuxt-link>
           </el-col>
         </el-row>
       </section>
@@ -36,9 +68,11 @@
 <script>
 import _ from 'lodash'
 import Vue from 'vue'
+import math from '../../../components/math'
 import popup from '../../../components/popup'
 import { Row, Col, Button } from 'element-ui'
 import Card from '../../vue-features/components/Card'
+import OrderList from '../../vue-features/components/OrderList'
 import bdStyleMixin from '../../vue-features/mixins/body-style'
 
 Vue.component(Row.name, Row)
@@ -56,17 +90,21 @@ export default {
   },
   mixins: [bdStyleMixin],
   components: {
-    Card
+    Card,
+    OrderList
   },
   mounted() {
     this.$http.get('/pay/payResult.do', {
       dealId: this.dealId
     }).then(data => {
       data = data || {}
+      data.dealInfo = data.dealInfo || {}
+      data.dealInfo.commonPay = data.dealInfo.commonPay || {}
 
       _.assign(this.serverData, data)
 
       if (this.serverData.paySuccess) {
+        this.title = '支付成功'
         // popup.alert('支付成功，正在跳转', {
         //   callback: () => {
         //     // this.$router.replace(`/order/${this.dealId}?out_trade_no=${this.dealId}`)
@@ -81,19 +119,24 @@ export default {
       }
     })
   },
-  methods: {
-    toHome() {
-      this.$router.push('/')
+  computed: {
+    hasPlatform() {
+      return this.serverData.dealInfo.dealPlatformList && this.serverData.dealInfo.dealPlatformList.length > 0
     },
-    toOrder() {
-      this.$router.push(`/order/${this.dealId}`)
+    hasTicket() {
+      return this.serverData.dealInfo.dealTicketList && this.serverData.dealInfo.dealTicketList.length > 0
+    },
+    discountAmount() {
+      return math.sub(this.serverData.dealInfo.commonPay.payFeeTotal || 0, this.serverData.dealInfo.commonPay.payFeePaid || 0)
     }
   },
   data() {
     return {
       title: '确认支付结果...',
       serverData: {
-        dealInfo: {},
+        dealInfo: {
+          commonPay: {}
+        },
         paySuccess: false
       },
       paid: false,
@@ -109,6 +152,20 @@ export default {
     font-size: 32px;
     color: #3ebd00;
     vertical-align: middle;
+  }
+}
+
+.amount-list {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  .el-row {
+    padding: 3px 0;
+    .el-col {
+      &:last-child {
+        color: #f26a3e;
+      }
+    }
   }
 }
 </style>
