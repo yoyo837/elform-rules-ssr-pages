@@ -1,7 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card>
-      <div class="pic-upload text-center">
+      <div class="pic-upload text-center" v-if="!isReadOnly">
         <div class="pic-upload-emit" @click="toUpload">
           <div class="camera-wrapper">
             <i class="icon-pt-camera" aria-hidden="true"></i>
@@ -26,39 +26,42 @@
       </div>
     </Card>
 
-    <section v-if="previewPic" class="pic-preview" :class="{'pic-preview-edit': editMode}">
+    <section v-if="previewPic" class="pic-preview" :class="{'pic-preview-edit': editMode, 'pic-preview-readonly': isReadOnly}">
       <img :src="previewPic.url" @click="onPreviewPicClick" ref="previewPic" :style="{transform: `rotate(${this.editData.rotate || 0}deg)`}">
-      <div v-if="editMode" class="operation operation-top">
-        <el-row>
-          <el-col :span="12">
-            <el-button type="text" class="full-width" @click="toCancelEdit">取消</el-button>
-          </el-col>
-          <el-col :span="12">
-            <el-button type="text" class="full-width sure-btn" @click="saveEdit">确定</el-button>
-          </el-col>
-        </el-row>
-      </div>
-      <div class="operation">
-        <el-row v-if="editMode">
-          <el-col :span="24">
-            <el-button type="text" class="full-width" @click="toRotate">旋转</el-button>
-          </el-col>
-        </el-row>
-        <el-row v-else>
-          <el-col :span="8">
-            <el-button type="text" class="full-width" @click="toEditPic">编辑图片</el-button>
-          </el-col>
-          <el-col :span="8">
-            <el-button type="text" class="full-width" @click="toDel">删除</el-button>
-          </el-col>
-          <!-- <el-col :span="6">
-                                <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
-                              </el-col> -->
-          <el-col :span="8">
-            <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
-          </el-col>
-        </el-row>
-      </div>
+      <template v-if="!isReadOnly">
+
+        <div v-if="editMode" class="operation operation-top">
+          <el-row>
+            <el-col :span="12">
+              <el-button type="text" class="full-width" @click="toCancelEdit">取消</el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button type="text" class="full-width sure-btn" @click="saveEdit">确定</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="operation">
+          <el-row v-if="editMode">
+            <el-col :span="24">
+              <el-button type="text" class="full-width" @click="toRotate">旋转</el-button>
+            </el-col>
+          </el-row>
+          <el-row v-else>
+            <el-col :span="8">
+              <el-button type="text" class="full-width" @click="toEditPic">编辑图片</el-button>
+            </el-col>
+            <el-col :span="8">
+              <el-button type="text" class="full-width" @click="toDel">删除</el-button>
+            </el-col>
+            <!-- <el-col :span="6">
+              <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
+            </el-col> -->
+            <el-col :span="8">
+              <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </template>
     </section>
 
   </section>
@@ -137,8 +140,8 @@ export default {
         2}px`
     },
     isReadOnly() {
-      // const time = +this.now.format('x')
-      return false
+      const time = +this.now.format('x')
+      return (time < (this.serverData.pubActivityVO.exerciseStartDate || 0)) || (time > (this.serverData.pubActivityVO.exerciseEndDate || 0))
     }
   },
   methods: {
@@ -233,7 +236,8 @@ export default {
       }).then(data => {
         _.assign(this.serverData, {
           page: data.page,
-          total: data.total
+          total: data.total,
+          pubActivityVO: data.pubActivityVO
         })
         const oldLength = this.list.length
         this.list.push.apply(
@@ -261,7 +265,8 @@ export default {
       this.allLoaded = false
       this.serverData = {
         page: 0,
-        total: 0
+        total: 0,
+        pubActivityVO: {}
       }
       this.loadBottom()
     }
@@ -282,7 +287,8 @@ export default {
       pageSize: 30,
       serverData: {
         page: 0,
-        total: 0
+        total: 0,
+        pubActivityVO: {}
       },
       pubActivityId: this.$route.params['activityid']
     }
@@ -406,6 +412,9 @@ export default {
       }
     }
   }
+}
+.pic-preview-readonly {
+  height: 100%;
 }
 </style>
 
