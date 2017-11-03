@@ -70,7 +70,7 @@
           <a :href="`tel:${serverData.commonSales.salesTel}`">
             <div class="venue-contact">
               <div>
-                <i class="fa fa-phone" aria-hidden="true"></i>
+                <i class="icon-pt-tel" aria-hidden="true"></i>
               </div>
               <div>联系商家</div>
             </div>

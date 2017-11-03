@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="我的活动" title-icon="fa fa-id-card">
+    <Card title-text="我的活动" title-icon="icon-pt-event">
       <div v-if="list == null || list.length === 0" class="text-center empty-events">
         暂无活动
       </div>

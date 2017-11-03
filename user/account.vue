@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="我的账户" title-icon="fa fa-id-card">
+    <Card title-text="我的账户" title-icon="icon-pt-account">
       <div class="text-center account-card-content">
         <div class="balance-title">账户余额：</div>
         <div class="balance-value ac-value">
@@ -17,7 +17,7 @@
         </el-row> -->
     </Card>
 
-    <Card title-text="我的积分" title-icon="fa fa-id-card" v-if="serverData.viewFee">
+    <Card title-text="我的积分" title-icon="icon-pt-fee" v-if="serverData.viewFee">
       <div class="text-center account-card-content">
         <div class="balance-title">当前积分：</div>
         <div class="balance-value ac-value">
@@ -33,7 +33,7 @@
       </el-row>
     </Card>
 
-    <Card title-text="我的优惠" title-icon="fa fa-id-card">
+    <Card title-text="我的优惠" title-icon="icon-pt-coupon">
       <div class="account-card-content">
         <div v-if="serverData.pubServiceAccountList && serverData.pubServiceAccountList.length" class="text-center">
           <Stamp v-for="item in serverData.pubServiceAccountList" :key="item.pubServiceId" :data="item">

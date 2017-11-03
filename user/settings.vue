@@ -2,11 +2,11 @@
   <section class="container container-pd">
     <Card :mini="true">
       <ProfileField to="/user/changepwd" :for-nav="true">
-        <i class="fa fa-id-card"></i>
+        <i class="icon-pt-cpwd"></i>
         <span>修改密码</span>
       </ProfileField>
       <ProfileField to="/user/0" :for-nav="true">
-        <i class="fa fa-id-card"></i>
+        <i class="icon-pt-profile"></i>
         <span>个人资料</span>
       </ProfileField>
 
@@ -14,7 +14,7 @@
 
     <Card :mini="true">
       <ProfileField to="/about" :for-nav="true">
-        <i class="fa fa-id-card"></i>
+        <i class="icon-pt-about"></i>
         <span>关于我们</span>
       </ProfileField>
     </Card>

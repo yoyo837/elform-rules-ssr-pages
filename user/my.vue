@@ -21,27 +21,27 @@
 
       <Card :mini="true">
         <ProfileField to="/user/account" :for-nav="true">
-          <i class="fa fa-id-card"></i>
+          <i class="icon-pt-account"></i>
           <span>我的账户</span>
         </ProfileField>
         <ProfileField to="/order" :for-nav="true">
-          <i class="fa fa-id-card"></i>
+          <i class="icon-pt-order"></i>
           <span>我的订单</span>
         </ProfileField>
-        <ProfileField :for-nav="true">
-          <i class="fa fa-id-card"></i>
+        <!-- <ProfileField :for-nav="true">
+          <i class="icon-pt-schedule"></i>
           <span>我的课程</span>
-        </ProfileField>
+        </ProfileField> -->
         <ProfileField to="/team/my" :for-nav="true">
-          <i class="fa fa-id-card"></i>
+          <i class="icon-pt-team"></i>
           <span>我的团队</span>
         </ProfileField>
         <ProfileField to="/event" :for-nav="true">
-          <i class="fa fa-id-card"></i>
+          <i class="icon-pt-event"></i>
           <span>我的活动</span>
         </ProfileField>
         <ProfileField to="/user/settings" :for-nav="true">
-          <i class="fa fa-id-card"></i>
+          <i class="icon-pt-settings"></i>
           <span>设置</span>
         </ProfileField>
       </Card>

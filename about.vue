@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="关于我们" title-icon="fa fa-id-card">
+    <Card title-text="关于我们" title-icon="icon-pt-about">
       <section class="about-info">
         <div class="about-info-item">
           <div class="about-title">

@@ -2,7 +2,7 @@
   <section class="container container-pd">
     <template v-if="serverData.paySuccess">
       <Card class="card-status text-center">
-        <i class="el-icon-circle-check" aria-hidden="true"></i>
+        <i class="icon-pt-complate" aria-hidden="true"></i>
         你已成功支付！
       </Card>
       <Card>

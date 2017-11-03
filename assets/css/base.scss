@@ -4,15 +4,53 @@
   box-sizing: border-box;
 }
 
-[class^="el-icon-fa"], [class*=" el-icon-fa"] {
+[class^='el-icon-fa'],
+[class*=' el-icon-fa'] {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome !important;
   font-size: inherit;
   text-rendering: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  top: 2px;
+}
 
-  top:2px;
+[class^='el-icon-fa'],
+[class*=' el-icon-fa'] {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome !important;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^='icon-pt'],
+[class*=' icon-pt'],
+[class^='iconfont'],
+[class^=' iconfont'] {
+  display: inline-block;
+  font-family: 'iconfont' !important;
+  font-size: inherit;
+  text-rendering: auto;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^='el-icon-fa'],
+[class*=' el-icon-fa'],
+[class^='el-icon-icon-pt'],
+[class*=' el-icon-icon-pt'] {
+  top: 2px;
+}
+
+.icon-pt-male {
+  color: #6699FF;
+}
+
+.icon-pt-female {
+  color: #FF88B2;
 }
 
 // 修饰样式
@@ -42,9 +80,9 @@
 }
 
 .text-overflow-line2 {
-  @include text-overflow-line(2)
+  @include text-overflow-line(2);
 }
 
 .text-overflow-line3 {
-  @include text-overflow-line(3)
+  @include text-overflow-line(3);
 }

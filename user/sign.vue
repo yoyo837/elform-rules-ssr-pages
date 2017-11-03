@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="签到" title-icon="fa fa-id-card">
+    <Card title-text="签到" title-icon="icon-pt-sign">
       <el-row class="text-center sign-tody">
         <el-col :span="24">
           <img :src="`${CDN_STATIC_HOST}/themes/mobile/red/red1/images/ji-${this.serverData.sameDay == 0 ? '1' : '0'}.png`">

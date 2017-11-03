@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="我的订单" title-icon="fa fa-id-card">
+    <Card title-text="我的订单" title-icon="icon-pt-order">
       <div class="col-percent el-card__edge el-card__edge-bottom el-card__edge-nobody">
         <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == null}" @click="switchTab()">
           <el-button type="text" class="full-width">全部</el-button>
@@ -30,7 +30,7 @@
           <template slot="header-desc">
             <span :class="`deal-status-${item.deal.dealStatus}`">{{item.deal.dealStatusValue}}</span>
             <span v-if="item.deal.dealStatus != DealStatusMap.NOT_PAY" :class="`deal-status-${item.deal.dealStatus}`" @click.stop="toDel(item.deal.dealId)">
-              <i class="el-icon-delete"></i>
+              <i class="icon-pt-del"></i>
             </span>
           </template>
           <OrderList :deal-info="item"></OrderList>

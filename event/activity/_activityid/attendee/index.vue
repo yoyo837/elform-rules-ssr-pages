@@ -26,7 +26,8 @@
               <div class="member-desc text-overflow">
                 <div class="member-name">{{member.pubRealName}}</div>
                 <div class="member-gender">
-                  <i class="fa fa-id-card" aria-hidden="true"></i>
+                  <i v-if="member.gender == 1" class="icon-pt-male" aria-hidden="true"></i>
+                  <i v-else-if="member.gender == 2" class="icon-pt-female" aria-hidden="true"></i>
                 </div>
               </div>
               <div v-if="serverData.dealSignupCanEdit" class="member-operation">

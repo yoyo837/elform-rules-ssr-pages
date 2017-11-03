@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="修改密码" title-icon="fa fa-id-card">
+    <Card title-text="修改密码" title-icon="icon-pt-cpwd">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="box">
         <el-form-item label="新密码" prop="newPwd1">
           <el-input v-model="form.newPwd1" placeholder="请输入新密码" type="password" class="text-right"></el-input>

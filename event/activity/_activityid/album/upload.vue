@@ -19,7 +19,7 @@
         <div class="pic-upload text-center">
           <div class="pic-upload-emit" @click="toUpload">
             <div class="camera-wrapper">
-              <i class="fa fa-camera" aria-hidden="true"></i>
+              <i class="icon-pt-camera" aria-hidden="true"></i>
             </div>
             <div>
               点击上传

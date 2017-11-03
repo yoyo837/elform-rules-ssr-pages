@@ -1,6 +1,6 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="我的团队" title-icon="fa fa-id-card">
+    <Card title-text="我的团队" title-icon="icon-pt-team">
       <ProfilePanel :pic-path="serverData.loginAccountVo.avatar">
         {{serverData.loginAccountVo.realName}}/{{serverData.loginAccountVo.mobile}}
       </ProfilePanel>
