@@ -98,12 +98,12 @@
             <el-col :span="10" v-if="size == null" class="text-right">
               <template v-if="getNewPriceText(dealTicket.dealTicketId, 99)">
                 <del>
-                  ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+                  ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketTotalPrice}}
                 </del>
                 <span>￥{{getNewPriceText(dealTicket.dealTicketId, 99)}}</span>
               </template>
               <template v-else>
-                ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+                ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketTotalPrice}}
               </template>
             </el-col>
           </el-row>
