@@ -214,14 +214,6 @@ export default {
         page: 0,
         total: 0
       },
-      // orderTypes: {
-      //   '49': '场地',
-      //   '50': '服务人员',
-      //   '55': '商品',
-      //   '57': '会员服务',
-      //   '99': '票务',
-      //   '100': '报名'
-      // },
       DealStatusMap: utils.DealStatusMap
     }
   },

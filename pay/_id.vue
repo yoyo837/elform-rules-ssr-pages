@@ -12,7 +12,16 @@
         </Card>
 
         <Card title-text="订单信息">
-          <OrderList :deal-info="item"></OrderList>
+          <OrderList :deal-info="item" :coupon-info="couponInfo"></OrderList>
+          <el-row class="order-counter">
+            <el-col :span="8">订单合计：</el-col>
+            <el-col :span="16" class="text-right">
+              <del v-if="usePubService">
+                ￥{{formatMoney(originalPrice)}}
+              </del>
+              ￥{{formatMoney(totalPrice)}}
+            </el-col>
+          </el-row>
         </Card>
 
         <Card title-text="优惠信息" class="coupon-info">
@@ -22,6 +31,13 @@
             </span>
             <i class="el-icon-arrow-right" aria-hidden="true"></i>
           </template>
+          <el-row class="order-counter-desc" v-if="usePubService">
+            <el-col :span="24">
+              优惠：
+              <span>￥{{formatMoney(couponPrice)}}</span>; 服务抵扣：
+              <span>￥{{formatMoney(deductionPrice)}}</span>;
+            </el-col>
+          </el-row>
         </Card>
 
         <Card title-text="支付方式" class="pay-mode-list">
@@ -58,7 +74,7 @@
             <el-col :span="12" class="amount-wrapper">
               <el-button type="text" class="full-width">
                 实付款：￥
-                <span>{{priceText(totalPrice)}}</span>
+                <span>{{formatMoney(totalPrice)}}</span>
               </el-button>
             </el-col>
             <el-col :span="12" class="pay-wrapper">
@@ -89,7 +105,7 @@ import moment from 'moment'
 import Vue from 'vue'
 import utils from '../../components/utils'
 import popup from '../../components/popup'
-import math from '../../components/math'
+// import math from '../../components/math'
 import { Row, Col, Button, Radio } from 'element-ui'
 import { TabContainer, TabContainerItem } from 'mint-ui'
 import Card from '../vue-features/components/Card'
@@ -139,56 +155,53 @@ export default {
 
     this.setActivePageByHash()
 
-    this.$http
-      .get('/pay/main.do', {
-        dealId: this.dealId
-      })
-      .then(data => {
-        if (process.browser) {
-          this.mq()
-          window.addEventListener('popstate', this.onPopstate)
+    this.$http.get('/pay/main.do', {
+      dealId: this.dealId
+    }).then(data => {
+      if (process.browser) {
+        this.mq()
+        window.addEventListener('popstate', this.onPopstate)
+      }
+      data = data || {}
+      data.dealInfo = data.dealInfo || {}
+      data.dealInfo.deal = data.dealInfo.deal || {}
+
+      // https://github.com/nuxt/nuxt.js/issues/1975
+      data.dealInfo.commonSales = data.dealInfo.commonSales || {}
+
+      // TEST
+      // data.pubAccount = data.pubAccount || {}
+      // data.pubAccount.amount = 50
+
+      _.assign(this.serverData, data)
+      this.form.pubServiceAccountId = this.serverData.pubServiceAccountId // 默认会员服务id
+
+      this.$nextTick().then(() => {
+        this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
+
+        if (this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
+          // 没有服务之前价格为0
+          this.toPay()
+          return
         }
-        data = data || {}
-        data.dealInfo = data.dealInfo || {}
-        data.dealInfo.deal = data.dealInfo.deal || {}
 
-        // https://github.com/nuxt/nuxt.js/issues/1975
-        data.dealInfo.commonSales = data.dealInfo.commonSales || {}
+        this.canPay = true
 
-        // TEST
-        // data.pubAccount = data.pubAccount || {}
-        // data.pubAccount.amount = 50
+        const dData = this.$route.query['_data']
+        const _data = JSON.parse(dData === undefined ? null : dData)
 
-        _.assign(this.serverData, data)
-        this.form.pubServiceAccountId = this.serverData.pubServiceAccountId // 默认会员服务id
-
-        this.$nextTick().then(() => {
-          this.form.payMeansId = this.canUseBalance ? 5 : ((this.serverData.commonPayMeans || [])[0] || {}).payMeansId
-
-          if (this.totalPrice <= 0 && this.form.pubServiceAccountId == null) {
-            // 没有服务之前价格为0
+        if (_data) {
+          _.assign(this.form, _data.form)
+          this.$nextTick().then(() => {
             this.toPay()
-            return
-          }
-
-          this.canPay = true
-
-          const dData = this.$route.query['_data']
-          const _data = JSON.parse(dData === undefined ? null : dData)
-
-          if (_data) {
-            _.assign(this.form, _data.form)
-            this.$nextTick().then(() => {
-              this.toPay()
-            })
-          }
-        })
+          })
+        }
       })
-      .catch(e => {
-        popup.alert(e.message, {
-          callback: () => this.$router.push('/order')
-        })
+    }).catch(e => {
+      popup.alert(e.message, {
+        callback: () => this.$router.push('/order')
       })
+    })
   },
   methods: {
     setActivePageByHash() {
@@ -258,25 +271,21 @@ export default {
       utils.enableBodyScroll()
     },
     toCancel() {
-      this.$http
-        .post('/deal/cancel.do', {
-          dealId: this.serverData.dealInfo.deal.id
-        })
-        .then(data => {
-          this.$router.push('/order')
-        })
+      this.$http.post('/deal/cancel.do', {
+        dealId: this.serverData.dealInfo.deal.id
+      }).then(data => {
+        this.$router.push('/order')
+      })
     },
     toPay() {
       if (this.payMode === 5 || this.totalPrice <= 0) {
         // 账户支付
-        this.$http
-          .post('/pay/pubAccountPay.do', {
-            dealId: this.dealId,
-            pubServiceAccountId: this.form.pubServiceAccountId
-          })
-          .then(data => {
-            this.$router.push(`/pay/result/${this.dealId}`)
-          })
+        this.$http.post('/pay/pubAccountPay.do', {
+          dealId: this.dealId,
+          pubServiceAccountId: this.form.pubServiceAccountId
+        }).then(data => {
+          this.$router.push(`/pay/result/${this.dealId}`)
+        })
         return
       }
       if (this.payMode === 7) {
@@ -299,29 +308,27 @@ export default {
             wx.ready(() => {
               this.initWXCode().then(result => {
                 if (result) {
-                  this.$http
-                    .post('/pay/wechatPay.do', {
-                      dealId: this.dealId,
-                      pubServiceAccountId: this.form.pubServiceAccountId,
-                      payMeansId: this.form.payMeansId,
-                      redirectUrl: location.href.split('#')[0],
-                      code: this.wxCode
+                  this.$http.post('/pay/wechatPay.do', {
+                    dealId: this.dealId,
+                    pubServiceAccountId: this.form.pubServiceAccountId,
+                    payMeansId: this.form.payMeansId,
+                    redirectUrl: location.href.split('#')[0],
+                    code: this.wxCode
+                  }).then(data => {
+                    data = data || {}
+                    wx.chooseWXPay({
+                      appId: data.appId,
+                      timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                      nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+                      package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                      signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                      paySign: data.paySign, // 支付签名
+                      success: res => {
+                        // console.log(res)
+                        this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
+                      }
                     })
-                    .then(data => {
-                      data = data || {}
-                      wx.chooseWXPay({
-                        appId: data.appId,
-                        timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                        nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
-                        package: data.pkg, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-                        signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                        paySign: data.paySign, // 支付签名
-                        success: res => {
-                          // console.log(res)
-                          this.$router.push(`/pay/result/${this.dealId}`) // 支付成功后的回调函数
-                        }
-                      })
-                    })
+                  })
                 }
               })
             })
@@ -335,32 +342,30 @@ export default {
           // 在微信中
           this.showBrowserTip()
         } else {
-          this.$http
-            .post('/pay/zfbPay.do', {
-              dealId: this.dealId,
-              pubServiceAccountId: this.form.pubServiceAccountId,
-              payMeansId: this.form.payMeansId,
-              returnUrl: `/pay/result/${this.dealId}`
+          this.$http.post('/pay/zfbPay.do', {
+            dealId: this.dealId,
+            pubServiceAccountId: this.form.pubServiceAccountId,
+            payMeansId: this.form.payMeansId,
+            returnUrl: `/pay/result/${this.dealId}`
+          }).then(data => {
+            data = data || {}
+            _.assign(this.alipayForm, {
+              action: data['action'],
+              fields: Object.keys(data)
+                .filter(key => {
+                  return key !== 'action'
+                })
+                .map(key => {
+                  return {
+                    name: key,
+                    value: data[key]
+                  }
+                })
             })
-            .then(data => {
-              data = data || {}
-              _.assign(this.alipayForm, {
-                action: data['action'],
-                fields: Object.keys(data)
-                  .filter(key => {
-                    return key !== 'action'
-                  })
-                  .map(key => {
-                    return {
-                      name: key,
-                      value: data[key]
-                    }
-                  })
-              })
-              this.$nextTick().then(() => {
-                this.$refs['alipay-form'].submit() // 跳转到支付宝
-              })
+            this.$nextTick().then(() => {
+              this.$refs['alipay-form'].submit() // 跳转到支付宝
             })
+          })
         }
       } else {
         popup.alert('不支持的第三方支付方式')
@@ -406,9 +411,6 @@ export default {
         }
       }
       return null
-    },
-    priceText(price = 0) {
-      return math.div(price, 100)
     }
   },
   computed: {
@@ -432,6 +434,12 @@ export default {
     usePubService() {
       return this.couponPrice > 0 || this.deductionPrice > 0
     },
+    originalPrice() {
+      if (this.usePubService) {
+        return this.couponInfo.payServicePrice.originalPrice || 0
+      }
+      return 0
+    },
     /**
      * 优惠金额，这个是提示优惠内容
      */
@@ -453,7 +461,7 @@ export default {
       return '请选择'
     },
     /**
-     * 服务扣除，这个才是最终支付金额应该扣除的
+     * 服务扣除
      */
     deductionPrice() {
       if (this.couponInfo) {
@@ -467,7 +475,12 @@ export default {
      * 支付金额
      */
     totalPrice() {
-      return Math.max((this.serverData.dealTotalPrice || 0) - this.deductionPrice, 0)
+      if (this.couponInfo) {
+        if (this.couponInfo.payServicePrice) {
+          return Math.max(this.couponInfo.payServicePrice.preferentialPrice || 0, 0)
+        }
+      }
+      return Math.max(this.serverData.dealTotalPrice || 0, 0)
     },
     waitTimeText() {
       return this.calTimeText(this.serverData.payWaitTime)
@@ -507,16 +520,14 @@ export default {
           this.couponInfo = null
           return
         }
-        await this.$http
-          .get('/pay/calcPubServicePrice.do', {
-            dealId: this.dealId,
-            pubServiceAccountId: this.form.pubServiceAccountId
-          })
-          .then(data => {
-            data = data || {}
-            this.couponCacheMap.set(this.form.pubServiceAccountId, data)
-            this.couponInfo = data
-          })
+        await this.$http.get('/pay/calcPubServicePrice.do', {
+          dealId: this.dealId,
+          pubServiceAccountId: this.form.pubServiceAccountId
+        }).then(data => {
+          data = data || {}
+          this.couponCacheMap.set(this.form.pubServiceAccountId, data)
+          this.couponInfo = data
+        })
       }
     }
   },
@@ -583,6 +594,11 @@ body.bd-pt-pay {
 </style>
 
 <style lang="scss" scoped>
+del {
+  color: #666;
+  font-size: 12px;
+}
+
 .container {
   .timeout-tips {
     i {
@@ -603,6 +619,25 @@ body.bd-pt-pay {
           color: #f26a3e;
         }
       }
+    }
+  }
+
+  .order-counter {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 15px;
+    margin-top: 15px;
+    .el-col {
+      &:last-child {
+        color: #f26a3e;
+      }
+    }
+  }
+
+  .order-counter-desc {
+    padding-top: 5px;
+    text-align: right;
+    span {
+      color: #f26a3e;
     }
   }
 

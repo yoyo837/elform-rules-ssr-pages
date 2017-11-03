@@ -6,7 +6,7 @@
       <ProfilePanel :pic-path="pubAccount.avatar" @afterUpload="afterUpload" :protruding="true">
         <template slot="left" v-if="serverData.viewFee">
           <span class="fee">积分：
-            <span class="fee-value">{{pubAccount.accountFee}}</span>
+            <span class="fee-value">{{formatMoney(pubAccount.accountFee, 0)}}</span>
           </span>
         </template>
         <template>

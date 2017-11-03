@@ -9,11 +9,19 @@
         </div>
         <div class="item-ctt-desc">
           <el-row>
-            <el-col :span="size == null ? 20 : 24" class="text-overflow">
+            <el-col :span="size == null ? 14 : 24" class="text-overflow">
               {{dealPlatform.platformName}} {{dealPlatform.startTime}}-{{dealPlatform.endTime}}
             </el-col>
-            <el-col :span="4" v-if="size == null" class="text-center">
-              ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+            <el-col :span="10" v-if="size == null" class="text-right">
+              <template v-if="getNewPriceText(dealPlatform.dealPlatformId, 49)">
+                <del>
+                  ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+                </del>
+                <span>￥{{getNewPriceText(dealPlatform.dealPlatformId, 49)}}</span>
+              </template>
+              <template v-else>
+                ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+              </template>
             </el-col>
           </el-row>
         </div>
@@ -28,11 +36,19 @@
         </div>
         <div class="item-ctt-desc">
           <el-row>
-            <el-col :span="size == null ? 20 : 24" class="text-overflow">
+            <el-col :span="size == null ? 14 : 24" class="text-overflow">
               {{serviceUser.professional}}-{{serviceUser.realName}}
             </el-col>
-            <el-col :span="4" v-if="size == null" class="text-center">
-              ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+            <el-col :span="10" v-if="size == null" class="text-right">
+              <template v-if="getNewPriceText(serviceUser.dealServicePubId, 50)">
+                <del>
+                  ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+                </del>
+                <span>￥{{getNewPriceText(dealPlatform.dealServicePubId, 50)}}</span>
+              </template>
+              <template v-else>
+                ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+              </template>
             </el-col>
           </el-row>
         </div>
@@ -48,11 +64,19 @@
           </div>
           <div class="item-ctt-desc">
             <el-row>
-              <el-col :span="size == null ? 20 : 24" class="text-overflow">
+              <el-col :span="size == null ? 14 : 24" class="text-overflow">
                 {{dealItemSnap.itemNum}}{{dealItemSnap.itemUnit}}
               </el-col>
-              <el-col :span="4" v-if="size == null" class="text-center">
-                ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+              <el-col :span="10" v-if="size == null" class="text-right">
+                <template v-if="getNewPriceText(dealItemSnap.dealItemSnapId, 55)">
+                  <del>
+                    ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+                  </del>
+                  <span>￥{{getNewPriceText(dealItemSnap.dealItemSnapId, 55)}}</span>
+                </template>
+                <template v-else>
+                  ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+                </template>
               </el-col>
             </el-row>
           </div>
@@ -68,11 +92,19 @@
         </div>
         <div class="item-ctt-desc">
           <el-row>
-            <el-col :span="size == null ? 20 : 24" class="text-overflow">
+            <el-col :span="size == null ? 14 : 24" class="text-overflow">
               {{dealTicket.orderDate}} {{dealTicket.startTime}} {{dealTicket.salesNum}}张
             </el-col>
-            <el-col :span="4" v-if="size == null" class="text-center">
-              ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+            <el-col :span="10" v-if="size == null" class="text-right">
+              <template v-if="getNewPriceText(dealTicket.dealTicketId, 99)">
+                <del>
+                  ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+                </del>
+                <span>￥{{getNewPriceText(dealTicket.dealTicketId, 99)}}</span>
+              </template>
+              <template v-else>
+                ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketPrice}}
+              </template>
             </el-col>
           </el-row>
         </div>
@@ -87,11 +119,19 @@
         </div>
         <div class="item-ctt-desc">
           <el-row>
-            <el-col :span="size == null ? 20 : 24" class="text-overflow">
+            <el-col :span="size == null ? 14 : 24" class="text-overflow">
               {{dealSignup.objectStartDate}}至{{dealSignup.objectEndDate}}
             </el-col>
-            <el-col :span="4" v-if="size == null" class="text-center">
-              ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+            <el-col :span="10" v-if="size == null" class="text-right">
+              <template v-if="getNewPriceText(dealSignup.dealSignupId, 100)">
+                <del>
+                  ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+                </del>
+                <span>￥{{getNewPriceText(dealSignup.dealSignupId, 100)}}</span>
+              </template>
+              <template v-else>
+                ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+              </template>
             </el-col>
           </el-row>
         </div>
@@ -106,11 +146,19 @@
         </div>
         <div class="item-ctt-desc">
           <el-row>
-            <el-col :span="size == null ? 20 : 24" class="text-overflow">
+            <el-col :span="size == null ? 14 : 24" class="text-overflow">
               {{servicePub.salesName}}
             </el-col>
-            <el-col :span="4" v-if="size == null" class="text-center">
-              ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+            <el-col :span="10" v-if="size == null" class="text-right">
+              <template v-if="getNewPriceText(servicePub.dealServicePubId, 57)">
+                <del>
+                  ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+                </del>
+                <span>￥{{getNewPriceText(servicePub.dealServicePubId, 57)}}</span>
+              </template>
+              <template v-else>
+                ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+              </template>
             </el-col>
           </el-row>
         </div>
@@ -132,12 +180,27 @@ export default {
       type: Object,
       required: true
     },
-    size: String
+    size: String,
+    couponInfo: Object
+  },
+  methods: {
+    getNewPriceText(innerItemDealId, relType) {
+      if (this.couponInfo == null || innerItemDealId == null || relType == null) {
+        return null
+      }
+      const targetItem = (this.couponInfo.dealServicePrice || []).find(item => {
+        return item.relType === relType && innerItemDealId === item.dataId
+      })
+      if (targetItem == null) {
+        return null
+      }
+      return targetItem.newPriceValue
+    }
   },
   computed: {
     dataObj() {
       if (this.dealInfo == null) {
-        return null
+        return { commonSales: {} }
       }
       // https://github.com/nuxt/nuxt.js/issues/1975
       this.dealInfo.commonSales = this.dealInfo.commonSales || {}
@@ -148,6 +211,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+del + span {
+  color: #f26a3e;
+}
 .order-content {
   .order-content-item {
     padding: 2px 0;

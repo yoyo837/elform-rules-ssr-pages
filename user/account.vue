@@ -21,7 +21,7 @@
       <div class="text-center account-card-content">
         <div class="balance-title">当前积分：</div>
         <div class="balance-value ac-value">
-          <span>{{serverData.pubAccount.accountFee}}</span>分
+          <span>{{formatMoney(serverData.pubAccount.accountFee, 0)}}</span>分
         </div>
       </div>
       <el-row class="el-card__edge el-card__edge-bottom">
