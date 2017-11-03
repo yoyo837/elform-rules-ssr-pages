@@ -53,6 +53,7 @@
           <el-row v-for="(commonPayMean, i) in serverData.commonPayMeans" :key="commonPayMean.payMeansId" v-if="payModeIcons[commonPayMean.payMode]">
             <el-col :span="20">
               <img :src="`${CDN_STATIC_HOST}${payModeIcons[commonPayMean.payMode]}`"> {{commonPayMean.payMeansName}}
+              <span v-if="commonPayMean.payMode == 8" class="balance-desc">(剩余积分{{formatMoney(accountFee, 0)}}分)</span>
             </el-col>
             <el-col :span="4" class="text-right">
               <el-radio class="radio" v-model="form.payMeansId" :label="commonPayMean.payMeansId" :disabled="!canPay">&nbsp;</el-radio>
@@ -75,7 +76,7 @@
               <template v-if="userFee">
                 <el-button type="text" class="full-width">
                   积分支付：
-                  <span>{{formatMoney(totalPrice, 0)}}分</span>
+                  <span>{{formatMoney(serverData.dealFeePrice, 0)}}分</span>
                 </el-button>
               </template>
               <template v-else>
@@ -427,6 +428,9 @@ export default {
   computed: {
     canMqPayTimeout() {
       return this.serverData.payExpireTime >= 0
+    },
+    accountFee() {
+      return (this.serverData.pubAccount || {}).accountFee
     },
     amount() {
       return (this.serverData.pubAccount || {}).amount
