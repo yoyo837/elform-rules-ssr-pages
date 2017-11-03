@@ -4,17 +4,17 @@
       <div class="text-center account-card-content">
         <div class="balance-title">账户余额：</div>
         <div class="balance-value ac-value">
-          <span>{{serverData.pubAccount.amount}}</span>元
+          <span>{{formatMoney(serverData.pubAccount.amount)}}</span>元
         </div>
       </div>
-      <el-row class="el-card__edge el-card__edge-bottom">
-        <el-col :span="12">
-          <el-button type="text" class="full-width">提现</el-button>
-        </el-col>
-        <el-col :span="12">
-          <el-button type="text" class="full-width">充值</el-button>
-        </el-col>
-      </el-row>
+      <!-- <el-row class="el-card__edge el-card__edge-bottom">
+          <el-col :span="12">
+            <el-button type="text" class="full-width">提现</el-button>
+          </el-col>
+          <el-col :span="12">
+            <el-button type="text" class="full-width">充值</el-button>
+          </el-col>
+        </el-row> -->
     </Card>
 
     <Card title-text="我的积分" title-icon="fa fa-id-card" v-if="serverData.viewFee">
@@ -25,9 +25,11 @@
         </div>
       </div>
       <el-row class="el-card__edge el-card__edge-bottom">
-        <el-col :span="24">
-          <el-button type="text" class="full-width">去签到</el-button>
-        </el-col>
+        <nuxt-link to="/user/sign">
+          <el-col :span="24">
+            <el-button type="text" class="full-width">去签到</el-button>
+          </el-col>
+        </nuxt-link>
       </el-row>
     </Card>
 
