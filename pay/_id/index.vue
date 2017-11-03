@@ -292,6 +292,7 @@ export default {
         // 账户支付
         this.$http.post('/pay/pubAccountPay.do', {
           dealId: this.dealId,
+          payMode: this.payMode,
           pubServiceAccountId: this.form.pubServiceAccountId
         }).then(data => {
           this.$router.push(`/pay/${this.dealId}/result`)
