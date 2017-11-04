@@ -1,7 +1,7 @@
 <template>
   <section class="container container-pd">
     <Card title-text="个人资料" title-icon="icon-pt-profile">
-      <ProfilePanel :pic-path="serverData.avatar" @afterUpload="afterUpload">
+      <ProfilePanel :pic-path="serverData.userInfo.avatar" @afterUpload="afterUpload">
         <!-- {{serverData.realName}}/{{serverData.mobile}} -->
       </ProfilePanel>
       <el-form ref="form" :model="serverData.userInfo" :rules="rules" label-width="80px">
