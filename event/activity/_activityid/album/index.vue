@@ -54,8 +54,8 @@
               <el-button type="text" class="full-width" @click="toDel">删除</el-button>
             </el-col>
             <!-- <el-col :span="6">
-              <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
-            </el-col> -->
+                <el-button type="text" class="full-width" @click="saveImg(previewPic.url)">保存</el-button>
+              </el-col> -->
             <el-col :span="8">
               <el-button type="text" class="full-width" @click="setCover">设为封面</el-button>
             </el-col>
@@ -240,15 +240,13 @@ export default {
           pubActivityVO: data.pubActivityVO
         })
         const oldLength = this.list.length
-        this.list.push.apply(
-          this.list,
-          (data.rows || []).map(item => {
-            // 处理一下字段再给到vm
-            item.deal = item.deal || {}
-            item.commonPay = item.commonPay || {}
-            item.commonSales = item.commonSales || {}
-            return item
-          })
+        this.list.push.apply(this.list, (data.rows || []).map(item => {
+          // 处理一下字段再给到vm
+          item.deal = item.deal || {}
+          item.commonPay = item.commonPay || {}
+          item.commonSales = item.commonSales || {}
+          return item
+        })
         ) // 追加
 
         if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {

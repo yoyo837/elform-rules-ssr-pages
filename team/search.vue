@@ -15,7 +15,7 @@
         <Card :mini="true">
           <el-row class="team-item" v-for="item in list" :key="item.id">
             <nuxt-link :to="`/team/${item.id}`">
-              <el-col :span="18">
+              <el-col :span="18" class="text-overflow">
                 <img :src="`${CDN_STATIC_HOST}/themes/mobile/blue/images/xicon_${item.professionalId}.png`">
                 <div class="team-desc">
                   <div class="team-desc__title text-overflow">{{item.teamName}}</div>
@@ -52,6 +52,11 @@ Vue.component(Col.name, Col)
 Vue.component(Loadmore.name, Loadmore)
 
 export default {
+  head() {
+    return {
+      title: '搜索团队'
+    }
+  },
   mixins: [bdStyleMixin],
   components: {
     Card
@@ -65,40 +70,38 @@ export default {
       this.load()
     },
     load() {
-      this.$http
-        .get(
-          '/team/searchTeamList.do',
-          _.assign(this.serverData, {
-            page: (this.listServerData.page || 0) + 1,
-            pageSize: this.pageSize
-          })
-        )
-        .then(data => {
-          if (_.isArray(data)) {
-            data = {
-              rows: data
-            }
-          }
-          if (!_.isArray(data.rows)) {
-            data.rows = []
-          }
-
-          const oldLength = this.list.length
-          if (data.rows.length) {
-            _.assign(this.listServerData, {
-              page: data.page || 1,
-              total: data.total || data.rows.length
-            })
-
-            /* eslint-disable no-useless-call */
-            this.list.splice.apply(this.list, [0, 0, ...data.rows])
-          }
-          if (this.list.length - oldLength < this.pageSize || this.list.length >= this.listServerData.total) {
-            // 没用响应满页或者超过总数
-            this.allLoaded = true
-          }
-          this.$refs.loadmore.onBottomLoaded()
+      this.$http.get(
+        '/team/searchTeamList.do',
+        _.assign(this.serverData, {
+          page: (this.listServerData.page || 0) + 1,
+          pageSize: this.pageSize
         })
+      ).then(data => {
+        if (_.isArray(data)) {
+          data = {
+            rows: data
+          }
+        }
+        if (!_.isArray(data.rows)) {
+          data.rows = []
+        }
+
+        const oldLength = this.list.length
+        if (data.rows.length) {
+          _.assign(this.listServerData, {
+            page: data.page || 1,
+            total: data.total || data.rows.length
+          })
+
+          /* eslint-disable no-useless-call */
+          this.list.push.apply(this.list, data.rows || [])
+        }
+        if (this.list.length - oldLength < this.pageSize || this.list.length >= this.listServerData.total) {
+          // 没用响应满页或者超过总数
+          this.allLoaded = true
+        }
+        this.$refs.loadmore.onBottomLoaded()
+      })
     }
   },
   computed: {

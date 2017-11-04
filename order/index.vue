@@ -131,15 +131,13 @@ export default {
           total: data.total
         })
         const oldLength = this.list.length
-        this.list.push.apply(
-          this.list,
-          (data.rows || []).map(item => {
-            // 处理一下字段再给到vm
-            item.deal = item.deal || {}
-            item.commonPay = item.commonPay || {}
-            item.commonSales = item.commonSales || {}
-            return item
-          })
+        this.list.push.apply(this.list, (data.rows || []).map(item => {
+          // 处理一下字段再给到vm
+          item.deal = item.deal || {}
+          item.commonPay = item.commonPay || {}
+          item.commonSales = item.commonSales || {}
+          return item
+        })
         ) // 追加
 
         if (this.list.length - oldLength < this.pageSize || this.list.length >= this.serverData.total) {
