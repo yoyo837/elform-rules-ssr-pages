@@ -17,7 +17,7 @@
       <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight}">
         <mt-loadmore v-if="list && list.length" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" class="pic-list">
           <div v-for="pic in list" :key="pic.fileKey" class="pic-item" @click="onPicClick(pic)">
-            <img :src="pic.url">
+            <img :src="getFileMiniShowUrl(pic.url)">
           </div>
         </mt-loadmore>
       </div>
@@ -169,6 +169,12 @@ export default {
       if (this.editData.rotate === onceDeg * 4) {
         this.editData.rotate = 0
       }
+    },
+    getFileMiniShowUrl(url) {
+      if (url) {
+        return `${url.split('@!')[0]}@!album_preview`
+      }
+      return url
     },
     saveEdit() {
       this.$http.post('/commonFile/updateStyle.do', _.assign({
