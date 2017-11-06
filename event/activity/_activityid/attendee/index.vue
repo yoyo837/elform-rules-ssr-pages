@@ -3,7 +3,9 @@
     <Card>
       <div class="attendee-title">
         {{serverData.dealSignupName}}
-        <span> - {{serverData.teamName}}</span>
+      </div>
+      <div class="attendee-team">
+        {{serverData.teamName}}
       </div>
       <div class="attendee-desc">
         团号：{{serverData.teamId}} 人数：{{serverData.dealSignupUserTotal}}
@@ -262,6 +264,15 @@ export default {
     font-weight: normal;
     color: #666;
   }
+}
+
+.attendee-desc {
+  color: #999;
+}
+
+.attendee-team {
+  font-size: 15px;
+  padding: 5px 0;
 }
 
 .update-list-btn {
