@@ -16,8 +16,8 @@ body.no-scroll {
 }
 
 // placeholder
-$placeholder: #666;
-$dis-placeholder: #eee;
+$placeholder: #bbb;
+$dis-placeholder: #aaa;
 .el-input__inner::-webkit-input-placeholder {
   color: $placeholder;
 }
