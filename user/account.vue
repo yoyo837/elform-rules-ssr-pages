@@ -1,8 +1,8 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="我的账户" title-icon="icon-pt-account">
+    <Card title-text="账户余额" title-icon="icon-pt-account">
       <div class="text-center account-card-content">
-        <div class="balance-title">账户余额：</div>
+        <div class="balance-title">当前余额：</div>
         <div class="balance-value ac-value">
           <span>{{formatMoney(serverData.pubAccount.amount)}}</span>元
         </div>
