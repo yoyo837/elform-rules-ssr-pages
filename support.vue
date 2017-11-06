@@ -1,18 +1,15 @@
 <template>
   <section class="container container-pd">
-    <Card title-text="关于我们" title-icon="icon-pt-about">
+    <Card title-text="技术支持" title-icon="icon-pt-about">
       <section class="about-info">
         <div class="about-info-item">
-          <div class="about-title">
-            技术支持:
-          </div>
           <div class="about-content">
             深圳运动帝图科技有限公司
           </div>
         </div>
         <div class="about-info-item">
           <div class="about-title">
-            服务网址:
+            服务网址
           </div>
           <div class="about-content">
             <a href="http://www.ydmap.com.cn">www.ydmap.com.cn</a>
@@ -20,7 +17,7 @@
         </div>
         <div class="about-info-item">
           <div class="about-title">
-            服务电话:
+            服务电话
           </div>
           <div class="about-content">
             <a href="tel:0755-83130059">0755-83130059</a>
@@ -28,7 +25,7 @@
         </div>
         <div class="about-info-item">
           <div class="about-title">
-            商务合作:
+            服务邮箱
           </div>
           <div class="about-content">
             <a href="mailto:union@ydmap.com.cn">union@ydmap.com.cn</a>
@@ -47,10 +44,9 @@ Vue.component(Row.name, Row)
 Vue.component(Col.name, Col)
 
 export default {
-  name: 'aboutUs',
   head() {
     return {
-      title: '关于我们'
+      title: '技术支持'
     }
   },
   components: {

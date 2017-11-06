@@ -17,6 +17,10 @@
         <i class="icon-pt-about"></i>
         <span>关于我们</span>
       </ProfileField>
+      <ProfileField to="/support" :for-nav="true">
+        <i class="icon-pt-about"></i>
+        <span>技术支持</span>
+      </ProfileField>
     </Card>
   </section>
 </template>
