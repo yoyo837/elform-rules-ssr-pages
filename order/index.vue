@@ -6,16 +6,16 @@
           <el-button type="text" class="full-width">全部</el-button>
           <div class="btn-selected-tag"></div>
         </div>
+        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.COMPLETE}" @click="switchTab(DealStatusMap.COMPLETE)">
+          <el-button type="text" class="full-width">已完成</el-button>
+          <div class="btn-selected-tag"></div>
+        </div>
         <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.NOT_PAY}" @click="switchTab(DealStatusMap.NOT_PAY)">
           <el-button type="text" class="full-width">待支付</el-button>
           <div class="btn-selected-tag"></div>
         </div>
         <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.REFUNDED}" @click="switchTab(DealStatusMap.REFUNDED)">
           <el-button type="text" class="full-width">已退款</el-button>
-          <div class="btn-selected-tag"></div>
-        </div>
-        <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.COMPLETE}" @click="switchTab(DealStatusMap.COMPLETE)">
-          <el-button type="text" class="full-width">已完成</el-button>
           <div class="btn-selected-tag"></div>
         </div>
         <div class="col-percent-20 text-overflow" :class="{'item-seleted': params.dealStatus == DealStatusMap.CANCEL}" @click="switchTab(DealStatusMap.CANCEL)">

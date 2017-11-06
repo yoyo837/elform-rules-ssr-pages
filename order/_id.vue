@@ -70,11 +70,11 @@
 
     <Card v-if="serverData.commonSales" class="venue-info">
       <el-row>
-        <el-col :span="18">
+        <el-col :span="serverData.commonSales.salesTel ? 18 : 24">
           <div class="venue-name">{{serverData.commonSales.salesName}}</div>
           <div class="venue-address">{{serverData.commonSales.province}}{{serverData.commonSales.city}}{{serverData.commonSales.district}}{{serverData.commonSales.salesAddress}}</div>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="6" v-if="serverData.commonSales.salesTel">
           <a :href="`tel:${serverData.commonSales.salesTel}`">
             <div class="venue-contact">
               <div>

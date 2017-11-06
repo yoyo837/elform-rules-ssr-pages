@@ -15,12 +15,12 @@
             <el-col :span="10" v-if="size == null" class="text-right">
               <template v-if="getNewPriceText(dealPlatform.dealPlatformId, 49)">
                 <del>
-                  ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+                  ￥{{formatMoney(dealPlatform.transactionPrice || dealPlatform.platformPrice)}}
                 </del>
                 <span>￥{{getNewPriceText(dealPlatform.dealPlatformId, 49)}}</span>
               </template>
               <template v-else>
-                ￥{{dealPlatform.transactionPrice || dealPlatform.platformPrice}}
+                ￥{{formatMoney(dealPlatform.transactionPrice || dealPlatform.platformPrice)}}
               </template>
             </el-col>
           </el-row>
@@ -42,12 +42,12 @@
             <el-col :span="10" v-if="size == null" class="text-right">
               <template v-if="getNewPriceText(serviceUser.dealServicePubId, 50)">
                 <del>
-                  ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+                  ￥{{formatMoney(serviceUser.transactionPrice || serviceUser.servicePrice)}}
                 </del>
                 <span>￥{{getNewPriceText(dealPlatform.dealServicePubId, 50)}}</span>
               </template>
               <template v-else>
-                ￥{{serviceUser.transactionPrice || serviceUser.servicePrice}}
+                ￥{{formatMoney(serviceUser.transactionPrice || serviceUser.servicePrice)}}
               </template>
             </el-col>
           </el-row>
@@ -70,12 +70,12 @@
               <el-col :span="10" v-if="size == null" class="text-right">
                 <template v-if="getNewPriceText(dealItemSnap.dealItemSnapId, 55)">
                   <del>
-                    ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+                    ￥{{formatMoney(dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice)}}
                   </del>
                   <span>￥{{getNewPriceText(dealItemSnap.dealItemSnapId, 55)}}</span>
                 </template>
                 <template v-else>
-                  ￥{{dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice}}
+                  ￥{{formatMoney(dealItemSnap.transactionTotalPrice || dealItemSnap.itemTotalPrice)}}
                 </template>
               </el-col>
             </el-row>
@@ -98,12 +98,12 @@
             <el-col :span="10" v-if="size == null" class="text-right">
               <template v-if="getNewPriceText(dealTicket.dealTicketId, 99)">
                 <del>
-                  ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketTotalPrice}}
+                  ￥{{formatMoney(dealTicket.transactionTotalPrice || dealTicket.ticketTotalPrice)}}
                 </del>
                 <span>￥{{getNewPriceText(dealTicket.dealTicketId, 99)}}</span>
               </template>
               <template v-else>
-                ￥{{dealTicket.transactionTotalPrice || dealTicket.ticketTotalPrice}}
+                ￥{{formatMoney(dealTicket.transactionTotalPrice || dealTicket.ticketTotalPrice)}}
               </template>
             </el-col>
           </el-row>
@@ -125,12 +125,12 @@
             <el-col :span="10" v-if="size == null" class="text-right">
               <template v-if="getNewPriceText(dealSignup.dealSignupId, 100)">
                 <del>
-                  ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+                  ￥{{formatMoney(dealSignup.transactionPrice || dealSignup.signupPrice)}}
                 </del>
                 <span>￥{{getNewPriceText(dealSignup.dealSignupId, 100)}}</span>
               </template>
               <template v-else>
-                ￥{{dealSignup.transactionPrice || dealSignup.signupPrice}}
+                ￥{{formatMoney(dealSignup.transactionPrice || dealSignup.signupPrice)}}
               </template>
             </el-col>
           </el-row>
@@ -152,12 +152,12 @@
             <el-col :span="10" v-if="size == null" class="text-right">
               <template v-if="getNewPriceText(servicePub.dealServicePubId, 57)">
                 <del>
-                  ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+                  ￥{{formatMoney(servicePub.transactionTotalPrice || servicePub.servicePrice)}}
                 </del>
                 <span>￥{{getNewPriceText(servicePub.dealServicePubId, 57)}}</span>
               </template>
               <template v-else>
-                ￥{{servicePub.transactionTotalPrice || servicePub.servicePrice}}
+                ￥{{formatMoney(servicePub.transactionTotalPrice || servicePub.servicePrice)}}
               </template>
             </el-col>
           </el-row>
