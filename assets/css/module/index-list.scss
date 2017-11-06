@@ -1,12 +1,14 @@
 .mint-indexlist {
   &.index-list-box {
-    .mint-indexsection + .mint-indexsection {
-      margin-top: 15px;
-    }
+    // .mint-indexsection + .mint-indexsection {
+    //   margin-top: 0px;
+    // }
     .mint-indexsection-index {
       background-color: transparent;
       color: #999;
       padding: 0;
+      font-size: 12px;
+      line-height: 18px;
     }
     .mint-indexlist-content {
       margin-right: 0 !important;
@@ -14,6 +16,7 @@
     .mint-indexlist-nav {
       background-color: transparent;
       border: none;
+      color: #666;
     }
   }
 }
