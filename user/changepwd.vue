@@ -12,7 +12,7 @@
     </Card>
 
     <section class="operation">
-      <el-button type="primary" @click="submitForm('form')" class="full-width shadow-button">确认并登陆</el-button>
+      <el-button type="primary" @click="submitForm('form')" class="full-width shadow-button">确认并登录</el-button>
     </section>
   </section>
 </template>

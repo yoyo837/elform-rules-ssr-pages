@@ -16,8 +16,8 @@
       </el-form-item>
     </el-form>
     <section class="operation">
-      <el-button type="primary" @click="submitForm('form')" class="full-width">确认并登陆</el-button>
-      <el-button @click="toLogin" class="full-width">已有账号，直接登陆</el-button>
+      <el-button type="primary" @click="submitForm('form')" class="full-width">确认并登录</el-button>
+      <el-button @click="toLogin" class="full-width">已有账号，直接登录</el-button>
     </section>
   </section>
 </template>

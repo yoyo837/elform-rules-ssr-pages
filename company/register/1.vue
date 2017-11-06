@@ -24,7 +24,7 @@
     </el-card>
 
     <section class="redirect-login text-center">
-      <a href="//cloud.ydmap.com.cn">已有账号，去登陆</a>
+      <a href="//cloud.ydmap.com.cn">已有账号，去登录</a>
     </section>
 
     <footer class="ctx-bg">

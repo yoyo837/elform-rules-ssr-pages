@@ -9,7 +9,7 @@
       </el-form-item>
     </el-form>
     <section class="operation">
-      <el-button type="primary" @click="submitForm('form')" class="full-width">马上登陆</el-button>
+      <el-button type="primary" @click="submitForm('form')" class="full-width">马上登录</el-button>
     </section>
     <el-row>
       <el-col :span="12">
@@ -42,7 +42,7 @@ Vue.component(Input.name, Input)
 export default {
   head() {
     return {
-      title: '会员登陆'
+      title: '会员登录'
     }
   },
   mixins: [bdStyleMixin],
@@ -76,7 +76,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$http.post('/pubUser/login.do', this.form).then(() => {
-            // 登陆成功
+            // 登录成功
             // redirectURL
             let redirectURL = decodeURIComponent(this.$route.query['redirectURL'] || '')
             const isHashUrl = nuxtConfig.router.router && nuxtConfig.router.router.mode === 'hash'
