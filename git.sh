@@ -8,6 +8,6 @@
 
 #git pull
 # git checkout refactor-ui
-git checkout master
+git checkout element-ui-2.x
 
 git pull
