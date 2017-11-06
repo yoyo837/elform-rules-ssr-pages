@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button type="text" @click="getSmsCode" :disabled="smsBtnDisabled" class="btn-right">{{smsBtnText}}</el-button>
-    <el-input v-model="smsCode" @change="onChange" class="text-right"></el-input>
+    <el-input type="number" v-model="smsCode" @change="onChange" class="text-right"></el-input>
 
     <el-dialog title="核验后发送验证码" :visible.sync="dVisible" class="portal-dialog verify-dialog" :class="{'portal-dialog-mobile': isMbl}">
       <img :src="codeSrc" @click="refreshT" alt="验证码加载中" class="verify-codeimg">

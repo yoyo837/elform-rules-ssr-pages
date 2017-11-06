@@ -2,7 +2,7 @@
   <section class="container container-shrink container-portable">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="手机号" prop="mobile">
-        <el-input v-model="form.mobile" placeholder="请输入您的手机号" class="text-right"></el-input>
+        <el-input type="number" v-model="form.mobile" placeholder="请输入您的手机号" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="验证码" prop="smsCode">
         <!-- <el-input v-model="form.smsCode" placeholder="请输入验证码"></el-input> -->

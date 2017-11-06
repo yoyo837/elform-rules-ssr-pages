@@ -5,7 +5,7 @@
         <el-input v-model="form.realName" placeholder="请输入您的姓名" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="手机号" prop="mobile">
-        <el-input v-model="form.mobile" placeholder="请输入您的手机号" class="text-right"></el-input>
+        <el-input type="number" v-model="form.mobile" placeholder="请输入您的手机号" class="text-right"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pwd">
         <el-input v-model="form.pwd" placeholder="请输入密码" type="password" class="text-right"></el-input>
